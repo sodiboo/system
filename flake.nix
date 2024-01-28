@@ -8,7 +8,7 @@
 
     stylix.url = "github:danth/stylix";
 
-    niri.url = "/home/sodiboo/niri-flake";
+    niri.url = "github:sodiboo/niri-flake";
     niri.inputs.niri-src.url = "github:YaLTeR/niri";
 
     # nari.url = "path:/home/sodiboo/nixos-razer-nari";
@@ -274,9 +274,27 @@
               systemd.enable = true;
               settings.mainBar = {
                 layer = "top";
-                modules-left = ["mpd"];
                 modules-center = ["clock"];
                 modules-right = ["network" "bluetooth" "battery"];
+
+                clock = {
+                  interval = 1;
+                  format = "  {:%H:%M:%S}";
+                  tooltip-format = "<tt>{calendar}</tt>";
+
+                  calendar = {
+                    mode = "year";
+                    mode-mon-col = 3;
+                    weeks-pos = "left";
+                    format = {
+                      months = "<span color='#ffead3'><b>{}</b></span>";
+                      days = "<span color='#ecc6d9'><b>{}</b></span>";
+                      weeks = "<span color='#99ffdd'><b>W{}</b></span>";
+                      weekdays = "<span color='#ffcc66'><b>{}</b></span>";
+                      today = "<span color='#ff6699'><b><u>{}</u></b></span>";
+                    };
+                  };
+                };
               };
             };
 
@@ -356,7 +374,6 @@
           services.spotifyd.settings.global = {
             username = lib.strings.fileContents ./.spotify_username;
             password = lib.strings.fileContents ./.spotify_password;
-            device_name = "sodi laptop";
           };
 
           xsession = {
@@ -491,6 +508,10 @@
     configs = {
       sodium.system = "x86_64-linux";
       sodium.modules = [
+        {
+          hardware.wooting.enable = true;
+          users.users.sodiboo.extraGroups = ["input"];
+        }
         ({pkgs, ...}: {
           environment.systemPackages = with pkgs; [
             openrazer-daemon
@@ -499,7 +520,10 @@
         })
       ];
       sodium.home_modules = [
-        {programs.niri.config = niri_config {wide = true;};}
+        {
+          services.spotifyd.settings.global.device_name = "sodi computer";
+          programs.niri.config = niri_config {wide = true;};
+        }
       ];
 
       lithium.system = "x86_64-linux";
@@ -514,7 +538,10 @@
         # {
         #   home.file.".config/Code/User/settings.json".enable= false;
         # }
-        {programs.niri.config = niri_config {wide = false;};}
+        {
+          services.spotifyd.settings.global.            device_name = "sodi laptop";
+          programs.niri.config = niri_config {wide = false;};
+        }
       ];
     };
 
@@ -552,24 +579,6 @@
       configs;
   in {
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-    nixosConfigurations = {
-      sodium = nixpkgs.lib.nixosSystem rec {
-        system = "x86_64-linux";
-
-        modules = [
-          ./configuration-sodium.nix
-          # home-manager.nixosModules.home-manager
-          niri.nixosModules.default
-          # nari.nixosModules.default
-          #{
-          #  home-manager.useGlobalPkgs = true;
-          #  home-manager.useUserPackages = true;
-          #  home-manager.users.sodiboo = import /home/sodiboo/.config/home-manager/home.nix;
-          #}
-        ];
-      };
-
-      lithium = actualConfigs.lithium;
-    };
+    nixosConfigurations = actualConfigs;
   };
 }

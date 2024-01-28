@@ -459,25 +459,25 @@
       "locked": {
         "lastModified": 1706200822,
         "narHash": "sha256-gi7jye7K8pX1HOveNMwfo/IermaewDrABPq5wYpl9Ho=",
-        "ref": "refs/heads/main",
+        "owner": "sodiboo",
+        "repo": "niri-flake",
         "rev": "0f4fb239b81e31f121e93f3fad6064d99815a0cd",
-        "revCount": 19,
-        "type": "git",
-        "url": "file:///home/sodiboo/niri-flake"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/sodiboo/niri-flake"
+        "owner": "sodiboo",
+        "repo": "niri-flake",
+        "type": "github"
       }
     },
     "niri-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1706157282,
-        "narHash": "sha256-npvdI/IFHr9HO11rNoSwWKDSg4/+skUOtseaaoEjW+k=",
+        "lastModified": 1706350231,
+        "narHash": "sha256-muDrga1kGDY29loPh6jcOxr88mYMiELX+tsT3KV5P0g=",
         "owner": "YaLTeR",
         "repo": "niri",
-        "rev": "837a0a20fbc6d6461a2f22799eab45472a1816f0",
+        "rev": "dd967554d10ea289ef480b142953f9a3d44fe4cf",
         "type": "github"
       },
       "original": {
