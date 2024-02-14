@@ -11,6 +11,13 @@
     niri.url = "github:sodiboo/niri-flake";
     niri.inputs.niri-src.url = "github:YaLTeR/niri";
 
+    # this is my best solution to use .gitignore'd files without scary git fuckery
+    # (because they are normally excluded from `self` passed to a flake)
+    # it creates a sort of "blockchain" because it depends on the lockfile, which updates every time.
+    # theoretically, you can go to the path of the etc-nixos input, and this is the prev revision
+    # and as long as they haven't been gc'd, keep going forever. lmao.
+    etc-nixos.url = "/etc/nixos/";
+    etc-nixos.flake = false;
     # nari.url = "path:/home/sodiboo/nixos-razer-nari";
   };
 
@@ -19,6 +26,7 @@
     home-manager,
     stylix,
     niri,
+    etc-nixos,
     # nari,
     ...
   } @ inputs: let
@@ -92,15 +100,15 @@
           enable = true;
           settings = {
             default_session = {
-              command = ''${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format="%F %T" --user-menu --cmd "niri-session" '';
+              command = ''${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format="%F %T" --remember --cmd "niri-session" '';
               user = "greeter";
             };
           };
         };
         security.pam.services.greetd.enableGnomeKeyring = true;
-        environment.extraInit = ''
-          LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${pkgs.libsecret}/lib"
-        '';
+        # environment.extraInit = ''
+        #   LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${pkgs.libsecret}/lib"
+        # '';
       })
       ({config, ...}: {
         services.xserver = {
@@ -242,32 +250,6 @@
             EDITOR = "kak";
           };
 
-          xdg.desktopEntries = let
-            OZONE = "--enable-features=UseOzonePlatform --ozone-platform=wayland";
-
-            code = {
-              categories = ["Utility" "TextEditor" "Development" "IDE"];
-              comment = "Code Editing. Redefined.";
-              exec = "code ${OZONE} %F";
-              genericName = "Text Editor";
-              icon = "vscode";
-              # keywords="vscode";
-              mimeType = ["text/plain" "inode/directory"];
-              name = "Visual Studio Code";
-              startupNotify = true;
-              # startupWMClass="Code";
-              type = "Application";
-
-              actions = {
-                new-empty-window = {
-                  exec = "code ${OZONE} --new-window %F";
-                  icon = "vscode";
-                  name = "New Empty Window";
-                };
-              };
-            };
-          in {};
-
           programs = {
             waybar = {
               enable = true;
@@ -282,6 +264,7 @@
                   format = "  {:%H:%M:%S}";
                   tooltip-format = "<tt>{calendar}</tt>";
 
+                  # this doesn't actually look right. i copied from the wiki. sucks on 16:9 and 32:9
                   calendar = {
                     mode = "year";
                     mode-mon-col = 3;
@@ -345,12 +328,8 @@
               shellAliases = {
                 eza = "eza --long --all --icons --time-style long-iso";
                 sptlrx = "sptlrx --before faint";
-                nix-shell = "nix-shell --run fish";
 
-                fix-clip = ''echo -n "" | wl-copy --primary'';
-                home-edit = "$EDITOR ~/.config/home-manager/home.nix";
-                home-switch = ''sh -c "cd ~/.config/home-manager; nix fmt; nix flake update; home-manager switch"'';
-                nix-edit = "sudoedit /etc/nixos/configuration.nix";
+                nix-shell = "nix-shell --run fish";
                 nix-switch = ''sudo sh -c "cd /etc/nixos; nix fmt; nix flake update; nixos-rebuild switch"'';
               };
             };
@@ -372,8 +351,8 @@
 
           services.spotifyd.enable = true;
           services.spotifyd.settings.global = {
-            username = lib.strings.fileContents ./.spotify_username;
-            password = lib.strings.fileContents ./.spotify_password;
+            username = lib.strings.fileContents "${etc-nixos}/.spotify_username";
+            password = lib.strings.fileContents "${etc-nixos}/.spotify_password";
           };
 
           xsession = {
@@ -381,6 +360,73 @@
           };
         }
       )
+      {
+        programs.swaylock.enable = true;
+      }
+      ({
+        pkgs,
+        config,
+        ...
+      }: {
+        home.packages = [
+          (let
+            wl-copy = "${pkgs.wl-clipboard}/bin/wl-copy";
+            wl-paste = "${pkgs.wl-clipboard}/bin/wl-paste";
+            convert = "${pkgs.imagemagick}/bin/convert";
+            makoctl = "${pkgs.mako}/bin/makoctl";
+            jq = "${pkgs.jq}/bin/jq";
+            swaylock = "${config.programs.swaylock.package}/bin/swaylock";
+            niri = "${config.programs.niri.package}/bin/niri";
+            notifs = builtins.concatStringsSep " | " [
+              "${makoctl} list"
+              "${jq} '${
+                builtins.concatStringsSep " |" [
+                  ''.data[0][]''
+                  ''select(.["app-name"].data == "niri" and .summary.data == "Screenshot captured")''
+                  ''.id.data''
+                ]
+              }'"
+              "sort"
+            ];
+            # for quick iteration
+            magick_args = [
+              "-filter Gaussian"
+              "-resize 2%"
+              "-resize 5000%"
+            ];
+          in
+            pkgs.writeScriptBin "blurred-locker" ''
+              dir=/tmp/blurred-locker
+
+              mkdir -p $dir
+
+              ${wl-paste} --no-newline > $dir/clip
+
+              ${notifs} > $dir/existing-notifs
+              ${niri} msg action screenshot-screen
+              while
+                new_notifs="$(${notifs} | comm -23 - $dir/existing-notifs | grep -P '^\d+$')"
+                [ $? -ne 0 ]
+              do
+                :
+              done
+              for i in $(echo "$new_notifs")
+              do
+                ${makoctl} dismiss -n $i
+              done
+              ${wl-paste} > $dir/screenshot.png
+
+              ${wl-copy} < $dir/clip
+              rm $dir/clip
+
+              ${convert} "$dir/screenshot.png" ${builtins.concatStringsSep " " magick_args} "$dir/blurred.png"
+
+              ${swaylock} -i $dir/blurred.png
+
+              rm -r $dir
+            '')
+        ];
+      })
     ];
 
     niri_config = {wide}: let
@@ -437,10 +483,16 @@
           }
           default-column-width { proportion 0.3333; }
       }
+
+      hotkey-overlay {
+        skip-at-startup
+      }
+
       binds {
           Mod+T { spawn "foot"; }
           Mod+D { spawn "fuzzel"; }
-          Mod+Alt+L { spawn "swaylock"; }
+          Mod+Alt+W { spawn "systemctl" "--user" "restart" "waybar.service"; }
+          Mod+Alt+L { spawn "blurred-locker"; }
 
           XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"; }
           XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"; }
@@ -492,10 +544,6 @@
           Mod+Shift+Minus { set-window-height "-10%"; }
           Mod+Shift+Plus { set-window-height "+10%"; }
 
-          Print { screenshot; }
-          Ctrl+Print { screenshot-screen; }
-          Alt+Print { screenshot-window; }
-
           Mod+Shift+S { screenshot; }
 
           Mod+Shift+E { quit; }
@@ -528,7 +576,10 @@
 
       lithium.system = "x86_64-linux";
       lithium.modules = [
-        {services.fprintd.enable = true;}
+        {
+          services.fprintd.enable = true;
+          security.pam.services.swaylock.fprintAuth = false;
+        }
         # stylix.nixosModules.stylix
         # ({pkgs, ...}: {
         #   stylix.image = pkgs.nixos-artwork.wallpapers.nineish-dark-gray.src;
@@ -539,7 +590,7 @@
         #   home.file.".config/Code/User/settings.json".enable= false;
         # }
         {
-          services.spotifyd.settings.global.            device_name = "sodi laptop";
+          services.spotifyd.settings.global.device_name = "sodi laptop";
           programs.niri.config = niri_config {wide = false;};
         }
       ];
@@ -552,7 +603,7 @@
             system = configs.${hostname}.system;
             modules =
               [
-                ./hardware-configuration.nix
+                "${etc-nixos}/hardware-configuration.nix"
                 {
                   networking.hostName = hostname;
                   nix.settings.experimental-features = ["nix-command" "flakes"];
