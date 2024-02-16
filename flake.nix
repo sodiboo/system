@@ -8,6 +8,9 @@
 
     stylix.url = "github:danth/stylix";
 
+    nix-index-database.url = "github:Mic92/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
     niri.url = "github:sodiboo/niri-flake";
     niri.inputs.niri-src.url = "github:YaLTeR/niri";
 
@@ -25,13 +28,44 @@
     nixpkgs,
     home-manager,
     stylix,
+    nix-index-database,
     niri,
     etc-nixos,
     # nari,
     ...
   } @ inputs: let
+    map_attr_pairs = f: attrs: builtins.concatMap (name: f name attrs.${name}) (builtins.attrNames attrs);
+    with_prefix = base: path: "${base}/${path}";
+    read_dir_recursively = dir:
+      map_attr_pairs (
+        name: type:
+          builtins.getAttr type {
+            directory = map (with_prefix name) (read_dir_recursively "${dir}/${name}");
+            regular = [name];
+            symlink = [];
+          }
+      ) (builtins.readDir dir);
+    names_to_attrs = f: names:
+      builtins.listToAttrs (map (name: {
+          inherit name;
+          value = f name;
+        })
+        names);
+    read_all_modules = base: names_to_attrs (with_prefix base) (builtins.filter (nixpkgs.lib.hasSuffix ".mod.nix") (read_dir_recursively base));
+
     keyboard_layout = "no";
     shared.modules = [
+      nix-index-database.nixosModules.nix-index
+      {
+        programs.nix-index-database.comma.enable = true;
+        programs.command-not-found.enable = false;
+        programs.nix-index.enableFishIntegration = false;
+        programs.fish.interactiveShellInit = ''
+          function fish_command_not_found
+            , $argv
+          end
+        '';
+      }
       {
         time.timeZone = "Europe/Stockholm";
         console.keyMap = keyboard_layout;
@@ -100,7 +134,12 @@
           enable = true;
           settings = {
             default_session = {
-              command = ''${pkgs.greetd.tuigreet}/bin/tuigreet --time --time-format="%F %T" --remember --cmd "niri-session" '';
+              command = builtins.concatStringsSep " " [
+                "${pkgs.greetd.tuigreet}/bin/tuigreet"
+                ''--time --time-format="%F %T"''
+                "--remember"
+                "--cmd niri-session"
+              ];
               user = "greeter";
             };
           };
@@ -167,11 +206,16 @@
         users.users.sodiboo.extraGroups = ["adbusers"];
         programs.adb.enable = true;
       }
+      {
+        security.pam.services.swaylock = {};
+      }
       niri.nixosModules.niri
       {programs.niri.enable = true;}
     ];
 
     shared.home_modules = [
+      # niri.homeModules.niri
+      # {programs.niri.enable = true;}
       (
         {
           config,
@@ -180,6 +224,7 @@
           ...
         }: {
           home.packages = with pkgs; [
+            bitwarden-cli
             appimage-run
             eww-wayland
             dolphin
@@ -358,6 +403,7 @@
           xsession = {
             enable = true;
           };
+          dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
         }
       )
       {
@@ -579,6 +625,7 @@
         {
           services.fprintd.enable = true;
           security.pam.services.swaylock.fprintAuth = false;
+          security.pam.services.greetd.fprintAuth = false;
         }
         # stylix.nixosModules.stylix
         # ({pkgs, ...}: {
@@ -595,8 +642,9 @@
         }
       ];
     };
-
-    actualConfigs =
+  in {
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+    nixosConfigurations =
       builtins.mapAttrs (
         hostname: config:
           nixpkgs.lib.nixosSystem {
@@ -628,8 +676,5 @@
           }
       )
       configs;
-  in {
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-    nixosConfigurations = actualConfigs;
   };
 }
