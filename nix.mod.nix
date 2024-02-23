@@ -20,6 +20,7 @@ in {
       home.packages = with pkgs; [
         cachix
         nil
+        nix-diff
       ];
     })
   ];

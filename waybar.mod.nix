@@ -5,9 +5,10 @@
       lib,
       ...
     }: {
-      home.activation.restart-waybar = lib.hm.dag.entryAfter ["writeBoundary"] ''
-        run ${config.systemd.user.systemctlPath} --user restart waybar.service
-      '';
+      # lol this breaks boot sequence
+      # home.activation.restart-waybar = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      #   run ${config.systemd.user.systemctlPath} --user restart waybar.service
+      # '';
       programs.waybar = {
         enable = true;
         systemd.enable = true;

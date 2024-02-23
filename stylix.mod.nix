@@ -15,7 +15,7 @@ in {
     ({pkgs, ...}: {
       stylix.polarity = "dark";
       stylix.targets.fish.enable = false;
-      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/uwunicorn.yaml";
+      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tube.yaml";
 
       fonts = {
         fontconfig.defaultFonts.monospace = ["FiraCode Nerd Font"];

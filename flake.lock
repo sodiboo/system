@@ -476,11 +476,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1708637206,
-        "narHash": "sha256-cbG8sxP5BB55smZjlqCkeV4GFEaUsPf6gzVVjpvquO0=",
+        "lastModified": 1708702983,
+        "narHash": "sha256-D9/I+K5Vd+bjwj/pN9J6DO0XBBHXbU+WNZ4nrAjoqHc=",
         "ref": "refs/heads/main",
-        "rev": "d2db3edda2f83eb8b30e2dd0c196db06ed8f93cf",
-        "revCount": 34,
+        "rev": "652d095d4c4aaec781561c6cb1bea9987dc72133",
+        "revCount": 45,
         "type": "git",
         "url": "file:///home/sodiboo/niri-flake"
       },
@@ -526,11 +526,11 @@
     "niri-unstable": {
       "flake": false,
       "locked": {
-        "lastModified": 1708582898,
-        "narHash": "sha256-Q7z99bH3tvV5FKzYw6Pvm6JKCrhyQHRF/to93TQriDY=",
+        "lastModified": 1708696032,
+        "narHash": "sha256-/kNkM/KvefH+o1XRSe8Eunn5LDtiyfVQwd2utJH9jT4=",
         "owner": "YaLTeR",
         "repo": "niri",
-        "rev": "f32a25eefefa23a0849a8f3c2710bcfd4fd8d5a0",
+        "rev": "506dcd99d7fafbe94f0444aed46c2f89f29612da",
         "type": "github"
       },
       "original": {
@@ -745,11 +745,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1707757489,
-        "narHash": "sha256-YyqHbxtDGB3OIITPQ3XtkM20fh9/t4CXkYXKzg9DuP8=",
+        "lastModified": 1708699241,
+        "narHash": "sha256-HpRE7W000QQmII9Tt/BBEEL6Io1mzUL6rl82QoRQP3A=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "50cae37cfe23e5ad202ed53f48529139dfa0d008",
+        "rev": "6c447e8761018fa75dfdc20df6232d67a8cc93f2",
         "type": "github"
       },
       "original": {

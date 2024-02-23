@@ -142,7 +142,8 @@ in {
     niri.nixosModules.niri
     ({pkgs, ...}: {
       programs.niri.enable = true;
-      programs.niri.package = niri.packages.${pkgs.stdenv.system}.niri-unstable;
+      nixpkgs.overlays = [niri.overlays.niri];
+      programs.niri.package = pkgs.niri-unstable;
       programs.niri.acknowledge-warning.will-use-nixpkgs = true;
       environment.variables.NIXOS_OZONE_WL = "1";
       environment.systemPackages = with pkgs; [
@@ -152,9 +153,9 @@ in {
         cage
         gamescope
       ];
-      qt.enable = true;
-      qt.style = "adwaita-dark";
-      qt.platformTheme = "gnome";
+      # qt.enable = true;
+      # qt.style = "adwaita-dark";
+      # qt.platformTheme = "gnome";
     })
   ];
 

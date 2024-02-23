@@ -11,8 +11,7 @@
     nix-index-database.url = "github:Mic92/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
-    niri.url = "/home/sodiboo/niri-flake";
-    # niri.inputs.niri-src.url = "github:YaLTeR/niri";
+    niri.url = "github:sodiboo/niri-flake";
 
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
@@ -42,6 +41,8 @@
         last
         (hasPrefix ".")
       ];
+
+      # `const` helper function is used extensively: the function is constant in regards to the name of the attribute.
 
       params =
         inputs
@@ -79,20 +80,17 @@
       inherit params systems configs;
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-      nixosConfigurations =
-        builtins.mapAttrs (
-          hostname: config:
-            nixpkgs.lib.nixosSystem {
-              inherit (config) system;
-              modules =
-                config.modules
-                ++ [
-                  {
-                    _module.args.home_modules = config.home_modules;
-                  }
-                ];
-            }
-        )
-        configs;
+      nixosConfigurations = builtins.mapAttrs (const (config:
+        nixpkgs.lib.nixosSystem {
+          inherit (config) system;
+          modules =
+            config.modules
+            ++ [
+              {
+                _module.args.home_modules = config.home_modules;
+              }
+            ];
+        }))
+      configs;
     };
 }
