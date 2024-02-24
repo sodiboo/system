@@ -34,19 +34,11 @@
           python311
           ffmpeg_6-full
           pairdrop
+          git
+          gh
         ];
 
-        # systemd.user.services.waybar.Unit.X-Restart-Triggers = [
-        #   config.xdg.configFile."waybar/config".source or ""
-        #   config.xdg.configFile."waybar/style.css".source or ""
-        # ];
-
         programs = {
-          foot = {
-            enable = true;
-            settings.csd.preferred = "none";
-          };
-
           # Shell prompt
           # starship.enable = true;
           # starship.settings = import ./starship.nix;

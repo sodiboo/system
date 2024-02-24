@@ -12,17 +12,30 @@
 in {
   shared.modules = [
     stylix.nixosModules.stylix
-    ({pkgs, ...}: {
+    ({
+      pkgs,
+      config,
+      ...
+    }: {
+      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/google-dark.yaml";
       stylix.polarity = "dark";
-      stylix.targets.fish.enable = false;
-      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tube.yaml";
 
-      fonts = {
-        fontconfig.defaultFonts.monospace = ["FiraCode Nerd Font"];
-        packages = [
-          (pkgs.nerdfonts.override {fonts = ["FiraCode"];})
-        ];
-      };
+      stylix.fonts.monospace.package = pkgs.nerdfonts;
+      stylix.fonts.monospace.name = "FiraCode Nerd Font";
+
+      stylix.fonts.sansSerif.package = pkgs.nerdfonts;
+      stylix.fonts.sansSerif.name = "Ubuntu Nerd Font";
+      stylix.fonts.serif = config.stylix.fonts.sansSerif;
+
+      stylix.fonts.sizes.applications = 10;
+      stylix.fonts.sizes.desktop = 12;
+
+      stylix.cursor.package = pkgs.phinger-cursors;
+      stylix.cursor.name = "phinger-cursors";
+
+      stylix.opacity.terminal = 0.9;
+
+      # stylix.targets.fish.enable = false;
     })
   ];
 
@@ -38,8 +51,6 @@ in {
     {
       # stylix.targets.gtk.enable = false;
       # stylix.targets.firefox.enable = false;
-      # stylix.targets.waybar.enable = false;
-      stylix.targets.fish.enable = false;
       stylix.targets.vscode.enable = false;
     }
   ];

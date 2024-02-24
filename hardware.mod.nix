@@ -14,7 +14,10 @@ let
     };
   };
 
-  fs = path: fsType: device: {fileSystems.${path} = {inherit device fsType;};};
+  filesystem = fsType: path: device: {fileSystems.${path} = {inherit device fsType;};};
+
+  fs.ext4 = filesystem "ext4";
+  fs.vfat = filesystem "vfat";
   swap = device: {swapDevices = [{inherit device;}];};
 
   cpu = brand: {hardware.cpu.${brand}.updateMicrocode = true;};
@@ -30,8 +33,8 @@ in
   // builtins.listToAttrs [
     (config "lithium" "x86_64-linux" [
       (cpu "intel")
-      (fs "/" "ext4" "/dev/disk/by-uuid/64d05a5c-e962-4fb4-9c16-9185dcff2dad")
-      (fs "/boot" "vfat" "/dev/disk/by-uuid/FC03-65D6")
+      (fs.ext4 "/" "/dev/disk/by-uuid/64d05a5c-e962-4fb4-9c16-9185dcff2dad")
+      (fs.vfat "/boot" "/dev/disk/by-uuid/FC03-65D6")
       (swap "/dev/disk/by-uuid/4c073557-45f2-43f3-8c77-c5254917c2de")
       {
         # Not sure where these belong, or what they do. Just put here for now. TODO: cleanup.

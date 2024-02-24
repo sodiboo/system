@@ -30,8 +30,6 @@
         bottom
         entr
         difftastic
-        git
-        gh
         kakoune
         micro
         socat
@@ -52,9 +50,6 @@
             exa = "eza";
             tree = "eza --tree";
             cat = "bat";
-            find = "fd";
-            grep = "rg";
-            diff = "difft";
           };
           shellAliases = let
             conf = ''env NIX_CONFIG="warn-dirty = false"'';
