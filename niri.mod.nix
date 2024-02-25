@@ -5,148 +5,177 @@
     ...
   }:
     with lib; let
-      only = cond: text:
+      only = cond:
         if cond
-        then text
-        else "/* ${text} */";
+        then id
+        else const null;
       binds = {
         suffixes,
         prefixes,
         substitutions ? {},
       }: let
-        format = prefix: suffix: "${prefix.key}+${suffix.key} { ${prefix.action}-${suffix.action}; }";
+        replacer = replaceStrings (attrNames substitutions) (attrValues substitutions);
+        format = prefix: suffix:
+          niri.kdl.plain "${prefix.key}+${suffix.key}" [
+            (let
+              actual-suffix =
+                if isList suffix.action
+                then {
+                  action = head suffix.action;
+                  args = tail suffix.action;
+                }
+                else {
+                  inherit (suffix) action;
+                  args = [];
+                };
+            in
+              niri.kdl.leaf (replacer "${prefix.action}-${actual-suffix.action}") actual-suffix.args)
+          ];
         pairs = attrs: fn:
           concatMap (key:
             fn {
               inherit key;
               action = attrs.${key};
             }) (attrNames attrs);
-        list = pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)]));
-        string = concatStringsSep "\n" list;
       in
-        replaceStrings (attrNames substitutions) (attrValues substitutions) string;
+        pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)]));
 
       colors = pipe (range 0 15) [
         (map (i: "base0${toHexString i}"))
         (map (name: {
           inherit name;
-          value = concatStringsSep " " (forEach ["r" "g" "b"] (c: config.lib.stylix.colors."${name}-rgb-${c}"));
+          value = forEach ["r" "g" "b"] (c: toInt config.lib.stylix.colors."${name}-rgb-${c}");
         }))
         listToAttrs
       ];
     in {
-      programs.niri.config = ''
-        input {
-            keyboard { xkb { layout "${config.locale.keyboard_layout}"; }; }
-            mouse { accel-speed 1.0; }
-            touchpad {
-              tap
-              dwt
-              natural-scroll
-            }
-        }
-        cursor {
-          xcursor-size ${toString config.stylix.cursor.size}
-          xcursor-theme "${config.stylix.cursor.name}"
-        }
-        output "eDP-1" { scale 2.0; }
+      programs.niri.config = with niri.kdl;
+        serialize.nodes [
+          (plain "input" [
+            (plain "keyboard" [
+              (plain "xkb" [
+                (leaf "layout" ["no"])
+              ])
+            ])
+            (plain "mouse" [
+              (leaf "accel-speed" [1.0])
+            ])
+            (plain "touchpad" [
+              (plain-leaf "tap")
+              (plain-leaf "dwt")
+              (plain-leaf "natural-scroll")
+            ])
+          ])
+          (plain "cursor" [
+            (leaf "xcursor-size" [config.stylix.cursor.size])
+            (leaf "xcursor-theme" [config.stylix.cursor.name])
+          ])
+          (node "output" ["eDP-1"] [
+            (leaf "scale" [2.0])
+          ])
+          (leaf "screenshot-path" ["~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"])
+          # (plain-leaf "prefer-no-csd")
+          (plain "layout" [
+            (leaf "gaps" [4])
+            (plain "focus-ring" [
+              (plain-leaf "off")
+            ])
+            (plain "border" [
+              (leaf "width" [4])
+              (leaf "active-color" (colors.base0A ++ [255]))
+              (leaf "inactive-color" (colors.base03 ++ [255]))
+            ])
+            (plain "preset-column-widths" [
+              (only wide (leaf "proportion" [0.166667]))
+              (only wide (leaf "proportion" [0.25]))
+              (leaf "proportion" [0.333333])
+              (leaf "proportion" [0.5])
+              (leaf "proportion" [0.666667])
+              (only wide (leaf "proportion" [0.75]))
+              (only wide (leaf "proportion" [0.833333]))
+            ])
+            (plain "default-column-width" [
+              (leaf "proportion" [0.333333])
+            ])
+          ])
+          (plain "hotkey-overlay" [
+            (plain-leaf "skip-at-startup")
+          ])
+          (let
+            bind = keys: action: args:
+              plain keys [
+                (leaf action args)
+              ];
+            spawn = flip bind "spawn";
+            simple = keys: action: bind keys action [];
+          in
+            plain "binds" [
+              (spawn "Mod+T" ["foot"])
+              (spawn "Mod+D" ["fuzzel"])
+              (spawn "Mod+W" ["systemctl" "--user" "restart" "waybar.service"])
+              (spawn "Mod+L" ["blurred-locker"])
 
-        screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
-        // Fucking vscode breaks with this enabled.
-        // prefer-no-csd
+              (spawn "XF86AudioRaiseVolume" ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"])
+              (spawn "XF86AudioLowerVolume" ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"])
+              (spawn "XF86AudioMute" ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"])
 
-        layout {
-            gaps 4
-            focus-ring { off; }
-            border {
-                width 4
-                active-color ${colors.base0A} 255
-                inactive-color ${colors.base03} 255
-            }
+              (spawn "XF86MonBrightnessUp" ["brightnessctl" "set" "10%+"])
+              (spawn "XF86MonBrightnessDown" ["brightnessctl" "set" "10%-"])
 
-            preset-column-widths {
-                ${only wide "proportion 0.1667"}
-                ${only wide "proportion 0.25"}
-                proportion 0.3333
-                proportion 0.5
-                proportion 0.6667
-                ${only wide "proportion 0.75"}
-                ${only wide "proportion 0.8333"}
-            }
-            default-column-width { proportion 0.3333; }
-        }
+              (spawn "Mod+Q" ["close-window"])
 
-        hotkey-overlay { skip-at-startup; }
+              (binds {
+                suffixes."Left" = "column-left";
+                suffixes."Down" = "window-down";
+                suffixes."Up" = "window-up";
+                suffixes."Right" = "column-right";
+                prefixes."Mod" = "focus";
+                prefixes."Mod+Ctrl" = "move";
+                prefixes."Mod+Shift" = "focus-monitor";
+                prefixes."Mod+Shift+Ctrl" = "move-window-to-monitor";
+                substitutions."monitor-column" = "monitor";
+                substitutions."monitor-window" = "monitor";
+              })
 
-        binds {
-            Mod+T { spawn "foot"; }
-            Mod+D { spawn "fuzzel"; }
-            Mod+W { spawn "systemctl" "--user" "restart" "waybar.service"; }
-            Mod+L { spawn "blurred-locker"; }
+              (binds {
+                suffixes."U" = "workspace-down";
+                suffixes."I" = "workspace-up";
+                prefixes."Mod" = "focus";
+                prefixes."Mod+Ctrl" = "move-window-to";
+                prefixes."Mod+Shift" = "move";
+              })
 
-            XF86AudioRaiseVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"; }
-            XF86AudioLowerVolume { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"; }
-            XF86AudioMute { spawn "wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"; }
+              (binds {
+                suffixes = builtins.listToAttrs (map (n: {
+                  name = toString n;
+                  value = ["workspace" n];
+                }) (range 1 9));
+                prefixes."Mod" = "focus";
+                prefixes."Mod+Ctrl" = "move-window-to";
+              })
 
-            XF86MonBrightnessUp { spawn "brightnessctl" "set" "10%+"; }
-            XF86MonBrightnessDown { spawn "brightnessctl" "set" "10%-"; }
+              (simple "Mod+Comma" "consume-window-into-column")
+              (simple "Mod+Period" "expel-window-from-column")
 
-            Mod+Q { close-window; }
+              (simple "Mod+R" "switch-preset-column-width")
+              (simple "Mod+F" "maximize-column")
+              (simple "Mod+Shift+F" "fullscreen-window")
+              (simple "Mod+C" "center-column")
 
-        ${binds {
-          suffixes."Left" = "column-left";
-          suffixes."Down" = "window-down";
-          suffixes."Up" = "window-up";
-          suffixes."Right" = "column-right";
-          prefixes."Mod" = "focus";
-          prefixes."Mod+Ctrl" = "move";
-          prefixes."Mod+Shift" = "focus-monitor";
-          prefixes."Mod+Shift+Ctrl" = "move-window-to-monitor";
-          substitutions."monitor-column" = "monitor";
-          substitutions."monitor-window" = "monitor";
-        }}
+              (bind "Mod+Minus" "set-column-width" ["-10%"])
+              (bind "Mod+Plus" "set-column-width" ["+10%"])
 
+              (bind "Mod+Shift+Minus" "set-window-height" ["-10%"])
+              (bind "Mod+Shift+Plus" "set-window-height" ["+10%"])
 
-        ${binds {
-          suffixes."U" = "workspace-down";
-          suffixes."I" = "workspace-up";
-          prefixes."Mod" = "focus";
-          prefixes."Mod+Ctrl" = "move-window-to";
-          prefixes."Mod+Shift" = "move";
-        }}
+              (simple "Mod+Shift+S" "screenshot")
 
+              (simple "Mod+Shift+E" "quit")
+              (simple "Mod+Shift+P" "power-off-monitors")
 
-        ${binds {
-          suffixes = builtins.listToAttrs (map (n: {
-            name = n;
-            value = "workspace ${n}";
-          }) (map toString (range 1 9)));
-          prefixes."Mod" = "focus";
-          prefixes."Mod+Ctrl" = "move-window-to";
-        }}
-
-            Mod+Comma  { consume-window-into-column; }
-            Mod+Period { expel-window-from-column; }
-
-            Mod+R { switch-preset-column-width; }
-            Mod+F { maximize-column; }
-            Mod+Shift+F { fullscreen-window; }
-            Mod+C { center-column; }
-
-            Mod+Minus { set-column-width "-10%"; }
-            Mod+Plus { set-column-width "+10%"; }
-
-            Mod+Shift+Minus { set-window-height "-10%"; }
-            Mod+Shift+Plus { set-window-height "+10%"; }
-
-            Mod+Shift+S { screenshot; }
-
-            Mod+Shift+E { quit; }
-            Mod+Shift+P { power-off-monitors; }
-
-            Mod+Shift+Ctrl+T { toggle-debug-tint; }
-        }
-      '';
+              (simple "Mod+Shift+Ctrl+T" "toggle-debug-tint")
+            ])
+        ];
     };
 in {
   shared.modules = [
