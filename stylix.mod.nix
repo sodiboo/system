@@ -17,7 +17,7 @@ in {
       config,
       ...
     }: {
-      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/google-dark.yaml";
+      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/uwunicorn.yaml";
       stylix.polarity = "dark";
 
       stylix.fonts.monospace.package = pkgs.nerdfonts;

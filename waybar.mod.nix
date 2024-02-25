@@ -26,6 +26,7 @@
         modules-right = [
           "network"
           "bluetooth"
+          "temperature"
           "battery"
         ];
 
@@ -39,7 +40,7 @@
 
         clock = {
           interval = 1;
-          format = "  {:%H:%M:%S}";
+          format = "{:%Y-%m-%d    %H:%M:%S}";
         };
 
         network = {

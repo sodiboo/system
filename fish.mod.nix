@@ -19,24 +19,6 @@
       programs.nix-index-database.comma.enable = true;
       programs.command-not-found.enable = false;
       programs.nix-index.enableFishIntegration = false;
-
-      environment.systemPackages = with pkgs; [
-        chase
-        tldr
-        eza
-        bat
-        fd
-        ripgrep
-        bottom
-        entr
-        difftastic
-        kakoune
-        micro
-        socat
-        jq
-        file
-        bc
-      ];
     })
   ];
 
