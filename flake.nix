@@ -77,7 +77,8 @@
 
       configs = mapAttrs (const (merge raw_configs.shared)) (builtins.removeAttrs raw_configs ["shared"]);
     in {
-      inherit params systems configs;
+      # for use in nix repl
+      p = s: builtins.trace "\n\n${s}\n" "---";
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
       nixosConfigurations = builtins.mapAttrs (const (config:

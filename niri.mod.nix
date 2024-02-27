@@ -5,32 +5,28 @@
     ...
   }:
     with lib; let
-      only = cond:
-        if cond
-        then id
-        else const null;
       binds = {
         suffixes,
         prefixes,
         substitutions ? {},
       }: let
         replacer = replaceStrings (attrNames substitutions) (attrValues substitutions);
-        format = prefix: suffix:
-          niri.kdl.plain "${prefix.key}+${suffix.key}" [
-            (let
-              actual-suffix =
-                if isList suffix.action
-                then {
-                  action = head suffix.action;
-                  args = tail suffix.action;
-                }
-                else {
-                  inherit (suffix) action;
-                  args = [];
-                };
-            in
-              niri.kdl.leaf (replacer "${prefix.action}-${actual-suffix.action}") actual-suffix.args)
-          ];
+        format = prefix: suffix: {
+          name = "${prefix.key}+${suffix.key}";
+          value = let
+            actual-suffix =
+              if isList suffix.action
+              then {
+                action = head suffix.action;
+                args = tail suffix.action;
+              }
+              else {
+                inherit (suffix) action;
+                args = [];
+              };
+          in
+            niri.kdl.leaf (replacer "${prefix.action}-${actual-suffix.action}") actual-suffix.args;
+        };
         pairs = attrs: fn:
           concatMap (key:
             fn {
@@ -38,144 +34,128 @@
               action = attrs.${key};
             }) (attrNames attrs);
       in
-        pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)]));
-
-      colors = pipe (range 0 15) [
-        (map (i: "base0${toHexString i}"))
-        (map (name: {
-          inherit name;
-          value = forEach ["r" "g" "b"] (c: toInt config.lib.stylix.colors."${name}-rgb-${c}");
-        }))
-        listToAttrs
-      ];
+        listToAttrs (pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)])));
     in {
-      programs.niri.config = with niri.kdl;
-        serialize.nodes [
-          (plain "input" [
-            (plain "keyboard" [
-              (plain "xkb" [
-                (leaf "layout" ["no"])
-              ])
-            ])
-            (plain "mouse" [
-              (leaf "accel-speed" [1.0])
-            ])
-            (plain "touchpad" [
-              (plain-leaf "tap")
-              (plain-leaf "dwt")
-              (plain-leaf "natural-scroll")
-            ])
-          ])
-          (plain "cursor" [
-            (leaf "xcursor-size" [config.stylix.cursor.size])
-            (leaf "xcursor-theme" [config.stylix.cursor.name])
-          ])
-          (node "output" ["eDP-1"] [
-            (leaf "scale" [2.0])
-          ])
-          (leaf "screenshot-path" ["~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"])
-          # (plain-leaf "prefer-no-csd")
-          (plain "layout" [
-            (leaf "gaps" [4])
-            (plain "focus-ring" [
-              (plain-leaf "off")
-            ])
-            (plain "border" [
-              (leaf "width" [4])
-              (leaf "active-color" (colors.base0A ++ [255]))
-              (leaf "inactive-color" (colors.base03 ++ [255]))
-            ])
-            (plain "preset-column-widths" [
-              (only wide (leaf "proportion" [0.166667]))
-              (only wide (leaf "proportion" [0.25]))
-              (leaf "proportion" [0.333333])
-              (leaf "proportion" [0.5])
-              (leaf "proportion" [0.666667])
-              (only wide (leaf "proportion" [0.75]))
-              (only wide (leaf "proportion" [0.833333]))
-            ])
-            (plain "default-column-width" [
-              (leaf "proportion" [0.333333])
-            ])
-          ])
-          (plain "hotkey-overlay" [
-            (plain-leaf "skip-at-startup")
-          ])
-          (let
-            bind = keys: action: args:
-              plain keys [
-                (leaf action args)
-              ];
-            spawn = flip bind "spawn";
-            simple = keys: action: bind keys action [];
-          in
-            plain "binds" [
-              (spawn "Mod+T" ["foot"])
-              (spawn "Mod+D" ["fuzzel"])
-              (spawn "Mod+W" ["systemctl" "--user" "restart" "waybar.service"])
-              (spawn "Mod+L" ["blurred-locker"])
+      programs.niri.settings = let
+        colors = config.lib.stylix.colors.withHashtag;
+      in {
+        input.keyboard.xkb.layout = "no";
+        input.mouse.accel-speed = 1.0;
+        input.touchpad = {
+          tap = true;
+          dwt = true;
+          natural-scroll = true;
+        };
+        cursor.size = config.stylix.cursor.size;
+        cursor.theme = config.stylix.cursor.name;
 
-              (spawn "XF86AudioRaiseVolume" ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"])
-              (spawn "XF86AudioLowerVolume" ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"])
-              (spawn "XF86AudioMute" ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"])
+        outputs."eDP-1" = {
+          scale = 2.0;
+        };
 
-              (spawn "XF86MonBrightnessUp" ["brightnessctl" "set" "10%+"])
-              (spawn "XF86MonBrightnessDown" ["brightnessctl" "set" "10%-"])
+        layout = {
+          gaps = 4;
+          focus-ring.enable = false;
+          border = {
+            enable = true;
+            width = 4;
+            active-color = colors.base0A;
+            inactive-color = colors.base03;
+          };
+        };
 
-              (spawn "Mod+Q" ["close-window"])
+        hotkey-overlay.skip-at-startup = true;
 
-              (binds {
-                suffixes."Left" = "column-left";
-                suffixes."Down" = "window-down";
-                suffixes."Up" = "window-up";
-                suffixes."Right" = "column-right";
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move";
-                prefixes."Mod+Shift" = "focus-monitor";
-                prefixes."Mod+Shift+Ctrl" = "move-window-to-monitor";
-                substitutions."monitor-column" = "monitor";
-                substitutions."monitor-window" = "monitor";
-              })
+        binds = with niri.kdl; let
+          spawn = leaf "spawn";
+        in
+          lib.attrsets.mergeAttrsList [
+            {
+              "Mod+T" = spawn "foot";
+              "Mod+D" = spawn "fuzzel";
+              "Mod+W" = spawn ["systemctl" "--user" "restart" "waybar.service"];
+              "Mod+L" = spawn "blurred-locker";
 
-              (binds {
-                suffixes."U" = "workspace-down";
-                suffixes."I" = "workspace-up";
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move-window-to";
-                prefixes."Mod+Shift" = "move";
-              })
+              "XF86AudioRaiseVolume" = spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
+              "XF86AudioLowerVolume" = spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
+              "XF86AudioMute" = spawn ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"];
 
-              (binds {
-                suffixes = builtins.listToAttrs (map (n: {
-                  name = toString n;
-                  value = ["workspace" n];
-                }) (range 1 9));
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move-window-to";
-              })
+              "XF86MonBrightnessUp" = spawn ["brightnessctl" "set" "10%+"];
+              "XF86MonBrightnessDown" = spawn ["brightnessctl" "set" "10%-"];
 
-              (simple "Mod+Comma" "consume-window-into-column")
-              (simple "Mod+Period" "expel-window-from-column")
+              "Mod+Q" = plain-leaf "close-window";
+            }
+            (binds {
+              suffixes."Left" = "column-left";
+              suffixes."Down" = "window-down";
+              suffixes."Up" = "window-up";
+              suffixes."Right" = "column-right";
+              prefixes."Mod" = "focus";
+              prefixes."Mod+Ctrl" = "move";
+              prefixes."Mod+Shift" = "focus-monitor";
+              prefixes."Mod+Shift+Ctrl" = "move-window-to-monitor";
+              substitutions."monitor-column" = "monitor";
+              substitutions."monitor-window" = "monitor";
+            })
 
-              (simple "Mod+R" "switch-preset-column-width")
-              (simple "Mod+F" "maximize-column")
-              (simple "Mod+Shift+F" "fullscreen-window")
-              (simple "Mod+C" "center-column")
+            (binds {
+              suffixes."U" = "workspace-down";
+              suffixes."I" = "workspace-up";
+              prefixes."Mod" = "focus";
+              prefixes."Mod+Ctrl" = "move-window-to";
+              prefixes."Mod+Shift" = "move";
+            })
 
-              (bind "Mod+Minus" "set-column-width" ["-10%"])
-              (bind "Mod+Plus" "set-column-width" ["+10%"])
+            (binds {
+              suffixes = builtins.listToAttrs (map (n: {
+                name = toString n;
+                value = ["workspace" n];
+              }) (range 1 9));
+              prefixes."Mod" = "focus";
+              prefixes."Mod+Ctrl" = "move-window-to";
+            })
+            {
+              "Mod+Comma" = plain-leaf "consume-window-into-column";
+              "Mod+Period" = plain-leaf "expel-window-from-column";
 
-              (bind "Mod+Shift+Minus" "set-window-height" ["-10%"])
-              (bind "Mod+Shift+Plus" "set-window-height" ["+10%"])
+              "Mod+R" = plain-leaf "switch-preset-column-width";
+              "Mod+F" = plain-leaf "maximize-column";
+              "Mod+Shift+F" = plain-leaf "fullscreen-window";
+              "Mod+C" = plain-leaf "center-column";
 
-              (simple "Mod+Shift+S" "screenshot")
+              "Mod+Minus" = leaf "set-column-width" "-10%";
+              "Mod+Plus" = leaf "set-column-width" "+10%";
+              "Mod+Shift+Minus" = leaf "set-window-height" "-10%";
+              "Mod+Shift+Plus" = leaf "set-window-height" "+10%";
 
-              (simple "Mod+Shift+E" "quit")
-              (simple "Mod+Shift+P" "power-off-monitors")
+              "Mod+Shift+S" = plain-leaf "screenshot";
 
-              (simple "Mod+Shift+Ctrl+T" "toggle-debug-tint")
-            ])
-        ];
+              "Mod+Shift+E" = plain-leaf "quit";
+              "Mod+Shift+P" = plain-leaf "power-off-monitors";
+
+              "Mod+Shift+Ctrl+T" = plain-leaf "toggle-debug-tint";
+            }
+          ];
+
+        # examples:
+
+        # spawn-at-startup = [
+        #   {command = ["alacritty"];}
+        #   {command = ["waybar"];}
+        #   {command = ["swww" "start"];}
+        # ];
+
+        # window-rules = [
+        #   {
+        #     matches = [{app-id = ''^org\.wezfurlong\.wezterm$'';}];
+        #     default-column-width = {};
+        #     open-fullscreen = true;
+        #     open-on-output = "eDP-1";
+        #   }
+        # ];
+      };
+
+      programs.niri.config = config.programs.niri.generated-kdl-config;
     };
 in {
   shared.modules = [
@@ -199,6 +179,7 @@ in {
   ];
 
   shared.home_modules = [
+    niri.homeModules.experimental-settings
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         mako
@@ -216,11 +197,38 @@ in {
     })
   ];
 
+  # alejandra gives up formatting these if you remove trailing zeros
+  # i.e. can't do `1. / 3.` even though it's valid nix
   sodium.home_modules = [
     (niri_config {wide = true;})
+    {
+      programs.niri.settings.layout = {
+        preset-column-widths = [
+          {proportion = 1.0 / 6.0;}
+          {proportion = 1.0 / 4.0;}
+          {proportion = 1.0 / 3.0;}
+          {proportion = 1.0 / 2.0;}
+          {proportion = 2.0 / 3.0;}
+          {proportion = 3.0 / 4.0;}
+          {proportion = 5.0 / 6.0;}
+        ];
+        default-column-width = {proportion = 1.0 / 3.0;};
+      };
+    }
   ];
 
   lithium.home_modules = [
     (niri_config {wide = false;})
+
+    {
+      programs.niri.settings.layout = {
+        preset-column-widths = [
+          {proportion = 1.0 / 3.0;}
+          {proportion = 1.0 / 2.0;}
+          {proportion = 2.0 / 3.0;}
+        ];
+        default-column-width = {proportion = 1.0 / 3.0;};
+      };
+    }
   ];
 }
