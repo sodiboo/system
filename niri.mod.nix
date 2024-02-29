@@ -11,21 +11,22 @@
         substitutions ? {},
       }: let
         replacer = replaceStrings (attrNames substitutions) (attrValues substitutions);
-        format = prefix: suffix: {
+        format = prefix: suffix: let
+          actual-suffix =
+            if isList suffix.action
+            then {
+              action = head suffix.action;
+              args = tail suffix.action;
+            }
+            else {
+              inherit (suffix) action;
+              args = [];
+            };
+
+          action = replacer "${prefix.action}-${actual-suffix.action}";
+        in {
           name = "${prefix.key}+${suffix.key}";
-          value = let
-            actual-suffix =
-              if isList suffix.action
-              then {
-                action = head suffix.action;
-                args = tail suffix.action;
-              }
-              else {
-                inherit (suffix) action;
-                args = [];
-              };
-          in
-            niri.kdl.leaf (replacer "${prefix.action}-${actual-suffix.action}") actual-suffix.args;
+          value.${action} = actual-suffix.args;
         };
         pairs = attrs: fn:
           concatMap (key:
@@ -46,6 +47,8 @@
           dwt = true;
           natural-scroll = true;
         };
+        input.tablet.map-to-output = "eDP-1";
+        input.touch.map-to-output = "eDP-1";
         cursor.size = config.stylix.cursor.size;
         cursor.theme = config.stylix.cursor.name;
 
@@ -66,24 +69,22 @@
 
         hotkey-overlay.skip-at-startup = true;
 
-        binds = with niri.kdl; let
-          spawn = leaf "spawn";
-        in
+        binds = with niri.kdl;
           lib.attrsets.mergeAttrsList [
             {
-              "Mod+T" = spawn "foot";
-              "Mod+D" = spawn "fuzzel";
-              "Mod+W" = spawn ["systemctl" "--user" "restart" "waybar.service"];
-              "Mod+L" = spawn "blurred-locker";
+              "Mod+T".spawn = "foot";
+              "Mod+D".spawn = "fuzzel";
+              "Mod+W".spawn = ["systemctl" "--user" "restart" "waybar.service"];
+              "Mod+L".spawn = "blurred-locker";
 
-              "XF86AudioRaiseVolume" = spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
-              "XF86AudioLowerVolume" = spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
-              "XF86AudioMute" = spawn ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"];
+              "XF86AudioRaiseVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
+              "XF86AudioLowerVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
+              "XF86AudioMute".spawn = ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"];
 
-              "XF86MonBrightnessUp" = spawn ["brightnessctl" "set" "10%+"];
-              "XF86MonBrightnessDown" = spawn ["brightnessctl" "set" "10%-"];
+              "XF86MonBrightnessUp".spawn = ["brightnessctl" "set" "10%+"];
+              "XF86MonBrightnessDown".spawn = ["brightnessctl" "set" "10%-"];
 
-              "Mod+Q" = plain-leaf "close-window";
+              "Mod+Q".close-window = [];
             }
             (binds {
               suffixes."Left" = "column-left";
@@ -115,25 +116,25 @@
               prefixes."Mod+Ctrl" = "move-window-to";
             })
             {
-              "Mod+Comma" = plain-leaf "consume-window-into-column";
-              "Mod+Period" = plain-leaf "expel-window-from-column";
+              "Mod+Comma".consume-window-into-column = [];
+              "Mod+Period".expel-window-from-column = [];
 
-              "Mod+R" = plain-leaf "switch-preset-column-width";
-              "Mod+F" = plain-leaf "maximize-column";
-              "Mod+Shift+F" = plain-leaf "fullscreen-window";
-              "Mod+C" = plain-leaf "center-column";
+              "Mod+R".switch-preset-column-width = [];
+              "Mod+F".maximize-column = [];
+              "Mod+Shift+F".fullscreen-window = [];
+              "Mod+C".center-column = [];
 
-              "Mod+Minus" = leaf "set-column-width" "-10%";
-              "Mod+Plus" = leaf "set-column-width" "+10%";
-              "Mod+Shift+Minus" = leaf "set-window-height" "-10%";
-              "Mod+Shift+Plus" = leaf "set-window-height" "+10%";
+              "Mod+Minus".set-column-width = "-10%";
+              "Mod+Plus".set-column-width = "+10%";
+              "Mod+Shift+Minus".set-window-height = "-10%";
+              "Mod+Shift+Plus".set-window-height = "+10%";
 
-              "Mod+Shift+S" = plain-leaf "screenshot";
+              "Mod+Shift+S".screenshot = [];
 
-              "Mod+Shift+E" = plain-leaf "quit";
-              "Mod+Shift+P" = plain-leaf "power-off-monitors";
+              "Mod+Shift+E".quit = [];
+              "Mod+Shift+P".power-off-monitors = [];
 
-              "Mod+Shift+Ctrl+T" = plain-leaf "toggle-debug-tint";
+              "Mod+Shift+Ctrl+T".toggle-debug-tint = [];
             }
           ];
 

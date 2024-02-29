@@ -17,7 +17,7 @@ in {
       config,
       ...
     }: {
-      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/uwunicorn.yaml";
+      stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/atelier-dune.yaml";
       stylix.polarity = "dark";
 
       stylix.fonts.monospace.package = pkgs.nerdfonts;
@@ -33,7 +33,7 @@ in {
       stylix.cursor.package = pkgs.phinger-cursors;
       stylix.cursor.name = "phinger-cursors";
 
-      stylix.opacity.terminal = 0.9;
+      # stylix.opacity.terminal = 0.9;
 
       # stylix.targets.fish.enable = false;
     })

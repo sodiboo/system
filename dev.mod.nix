@@ -17,6 +17,8 @@
         jq
         file
         bc
+        btop
+        dust
       ];
     })
   ];
