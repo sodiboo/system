@@ -69,9 +69,6 @@
           "root"
         ];
 
-        direnv.enable = true;
-        direnv.nix-direnv.enable = true;
-
         bash.enable = true; # Sometimes, applications drop me into a bash shell against my will.
       };
     }
