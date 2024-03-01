@@ -28,6 +28,7 @@
       home.packages = with pkgs; [
         rustup
         clang
+        bun
       ];
 
       programs.git.enable = true;
