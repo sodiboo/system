@@ -98,7 +98,12 @@
               substitutions."monitor-column" = "monitor";
               substitutions."monitor-window" = "monitor";
             })
-
+            (binds {
+              suffixes."Home" = "first";
+              suffixes."End" = "last";
+              prefixes."Mod" = "focus-column";
+              prefixes."Mod+Ctrl" = "move-column-to";
+            })
             (binds {
               suffixes."U" = "workspace-down";
               suffixes."I" = "workspace-up";
@@ -106,7 +111,6 @@
               prefixes."Mod+Ctrl" = "move-window-to";
               prefixes."Mod+Shift" = "move";
             })
-
             (binds {
               suffixes = builtins.listToAttrs (map (n: {
                 name = toString n;
