@@ -1,4 +1,21 @@
-{
+let
+  icons = {
+    calendar = "󰃭 ";
+    clock = " ";
+    battery.charging = "󱐋";
+    battery.levels = [" " " " " " " " " "];
+    network.disconnected = "󰤮 ";
+    network.ethernet = "󰈀 ";
+    network.strength = ["󰤟 " "󰤢 " "󰤥 " "󰤨 "];
+    bluetooth.on = "󰂯";
+    bluetooth.off = "󰂲";
+    volume.source = "󱄠";
+    volume.muted = "󰝟";
+    volume.levels = ["󰕿" "󰖀" "󰕾"];
+    idle.on = "󰈈 ";
+    idle.off = "󰈉 ";
+  };
+in {
   shared.home_modules = [
     ({
       config,
@@ -22,56 +39,127 @@
       };
       programs.waybar.settings.mainBar = {
         layer = "top";
-        modules-center = ["clock"];
-        modules-right = [
-          "network"
-          "bluetooth"
-          "temperature"
-          "battery"
-        ];
+        modules-left = ["wireplumber#source" "wireplumber" "idle_inhibitor"];
+        modules-center = ["clock#date" "clock"];
+        modules-right = ["network" "bluetooth" "battery"];
 
         battery = {
           interval = 5;
           format = "{icon}  {capacity}%";
-          format-icons = [" " " " " " " " " "];
+          format-charging = "{icon}  {capacity}% ${icons.battery.charging}";
+          format-icons = icons.battery.levels;
           states.warning = 30;
           states.critical = 15;
         };
 
         clock = {
           interval = 1;
-          format = "{:%Y-%m-%d    %H:%M:%S}";
+          format = "${icons.clock} {:%H:%M:%S}";
+        };
+
+        "clock#date" = {
+          format = "${icons.calendar} {:%Y-%m-%d}";
         };
 
         network = {
           tooltip-format = "{ifname}";
-          format-disconnected = "(disconnected)";
-          format-ethernet = "(ethernet)";
+          format-disconnected = icons.network.disconnected;
+          format-ethernet = icons.network.ethernet;
           format-wifi = "{icon} {essid}";
-          format-icons = ["󰤟 " "󰤢 " "󰤥 " "󰤨 "];
+          format-icons = icons.network.strength;
+        };
+
+        bluetooth = {
+          format = "{icon}";
+          format-disabled = "";
+          format-icons = {
+            inherit (icons.bluetooth) on off;
+            connected = icons.bluetooth.on;
+          };
+          format-connected = "{icon} {device_alias}";
+          format-connected-battery = "{icon} {device_alias} {device_battery_percentage}%";
+        };
+
+        wireplumber = {
+          format = "{icon} {volume}%";
+          format-muted = "${icons.volume.muted} {volume}%";
+          format-icons = icons.volume.levels;
+          reverse-scrolling = 1;
+          tooltip = false;
+        };
+
+        "wireplumber#source" = {
+          format = "${icons.volume.source} {node_name}";
+          tooltip = false;
+        };
+
+        # "group/volume" = {
+        #   orientation = "horizontal";
+        #   modules = [
+        #     "wireplumber"
+        #     "wireplumber#source"
+        #   ];
+        #   drawer = {
+        #     transition-left-to-right = true;
+        #   };
+        # };
+
+        idle_inhibitor = {
+          format = "{icon}";
+          format-icons = {
+            activated = icons.idle.on;
+            deactivated = icons.idle.off;
+          };
         };
       };
       stylix.targets.waybar.enable = false;
       programs.waybar.style = let
         colors = config.lib.stylix.colors;
+        modules = s: "${s ".modules-left"}, ${s ".modules-center"}, ${s ".modules-right"}";
+        module = s: modules (m: "${m} > ${s} > *");
       in ''
         * {
             border: none;
             font-family: ${config.stylix.fonts.sansSerif.name};
             font-size: ${toString config.stylix.fonts.sizes.desktop}px;
             color: #${colors.base07};
-            border-radius: 20px;
         }
 
         window#waybar {
             background: transparent;
+            font-size: 2em;
         }
 
-        .modules-left, .modules-center, .modules-right {
-            background-color: #${colors.base00};
+        ${modules lib.id} {
+            background: transparent;
             margin: 3px 10px;
-            padding: 5px 7px;
-            font-size: 1.2em;
+        }
+
+        ${module "*"} {
+          margin: 3px 1px;
+          padding: 5px 7px;
+          background: #${colors.base00};
+        }
+        ${module ":first-child"} {
+            padding-left: 10px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        ${module ":last-child"} {
+            padding-right: 10px;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        ${module ":not(:first-child)"} {
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+        }
+
+        ${module ":not(last-child)"} {
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
         }
 
         #battery.charging {
@@ -79,7 +167,7 @@
         }
 
         #battery.warning:not(.charging) {
-            color: #${colors.yellow};
+            color: #${colors.base0A};
         }
 
         #battery.critical:not(.charging) {
@@ -88,7 +176,7 @@
 
         @keyframes critical-blink {
             to {
-                color: #${colors.red};
+                color: #${colors.base09};
             }
         }
       '';

@@ -79,7 +79,7 @@
 
               "XF86AudioRaiseVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
               "XF86AudioLowerVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
-              "XF86AudioMute".spawn = ["wpctl" "toggle-mute" "@DEFAULT_AUDIO_SINK@"];
+              "XF86AudioMute".spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
 
               "XF86MonBrightnessUp".spawn = ["brightnessctl" "set" "10%+"];
               "XF86MonBrightnessDown".spawn = ["brightnessctl" "set" "10%-"];
