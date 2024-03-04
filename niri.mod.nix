@@ -52,12 +52,13 @@
         cursor.size = config.stylix.cursor.size;
         cursor.theme = config.stylix.cursor.name;
 
-        outputs."eDP-1" = {
-          scale = 2.0;
-        };
+        outputs."eDP-1".scale = 2.0;
+        outputs.winit.scale = 2.0;
 
         layout = {
           gaps = 4;
+          struts.left = 64;
+          struts.right = 64;
           focus-ring.enable = false;
           border = {
             enable = true;
