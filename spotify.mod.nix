@@ -14,6 +14,7 @@
       home.packages = with pkgs; [
         spotifyd
         spotify-tui
+        spotify-player
         sptlrx
       ];
 

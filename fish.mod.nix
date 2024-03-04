@@ -49,6 +49,8 @@
           in {
             eza = "eza --long --all --icons --time-style long-iso";
 
+            bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
+
             nix-shell = "nix-shell --run fish";
             nix-switch = rebuild true;
             nix-rebuild = rebuild false;
