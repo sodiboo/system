@@ -12,6 +12,8 @@
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
     niri.url = "github:sodiboo/niri-flake";
+    niri-working-tree.url = "github:sodiboo/niri";
+    niri-working-tree.flake = false;
 
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
