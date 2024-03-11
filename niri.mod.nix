@@ -1,6 +1,6 @@
 {
   niri,
-  niri-working-tree,
+  # niri-working-tree,
   ...
 }: {
   shared.modules = [
@@ -8,7 +8,8 @@
     ({pkgs, ...}: {
       programs.niri.enable = true;
       nixpkgs.overlays = [niri.overlays.niri];
-      programs.niri.package = pkgs.niri-unstable.override {src = niri-working-tree;};
+      programs.niri.package = pkgs.niri-unstable;
+      # programs.niri.package = pkgs.niri-unstable.override {src = niri-working-tree;};
       environment.variables.NIXOS_OZONE_WL = "1";
       environment.systemPackages = with pkgs; [
         wl-clipboard
@@ -65,6 +66,7 @@
       in {
         programs.niri.settings = let
           colors = config.lib.stylix.colors.withHashtag;
+          sh = cmd: ["sh" "-c" cmd];
         in {
           input.keyboard.xkb.layout = "no";
           input.mouse.accel-speed = 1.0;
@@ -101,15 +103,15 @@
               {
                 "Mod+T".spawn = "foot";
                 "Mod+D".spawn = "fuzzel";
-                "Mod+W".spawn = ["systemctl" "--user" "restart" "waybar.service"];
+                "Mod+W".spawn = sh "systemctl --user restart waybar.service";
                 "Mod+L".spawn = "blurred-locker";
 
-                "XF86AudioRaiseVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"];
-                "XF86AudioLowerVolume".spawn = ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"];
-                "XF86AudioMute".spawn = ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+                "XF86AudioRaiseVolume".spawn = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
+                "XF86AudioLowerVolume".spawn = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
+                "XF86AudioMute".spawn = sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
 
-                "XF86MonBrightnessUp".spawn = ["brightnessctl" "set" "10%+"];
-                "XF86MonBrightnessDown".spawn = ["brightnessctl" "set" "10%-"];
+                "XF86MonBrightnessUp".spawn = sh "brightnessctl set 10%+";
+                "XF86MonBrightnessDown".spawn = sh "brightnessctl set 10%-";
 
                 "Mod+Q".close-window = [];
               }
@@ -160,7 +162,7 @@
                 "Mod+Shift+Minus".set-window-height = "-10%";
                 "Mod+Shift+Plus".set-window-height = "+10%";
 
-                "Mod+Shift+S".screenshot = [];
+                "Mod+Shift+S".spawn = sh ''grim -g "$(slurp)" - | wl-copy -t image/png'';
 
                 "Mod+Shift+E".quit = [];
                 "Mod+Shift+P".power-off-monitors = [];
