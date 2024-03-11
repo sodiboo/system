@@ -25,7 +25,6 @@
   ];
 
   shared.home_modules = [
-    niri.homeModules.experimental-settings
     ({
       config,
       lib,
@@ -65,7 +64,6 @@
           listToAttrs (pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)])));
       in {
         programs.niri.settings = let
-          colors = config.lib.stylix.colors.withHashtag;
           sh = cmd: ["sh" "-c" cmd];
         in {
           input.keyboard.xkb.layout = "no";
@@ -77,8 +75,6 @@
           };
           input.tablet.map-to-output = "eDP-1";
           input.touch.map-to-output = "eDP-1";
-          cursor.size = config.stylix.cursor.size;
-          cursor.theme = config.stylix.cursor.name;
 
           outputs."eDP-1".scale = 2.0;
           outputs.winit.scale = 2.0;
@@ -87,13 +83,7 @@
             gaps = 4;
             struts.left = 64;
             struts.right = 64;
-            focus-ring.enable = false;
-            border = {
-              enable = true;
-              width = 4;
-              active-color = colors.base0A;
-              inactive-color = colors.base03;
-            };
+            border.width = 4;
           };
 
           hotkey-overlay.skip-at-startup = true;
@@ -188,8 +178,6 @@
           #   }
           # ];
         };
-
-        programs.niri.config = config.programs.niri.generated-kdl-config;
       })
     ({pkgs, ...}: {
       home.packages = with pkgs; [
