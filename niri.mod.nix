@@ -52,7 +52,7 @@
             action = replacer "${prefix.action}-${actual-suffix.action}";
           in {
             name = "${prefix.key}+${suffix.key}";
-            value.${action} = actual-suffix.args;
+            value.action.${action} = actual-suffix.args;
           };
           pairs = attrs: fn:
             concatMap (key:
@@ -63,9 +63,7 @@
         in
           listToAttrs (pairs prefixes (prefix: pairs suffixes (suffix: [(format prefix suffix)])));
       in {
-        programs.niri.settings = let
-          sh = cmd: ["sh" "-c" cmd];
-        in {
+        programs.niri.settings = {
           input.keyboard.xkb.layout = "no";
           input.mouse.accel-speed = 1.0;
           input.touchpad = {
@@ -76,8 +74,7 @@
           input.tablet.map-to-output = "eDP-1";
           input.touch.map-to-output = "eDP-1";
 
-          outputs."eDP-1".scale = 2.0;
-          outputs.winit.scale = 2.0;
+          prefer-no-csd = true;
 
           layout = {
             gaps = 4;
@@ -88,22 +85,24 @@
 
           hotkey-overlay.skip-at-startup = true;
 
-          binds = with niri.kdl;
+          binds = with config.lib.niri.actions; let
+            sh = spawn "sh" "-c";
+          in
             lib.attrsets.mergeAttrsList [
               {
-                "Mod+T".spawn = "foot";
-                "Mod+D".spawn = "fuzzel";
-                "Mod+W".spawn = sh "systemctl --user restart waybar.service";
-                "Mod+L".spawn = "blurred-locker";
+                "Mod+T".action = spawn "foot";
+                "Mod+D".action = spawn "fuzzel";
+                "Mod+W".action = sh "systemctl --user restart waybar.service";
+                "Mod+L".action = spawn "blurred-locker";
 
-                "XF86AudioRaiseVolume".spawn = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
-                "XF86AudioLowerVolume".spawn = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
-                "XF86AudioMute".spawn = sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+                "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
+                "XF86AudioLowerVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
+                "XF86AudioMute".action = sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
 
-                "XF86MonBrightnessUp".spawn = sh "brightnessctl set 10%+";
-                "XF86MonBrightnessDown".spawn = sh "brightnessctl set 10%-";
+                "XF86MonBrightnessUp".action = sh "brightnessctl set 10%+";
+                "XF86MonBrightnessDown".action = sh "brightnessctl set 10%-";
 
-                "Mod+Q".close-window = [];
+                "Mod+Q".action = close-window;
               }
               (binds {
                 suffixes."Left" = "column-left";
@@ -139,25 +138,26 @@
                 prefixes."Mod+Ctrl" = "move-window-to";
               })
               {
-                "Mod+Comma".consume-window-into-column = [];
-                "Mod+Period".expel-window-from-column = [];
+                "Mod+Comma".action = consume-window-into-column;
+                "Mod+Period".action = expel-window-from-column;
 
-                "Mod+R".switch-preset-column-width = [];
-                "Mod+F".maximize-column = [];
-                "Mod+Shift+F".fullscreen-window = [];
-                "Mod+C".center-column = [];
+                "Mod+R".action = switch-preset-column-width;
+                "Mod+F".action = maximize-column;
+                "Mod+Shift+F".action = fullscreen-window;
+                "Mod+C".action = center-column;
 
-                "Mod+Minus".set-column-width = "-10%";
-                "Mod+Plus".set-column-width = "+10%";
-                "Mod+Shift+Minus".set-window-height = "-10%";
-                "Mod+Shift+Plus".set-window-height = "+10%";
+                "Mod+Minus".action = set-column-width "-10%";
+                "Mod+Plus".action = set-column-width "+10%";
+                "Mod+Shift+Minus".action = set-window-height "-10%";
+                "Mod+Shift+Plus".action = set-window-height "+10%";
 
-                "Mod+Shift+S".spawn = sh ''grim -g "$(slurp)" - | wl-copy -t image/png'';
+                "Mod+Shift+S".action = sh ''grim -g "$(slurp)" - | wl-copy -t image/png'';
+                "Mod+Print".action = screenshot;
 
-                "Mod+Shift+E".quit = [];
-                "Mod+Shift+P".power-off-monitors = [];
+                "Mod+Shift+E".action = quit;
+                "Mod+Shift+P".action = power-off-monitors;
 
-                "Mod+Shift+Ctrl+T".toggle-debug-tint = [];
+                "Mod+Shift+Ctrl+T".action = toggle-debug-tint;
               }
             ];
 
@@ -172,9 +172,19 @@
           # window-rules = [
           #   {
           #     matches = [{app-id = ''^org\.wezfurlong\.wezterm$'';}];
+          #     excludes = [{app-id = ''^org\.wezfurlong\.wezterm$'';}];
           #     default-column-width = {};
           #     open-fullscreen = true;
           #     open-on-output = "eDP-1";
+          #   }
+          #   {
+          #     matches = [
+          #       {
+          #         is-active = true;
+          #         is-focused = false;
+          #       }
+          #     ];
+          #     opacity = 0.8;
           #   }
           # ];
         };
@@ -283,30 +293,41 @@
   # but the ones still in use are incapable of correctly parsing nix??
   sodium.home_modules = [
     {
-      programs.niri.settings.layout = {
-        preset-column-widths = [
-          {proportion = 1.0 / 6.0;}
-          {proportion = 1.0 / 4.0;}
-          {proportion = 1.0 / 3.0;}
-          {proportion = 1.0 / 2.0;}
-          {proportion = 2.0 / 3.0;}
-          {proportion = 3.0 / 4.0;}
-          {proportion = 5.0 / 6.0;}
-        ];
-        default-column-width = {proportion = 1.0 / 3.0;};
+      programs.niri.settings = {
+        layout = {
+          preset-column-widths = [
+            {proportion = 1.0 / 6.0;}
+            {proportion = 1.0 / 4.0;}
+            {proportion = 1.0 / 3.0;}
+            {proportion = 1.0 / 2.0;}
+            {proportion = 2.0 / 3.0;}
+            {proportion = 3.0 / 4.0;}
+            {proportion = 5.0 / 6.0;}
+          ];
+          default-column-width = {proportion = 1.0 / 3.0;};
+        };
       };
     }
   ];
 
   lithium.home_modules = [
     {
-      programs.niri.settings.layout = {
-        preset-column-widths = [
-          {proportion = 1.0 / 3.0;}
-          {proportion = 1.0 / 2.0;}
-          {proportion = 2.0 / 3.0;}
-        ];
-        default-column-width = {proportion = 1.0 / 3.0;};
+      programs.niri.settings = {
+        layout = {
+          preset-column-widths = [
+            {proportion = 1.0 / 3.0;}
+            {proportion = 1.0 / 2.0;}
+            {proportion = 2.0 / 3.0;}
+          ];
+          default-column-width = {proportion = 1.0 / 3.0;};
+        };
+
+        # internal laptop display
+        outputs."eDP-1".scale = 2.0;
+        # a TV i sometimes use to display stuff
+        outputs."DP-2".scale = 2.0;
+        # nested niri window for development should match
+        outputs.winit.scale = 2.0;
       };
     }
   ];
