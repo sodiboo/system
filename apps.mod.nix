@@ -1,7 +1,13 @@
 {
+  shared.modules = [
+    {
+      programs.steam.enable = true;
+    }
+  ];
   shared.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
+        fm-go
         appimage-run
         dolphin
         firefox

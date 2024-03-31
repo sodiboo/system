@@ -20,6 +20,7 @@
         bc
         btop
         dust
+        moreutils
       ];
     })
   ];
