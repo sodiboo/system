@@ -15,6 +15,7 @@
         micro
         socat
         jq
+        just
         file
         bc
         btop
