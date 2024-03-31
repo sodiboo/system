@@ -54,7 +54,7 @@ in {
 
         clock = {
           interval = 1;
-          format = "${icons.clock} {:%H:%M:%S}";
+          format = "${icons.clock} {:%H:%M:%S} paggles";
         };
 
         "clock#date" = {
