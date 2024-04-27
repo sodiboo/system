@@ -1,9 +1,11 @@
 let
-  icons = {
+  icons = rec {
     calendar = "󰃭 ";
     clock = " ";
     battery.charging = "󱐋";
-    battery.levels = [" " " " " " " " " "];
+    battery.horizontal = [" " " " " " " " " "];
+    battery.vertical = ["󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹"];
+    battery.levels = battery.vertical;
     network.disconnected = "󰤮 ";
     network.ethernet = "󰈀 ";
     network.strength = ["󰤟 " "󰤢 " "󰤥 " "󰤨 "];
