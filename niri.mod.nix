@@ -174,24 +174,11 @@
           #   {command = ["swww" "start"];}
           # ];
 
-          # window-rules = [
-          #   {
-          #     matches = [{app-id = ''^org\.wezfurlong\.wezterm$'';}];
-          #     excludes = [{app-id = ''^org\.wezfurlong\.wezterm$'';}];
-          #     default-column-width = {};
-          #     open-fullscreen = true;
-          #     open-on-output = "eDP-1";
-          #   }
-          #   {
-          #     matches = [
-          #       {
-          #         is-active = true;
-          #         is-focused = false;
-          #       }
-          #     ];
-          #     opacity = 0.8;
-          #   }
-          # ];
+          window-rules = [
+            {
+              draw-border-with-background = false;
+            }
+          ];
         };
       })
     ({pkgs, ...}: {
