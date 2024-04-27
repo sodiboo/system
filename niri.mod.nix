@@ -178,6 +178,15 @@
             {
               draw-border-with-background = false;
             }
+            {
+              matches = [
+                {
+                  app-id = "^firefox$";
+                  title = "Private Browsing";
+                }
+              ];
+              border.active.color = "purple";
+            }
           ];
         };
       })
