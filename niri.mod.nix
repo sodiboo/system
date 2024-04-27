@@ -67,10 +67,12 @@
           input.keyboard.xkb.layout = "no";
           input.mouse.accel-speed = 1.0;
           input.touchpad = {
-            tap = true;
+            tap = false;
             dwt = true;
             natural-scroll = true;
+            click-method = "clickfinger";
           };
+
           input.tablet.map-to-output = "eDP-1";
           input.touch.map-to-output = "eDP-1";
 
