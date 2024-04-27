@@ -9,6 +9,7 @@ let
     network.strength = ["󰤟 " "󰤢 " "󰤥 " "󰤨 "];
     bluetooth.on = "󰂯";
     bluetooth.off = "󰂲";
+    bluetooth.battery = "󰥉";
     volume.source = "󱄠";
     volume.muted = "󰝟";
     volume.levels = ["󰕿" "󰖀" "󰕾"];
@@ -39,9 +40,9 @@ in {
       };
       programs.waybar.settings.mainBar = {
         layer = "top";
-        modules-left = ["wireplumber#source" "wireplumber" "idle_inhibitor"];
+        modules-left = ["wireplumber" "wireplumber#source"];
         modules-center = ["clock#date" "clock"];
-        modules-right = ["network" "bluetooth" "battery"];
+        modules-right = ["network" "bluetooth" "bluetooth#battery" "battery"];
 
         battery = {
           interval = 5;
@@ -77,7 +78,10 @@ in {
             connected = icons.bluetooth.on;
           };
           format-connected = "{icon} {device_alias}";
-          format-connected-battery = "{icon} {device_alias} {device_battery_percentage}%";
+        };
+        "bluetooth#battery" = {
+          format = "";
+          format-connected-battery = "${icons.bluetooth.battery} {device_battery_percentage}%";
         };
 
         wireplumber = {
