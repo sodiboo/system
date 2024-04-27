@@ -27,6 +27,10 @@
         python311
         ffmpeg_6-full
         pairdrop
+        swayimg
+        p7zip
+        pandoc
+        ripgrep-all
       ];
     })
     (
