@@ -157,7 +157,7 @@
                 "Mod+Shift+Plus".action = set-window-height "+10%";
 
                 "Mod+Shift+S".action = sh ''grim -g "$(slurp)" - | wl-copy -t image/png'';
-                "Mod+Print".action = screenshot;
+                "Mod+Print".action = screenshot-window;
 
                 "Mod+Shift+E".action = quit;
                 "Mod+Shift+P".action = power-off-monitors;
