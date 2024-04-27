@@ -31,9 +31,10 @@ in {
       stylix.fonts.sizes.desktop = 12;
 
       stylix.cursor.package = pkgs.phinger-cursors;
-      stylix.cursor.name = "phinger-cursors";
+      stylix.cursor.name = "phinger-cursors-dark";
+      stylix.cursor.size = 24;
 
-      # stylix.opacity.terminal = 0.9;
+      stylix.opacity.terminal = 0.9;
 
       # stylix.targets.fish.enable = false;
     })
