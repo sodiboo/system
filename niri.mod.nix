@@ -105,6 +105,9 @@
                 "XF86MonBrightnessDown".action = sh "brightnessctl set 10%-";
 
                 "Mod+Q".action = close-window;
+
+                "XF86AudioNext".action = focus-column-right;
+                "XF86AudioPrev".action = focus-column-left;
               }
               (binds {
                 suffixes."Left" = "column-left";
