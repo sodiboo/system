@@ -5,7 +5,6 @@
 # But if you're reading this and it's the latest commit, then i'm still working on making that happen.
 {
   nixpkgs,
-  pki,
   ...
 }: let
   # carbon in PKI is the CA
@@ -84,13 +83,13 @@ in {
       networking.firewall.trustedInterfaces = [tun];
       networking.firewall."allowed${nat_proto}Ports" = [nat_port];
       environment.systemPackages = with pkgs; [openvpn openssl];
-      services.stunnel.enable = use_stunnel;
-      services.stunnel.servers.openvpn = {
-        accept = stunnel_port;
-        cert = "${pki}/sodium.crt";
-        key = "${pki}/private/sodium.key";
-        connect = openvpn_port;
-      };
+      # services.stunnel.enable = use_stunnel;
+      # services.stunnel.servers.openvpn = {
+      #   accept = stunnel_port;
+      #   cert = "${pki}/sodium.crt";
+      #   key = "${pki}/private/sodium.key";
+      #   connect = openvpn_port;
+      # };
       services.openvpn.servers.sodium.config =
         ''
           dev ${tun}
@@ -171,15 +170,6 @@ in {
 
           auth-nocache
         '';
-      system.activationScripts.openvpn-addkey = ignore ''
-        f="/etc/openvpn/lithium.ovpn"
-        if ! grep -q '<secret>' $f; then
-          echo "appending secret key"
-          echo "<secret>" >> $f
-          cat ''${secret} >> $f
-          echo "</secret>" >> $f
-        fi
-      '';
     })
   ];
 }

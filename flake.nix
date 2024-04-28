@@ -19,8 +19,6 @@
 
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
-    pki.url = "/etc/openvpn/pki";
-    pki.flake = false;
   };
 
   outputs = {
