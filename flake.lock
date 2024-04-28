@@ -477,11 +477,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1714241454,
-        "narHash": "sha256-W+LOfcJ+6Zt7K5Av7TpEFx9W1nZocJAnW+WOc4F4pGI=",
+        "lastModified": 1714317672,
+        "narHash": "sha256-qm2K4zBcqFFo0nwCmG/aE38avRT0Yf3/ybCD9ZDTRJ4=",
         "owner": "sodiboo",
         "repo": "niri-flake",
-        "rev": "dce2ff6147b1724f8a3443a95101939c628a0671",
+        "rev": "b03b9ecc72b7d721330a4af24b3d18d5dd613352",
         "type": "github"
       },
       "original": {
@@ -595,11 +595,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1713995372,
-        "narHash": "sha256-fFE3M0vCoiSwCX02z8VF58jXFRj9enYUSTqjyHAjrds=",
+        "lastModified": 1714272655,
+        "narHash": "sha256-3/ghIWCve93ngkx5eNPdHIKJP/pMzSr5Wc4rNKE1wOc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "dd37924974b9202f8226ed5d74a252a9785aedf8",
+        "rev": "12430e43bd9b81a6b4e79e64f87c624ade701eaf",
         "type": "github"
       },
       "original": {
@@ -625,11 +625,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1714076141,
-        "narHash": "sha256-Drmja/f5MRHZCskS6mvzFqxEaZMeciScCTFxWVLqWEY=",
+        "lastModified": 1714253743,
+        "narHash": "sha256-mdTQw2XlariysyScCv2tTE45QSU9v/ezLcHJ22f0Nxc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7bb2ccd8cdc44c91edba16c48d2c8f331fb3d856",
+        "rev": "58a1abdbae3217ca6b702f03d3b35125d88a2994",
         "type": "github"
       },
       "original": {
@@ -641,11 +641,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1714076141,
-        "narHash": "sha256-Drmja/f5MRHZCskS6mvzFqxEaZMeciScCTFxWVLqWEY=",
+        "lastModified": 1714253743,
+        "narHash": "sha256-mdTQw2XlariysyScCv2tTE45QSU9v/ezLcHJ22f0Nxc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7bb2ccd8cdc44c91edba16c48d2c8f331fb3d856",
+        "rev": "58a1abdbae3217ca6b702f03d3b35125d88a2994",
         "type": "github"
       },
       "original": {
@@ -669,6 +669,19 @@
         "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
+      }
+    },
+    "pki": {
+      "flake": false,
+      "locked": {
+        "lastModified": 0,
+        "narHash": "sha256-SY3UdYlEYbrCFt+ervQ9OLWgy895CqzY7PiQ0E7R2AE=",
+        "path": "/etc/openvpn/pki",
+        "type": "path"
+      },
+      "original": {
+        "path": "/etc/openvpn/pki",
+        "type": "path"
       }
     },
     "pre-commit-hooks": {
@@ -712,6 +725,7 @@
         "niri": "niri",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_4",
+        "pki": "pki",
         "secrets": "secrets",
         "stylix": "stylix"
       }
