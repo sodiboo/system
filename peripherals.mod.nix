@@ -1,4 +1,4 @@
-{
+{nari, ...}: {
   shared.modules = [
     {
       programs.adb.enable = true;
@@ -10,6 +10,7 @@
     }
   ];
   sodium.modules = [
+    nari.nixosModules.default
     ({pkgs, ...}: {
       hardware.wooting.enable = true;
       users.users.sodiboo.extraGroups = ["input"];

@@ -433,6 +433,40 @@
         "type": "github"
       }
     },
+    "nari": {
+      "inputs": {
+        "nari": "nari_2"
+      },
+      "locked": {
+        "lastModified": 1714298944,
+        "narHash": "sha256-OcQtT6miXD3ls9wLTFGlr+HKCcmMN92QiwI6kemS4TU=",
+        "owner": "sodiboo",
+        "repo": "nixos-razer-nari",
+        "rev": "f0a31bb9081b9dfca93f51f1a5dda713a1639d59",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sodiboo",
+        "repo": "nixos-razer-nari",
+        "type": "github"
+      }
+    },
+    "nari_2": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1686086716,
+        "narHash": "sha256-zt5Bb6VoN7ivVaEwblEIfS5aHR4hBU0X9yZ+Eg5m4PM=",
+        "owner": "mrquantumoff",
+        "repo": "razer-nari-pipewire-profile",
+        "rev": "39596e7d3c30abe04f8713cd709f6eec5816be48",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mrquantumoff",
+        "repo": "razer-nari-pipewire-profile",
+        "type": "github"
+      }
+    },
     "niri": {
       "inputs": {
         "crate2nix": "crate2nix",
@@ -674,6 +708,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "nari": "nari",
         "niri": "niri",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_4",

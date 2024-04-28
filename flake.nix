@@ -17,6 +17,7 @@
 
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
+    nari.url = "github:sodiboo/nixos-razer-nari";
   };
 
   outputs = {
