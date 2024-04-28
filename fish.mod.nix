@@ -33,27 +33,10 @@
             tree = "eza --tree";
             cat = "bat";
           };
-          shellAliases = let
-            conf = ''env NIX_CONFIG="warn-dirty = false"'';
-            rebuild = switch: "sh -c '${builtins.concatStringsSep " && " [
-              "cd /etc/nixos"
-              "${conf} nix fmt -- --quiet *"
-              "${conf} nix flake update"
-              "git add ."
-              (
-                if switch
-                then "sudo ${conf} nixos-rebuild switch"
-                else "${conf} nixos-rebuild build"
-              )
-            ]}'";
-          in {
+          shellAliases = {
             eza = "eza --long --all --icons --time-style long-iso";
 
             bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
-
-            nix-shell = "nix-shell --run fish";
-            nix-switch = rebuild true;
-            nix-rebuild = rebuild false;
           };
         };
 
