@@ -108,9 +108,6 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
-          ; compress lz4-v2
-          ; push "compress lz4-v2"
-
           key-direction 0
           keepalive 10 120
           persist-key
