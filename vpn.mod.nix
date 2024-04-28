@@ -112,13 +112,14 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
-          compress lz4-v2
-          push "compress lz4-v2"
+          ${ignore ''compress lz4-v2''}
+          ${ignore ''push "compress lz4-v2"''}
 
           key-direction 0
           keepalive 10 120
           persist-key
           persist-tun
+          comp-lzo
         ''
         + ignore ''
           proto udp
@@ -155,22 +156,20 @@ in {
           keepalive 10 120
           persist-key
           persist-tun
+          comp-lzo
 
           ${ignore "dh ${pki}/dh.pem"}
           tls-auth ${pki}/private/ta.key
 
           ca ${pki}/ca.crt
-          cert ${pki}/issued/lithium.crt
+          cert ${pki}/lithium.crt
           key ${pki}/private/lithium.key
+
         ''
         + ignore ''
           redirect-gateway def1
 
           auth-nocache
-
-          comp-lzo
-          keepalive 10 60
-          nobind
         '';
       system.activationScripts.openvpn-addkey = ignore ''
         f="/etc/openvpn/lithium.ovpn"
