@@ -96,7 +96,7 @@ in {
 
           server 10.8.0.0 255.255.255.0
           push "route ${subnet} 255.255.255.0"
-          push "redirect-gateway def1"
+          ; push "redirect-gateway def1"
 
           push "dhcp-option DNS 1.1.1.1"
           push "dhcp-option DNS 1.0.0.1"
