@@ -3,10 +3,7 @@
 # Most of it is from around january, probably (timestamp is missing). It predates my flakes migration.
 # I gave up on connecting my phone. Now, i'm aiming to connect my laptop to my home network.
 # But if you're reading this and it's the latest commit, then i'm still working on making that happen.
-{
-  nixpkgs,
-  ...
-}: let
+{nixpkgs, ...}: let
   # carbon in PKI is the CA
   # sodium is the server
   # carbon and sodium live on the same machine. (they were roommates <3)
@@ -111,14 +108,13 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
-          ${ignore ''compress lz4-v2''}
-          ${ignore ''push "compress lz4-v2"''}
+          compress lz4-v2
+          push "compress lz4-v2"
 
           key-direction 0
           keepalive 10 120
           persist-key
           persist-tun
-          comp-lzo
         ''
         + ignore ''
           proto udp
@@ -148,6 +144,7 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
+          allow-compression yes
           remote-cert-tls server
           resolv-retry infinite
 
@@ -155,7 +152,6 @@ in {
           keepalive 10 120
           persist-key
           persist-tun
-          comp-lzo
 
           ${ignore "dh ${pki}/dh.pem"}
           tls-auth ${pki}/private/ta.key

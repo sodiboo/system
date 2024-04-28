@@ -671,19 +671,6 @@
         "type": "github"
       }
     },
-    "pki": {
-      "flake": false,
-      "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-SY3UdYlEYbrCFt+ervQ9OLWgy895CqzY7PiQ0E7R2AE=",
-        "path": "/etc/openvpn/pki",
-        "type": "path"
-      },
-      "original": {
-        "path": "/etc/openvpn/pki",
-        "type": "path"
-      }
-    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": [
@@ -725,7 +712,6 @@
         "niri": "niri",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_4",
-        "pki": "pki",
         "secrets": "secrets",
         "stylix": "stylix"
       }
