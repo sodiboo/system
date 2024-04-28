@@ -3,8 +3,8 @@
     planets.url = "https://w.wallhaven.cc/full/z8/wallhaven-z8qe8g.jpg";
     planets.sha256 = "sha256-+7avaRAffJj781tXMGk5WiM2DDUi6l9idCIbzIYhkC4=";
 
-    stabby.url = "https://w.wallhaven.cc/full/rr/wallhaven-rroo6m.png";
-    stabby.sha256 = "sha256-SREdgxHXpNOs2rxoP23ohf/l41z7LP1LqhKoX5EQlIQ=";
+    hex-lines.url = "https://wallhaven.cc/w/gjkxke";
+    hex-lines.sha256 = "sha256-Sem6rEvcGav9RpcxlJBZutPJoNp/tQ9UnwrIcRYrs2s=";
 
     firewatch.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
     firewatch.sha256 = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
@@ -41,7 +41,7 @@ in {
   ];
 
   sodium.modules = [
-    wallpapers.stabby
+    wallpapers.firewatch
   ];
 
   lithium.modules = [
