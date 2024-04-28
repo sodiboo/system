@@ -108,8 +108,8 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
-          compress lz4-v2
-          push "compress lz4-v2"
+          ; compress lz4-v2
+          ; push "compress lz4-v2"
 
           key-direction 0
           keepalive 10 120
@@ -144,7 +144,6 @@ in {
           proto ${openvpn_proto}
           cipher AES-256-GCM
 
-          allow-compression yes
           remote-cert-tls server
           resolv-retry infinite
 
