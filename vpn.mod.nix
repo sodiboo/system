@@ -1,77 +1,77 @@
+# !! UNDER CONSTRUCTION !!
+# This was originally for connecting an Android device to my home network.
+# Most of it is from around january, probably (timestamp is missing). It predates my flakes migration.
+# I gave up on connecting my phone. Now, i'm aiming to connect my laptop to my home network.
+# But if you're reading this and it's the latest commit, then i'm still working on making that happen.
 {
-  secrets,
+  nixpkgs,
   pki,
   ...
-}: {
-  # !! UNDER CONSTRUCTION !!
-  # This was originally for connecting an Android device to my home network.
-  # Most of it is from around january, probably (timestamp is missing). It predates my flakes migration.
-  # I gave up on connecting my phone. Now, i'm aiming to connect my laptop to my home network.
-  # But if you're reading this and it's the latest commit, then i'm still working on making that happen.
+}: let
+  # carbon in PKI is the CA
+  # sodium is the server
+  # carbon and sodium live on the same machine. (they were roommates <3)
+  # all others are clients. currently only lithium
+  stunnel_port = null;
+
+  # sudo openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=US' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
+  # sudo chmod 600 /etc/stunnel/stunnel.pem
+  stunnel = /etc/stunnel/stunnel.pem;
+
+  # ./easyrsa init-pki
+  # ./easyrsa build-ca # Common Name = carbon
+  # ./easyrsa build-server-full sodium
+  # ./easyrsa build-client-full lithium
+  # ./easyrsa gen-dh
+  # openssl pkcs12 -export -in ./pki/issued/lithium.crt -inkey ./pki/private/lithium.key -certfile ./pki/ca.crt -name lithium -out ./pki/lithium.p12
+  # -> ./pki contains all the good stuff.
+  #
+  # (move ./pki/ca.crt, ./pki/dh.pem, and ./pki/issued/*.crt to /etc/openvpn/pki)
+  # (move ./pki/private/*.key to /etc/openvpn/pki/private)
+  # (transfer ./pki/lithium.p12 to Android device)
+  #
+  # sudo chmod 644 -R /etc/openvpn/pki/
+  # sudo chmod 600 -R /etc/openvpn/pki/private
+  #
+  # (import this file to configuration.nix)
+  # (transfer /etc/openvpn/lithium.ovpn to Android device)
+  # (import lithium.p12 to OpenVPN Connect)
+  # (import lithium.ovpn to OpenVPN, selecting lithium certificate)
+  pki = "/etc/openvpn/pki";
+
+  remote = "vpn.sodi.boo";
+  # subnet of my home network
+  subnet = "192.168.86.0";
+
+  tun = "tun0";
+  eth = "enp3s0";
+
+  openvpn_port = 1194;
+  openvpn_proto = "tcp";
+
+  use_stunnel = stunnel_port != null;
+  nat_port =
+    if stunnel_port != null
+    then stunnel_port
+    else openvpn_port;
+  nat_proto =
+    if stunnel_port != null
+    then "TCP"
+    else nixpkgs.lib.toUpper openvpn_proto;
+  client_remote =
+    if use_stunnel
+    then "127.0.0.1"
+    else remote;
+
+  ignore = x: "";
+in {
   sodium.modules = [
     ({
       config,
       lib,
       pkgs,
       ...
-    }: let
-      # carbon in PKI is the CA
-      # sodium is the server
-      # carbon and sodium live on the same machine. (they were roommates <3)
-      # all others are clients. currently only lithium
-      stunnel_port = null;
-
-      # sudo openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=US' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
-      # sudo chmod 600 /etc/stunnel/stunnel.pem
-      stunnel = /etc/stunnel/stunnel.pem;
-
-      # ./easyrsa init-pki
-      # ./easyrsa build-ca # Common Name = carbon
-      # ./easyrsa build-server-full sodium
-      # ./easyrsa build-client-full lithium
-      # ./easyrsa gen-dh
-      # openssl pkcs12 -export -in ./pki/issued/lithium.crt -inkey ./pki/private/lithium.key -certfile ./pki/ca.crt -name lithium -out ./pki/lithium.p12
-      # -> ./pki contains all the good stuff.
-      #
-      # (move ./pki/ca.crt, ./pki/dh.pem, and ./pki/issued/*.crt to /etc/openvpn/pki)
-      # (move ./pki/private/*.key to /etc/openvpn/pki/private)
-      # (transfer ./pki/lithium.p12 to Android device)
-      #
-      # sudo chmod 644 -R /etc/openvpn/pki/
-      # sudo chmod 600 -R /etc/openvpn/pki/private
-      #
-      # (import this file to configuration.nix)
-      # (transfer /etc/openvpn/lithium.ovpn to Android device)
-      # (import lithium.p12 to OpenVPN Connect)
-      # (import lithium.ovpn to OpenVPN, selecting lithium certificate)
-      # pki = "${secrets}/.pki";
-
-      remote = "vpn.sodi.boo";
-      # subnet of my home network
-      subnet = "192.168.86.0";
-
-      tun = "tun0";
-      eth = "enp3s0";
-
-      openvpn_port = 1194;
-      openvpn_proto = "tcp";
-
-      use_stunnel = stunnel_port != null;
-      nat_port =
-        if stunnel_port != null
-        then stunnel_port
-        else openvpn_port;
-      nat_proto =
-        if stunnel_port != null
-        then "TCP"
-        else lib.toUpper openvpn_proto;
-      client_remote =
-        if use_stunnel
-        then "127.0.0.1"
-        else remote;
-
-      ignore = x: "";
-    in {
+    }: {
       # suo systemctl start nat
       networking.nat = {
         enable = true;
@@ -110,7 +110,7 @@
 
           port ${toString openvpn_port}
           proto ${openvpn_proto}
-          cipher AES-256-CBC
+          cipher AES-256-GCM
 
           compress lz4-v2
           push "compress lz4-v2"
@@ -127,45 +127,51 @@
           keepalive 10 60
           ping-timer-rem
         '';
+    })
+  ];
 
-      environment.etc."openvpn/lithium.ovpn" = {
-        text = let
-          f = name: path: "\n<${name}>\n${builtins.readFile (pki + path)}\n</${name}>\n";
-        in
-          ''
-            dev tun
-            client
-            nobind
+  lithium.modules = [
+    ({
+      config,
+      lib,
+      pkgs,
+      ...
+    }: {
+      services.openvpn.servers.lithium.config =
+        ''
+          dev tun
+          client
+          nobind
 
-            remote "${client_remote}"
-            port ${toString openvpn_port}
-            proto ${openvpn_proto}
-            cipher AES-256-CBC
+          remote "${client_remote}"
+          port ${toString openvpn_port}
+          proto ${openvpn_proto}
+          cipher AES-256-GCM
 
-            remote-cert-tls server
-            resolv-retry infinite
+          remote-cert-tls server
+          resolv-retry infinite
 
-            key-direction 1
-            keepalive 10 120
-            persist-key
-            persist-tun
-          ''
-          + f "dh" /dh.pem
-          + f "tls-auth" /private/ta.key
-          # + f "ca" /ca.crt
-          # + f "cert" /lithium.crt
-          # + f "key" /private/lithium.key
-          + ignore ''
-            redirect-gateway def1
+          key-direction 1
+          keepalive 10 120
+          persist-key
+          persist-tun
 
-            auth-nocache
+          ${ignore "dh ${pki}/dh.pem"}
+          tls-auth ${pki}/private/ta.key
 
-            comp-lzo
-            keepalive 10 60
-            nobind
-          '';
-        mode = "600";
-      };
+          ca ${pki}/ca.crt
+          cert ${pki}/issued/lithium.crt
+          key ${pki}/private/lithium.key
+        ''
+        + ignore ''
+          redirect-gateway def1
+
+          auth-nocache
+
+          comp-lzo
+          keepalive 10 60
+          nobind
+        '';
       system.activationScripts.openvpn-addkey = ignore ''
         f="/etc/openvpn/lithium.ovpn"
         if ! grep -q '<secret>' $f; then
