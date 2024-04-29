@@ -68,7 +68,7 @@ in {
       pkgs,
       ...
     }: {
-      # suo systemctl start nat
+      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
       networking.nat = {
         enable = true;
         externalInterface = eth;
