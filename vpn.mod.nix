@@ -8,7 +8,7 @@
   # sodium is the server
   # carbon and sodium live on the same machine. (they were roommates <3)
   # all others are clients. currently only lithium
-  stunnel_port = null;
+  stunnel_port = 443;
 
   # sudo openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=US' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
   # sudo chmod 600 /etc/stunnel/stunnel.pem
@@ -47,17 +47,37 @@
 
   use_stunnel = stunnel_port != null;
   nat_port =
-    if stunnel_port != null
+    if use_stunnel
     then stunnel_port
     else openvpn_port;
   nat_proto =
-    if stunnel_port != null
+    if use_stunnel
     then "TCP"
     else nixpkgs.lib.toUpper openvpn_proto;
   client_remote =
     if use_stunnel
     then "127.0.0.1"
     else remote;
+
+  # Networking invariants in above config:
+  # - ${eth} is the ethernet interface on sodium.
+  # - ${remote} is a public hostname that points to sodium.
+  # - ${remote}:${nat_port} is forwarded to sodium.
+  #
+  # Filesystem invariants:
+  #
+  # The following files exist on sodium:
+  # - ${pki}/ca.crt
+  # - ${pki}/dh.pem
+  # - ${pki}/sodium.crt
+  # - ${pki}/private/sodium.key
+  # - ${pki}/private/ta.key
+  #
+  # The following files exist on lithium:
+  # - ${pki}/ca.crt
+  # - ${pki}/lithium.crt
+  # - ${pki}/private/lithium.key
+  # - ${pki}/private/ta.key
 
   ignore = x: "";
 in {
@@ -80,12 +100,12 @@ in {
       networking.firewall.trustedInterfaces = [tun];
       networking.firewall."allowed${nat_proto}Ports" = [nat_port];
       environment.systemPackages = with pkgs; [openvpn openssl];
-      # services.stunnel.enable = use_stunnel;
-      # services.stunnel.servers.openvpn = {
-      #   accept = stunnel_port;
-      #   cert = "/etc/stunnel/stunnel.pem";
-      #   connect = openvpn_port;
-      # };
+      services.stunnel.enable = use_stunnel;
+      services.stunnel.servers.sodium = {
+        cert = "/etc/stunnel/stunnel.pem";
+        accept = stunnel_port;
+        connect = openvpn_port;
+      };
       services.openvpn.servers.sodium.config =
         ''
           dev ${tun}
@@ -97,27 +117,21 @@ in {
           push "dhcp-option DNS 1.1.1.1"
           push "dhcp-option DNS 1.0.0.1"
 
+          port ${toString openvpn_port}
+          proto ${openvpn_proto}
+          cipher AES-256-GCM
+
           ca ${pki}/ca.crt
           dh ${pki}/dh.pem
           cert ${pki}/sodium.crt
           key ${pki}/private/sodium.key
           tls-auth ${pki}/private/ta.key
 
-          port ${toString openvpn_port}
-          proto ${openvpn_proto}
-          cipher AES-256-GCM
-
           key-direction 0
           keepalive 10 120
+          auth-nocache
           persist-key
           persist-tun
-        ''
-        + ignore ''
-          proto udp
-          auth-nocache
-
-          keepalive 10 60
-          ping-timer-rem
         '';
     })
   ];
@@ -129,6 +143,12 @@ in {
       pkgs,
       ...
     }: {
+      services.stunnel.enable = use_stunnel;
+      services.stunnel.clients.lithium = {
+        accept = openvpn_port;
+        connect = "${remote}:${toString stunnel_port}";
+        cert = stunnel;
+      };
       services.openvpn.servers.lithium.config =
         ''
           dev tun
@@ -136,30 +156,24 @@ in {
           nobind
 
           remote "${client_remote}"
-          port ${toString openvpn_port}
-          proto ${openvpn_proto}
-          cipher AES-256-GCM
 
           remote-cert-tls server
           resolv-retry infinite
 
-          key-direction 1
-          keepalive 10 120
-          persist-key
-          persist-tun
-
-          ${ignore "dh ${pki}/dh.pem"}
-          tls-auth ${pki}/private/ta.key
+          port ${toString openvpn_port}
+          proto ${openvpn_proto}
+          cipher AES-256-GCM
 
           ca ${pki}/ca.crt
           cert ${pki}/lithium.crt
           key ${pki}/private/lithium.key
+          tls-auth ${pki}/private/ta.key
 
-        ''
-        + ignore ''
-          redirect-gateway def1
-
+          key-direction 1
+          keepalive 10 120
           auth-nocache
+          persist-key
+          persist-tun
         '';
     })
   ];
