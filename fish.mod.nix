@@ -37,6 +37,7 @@
             eza = "eza --long --all --icons --time-style long-iso";
 
             bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
+            pki-pass = "bw list items | jq -r '.[] | select(.name == \"PKI '$(hostname)'\") | .notes'";
           };
         };
 
