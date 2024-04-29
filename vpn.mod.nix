@@ -83,8 +83,7 @@ in {
       # services.stunnel.enable = use_stunnel;
       # services.stunnel.servers.openvpn = {
       #   accept = stunnel_port;
-      #   cert = "${pki}/sodium.crt";
-      #   key = "${pki}/private/sodium.key";
+      #   cert = "/etc/stunnel/stunnel.pem";
       #   connect = openvpn_port;
       # };
       services.openvpn.servers.sodium.config =
