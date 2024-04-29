@@ -8,7 +8,8 @@
   # sodium is the server
   # carbon and sodium live on the same machine. (they were roommates <3)
   # all others are clients. currently only lithium
-  stunnel_port = 443;
+  stunnel_port = null;
+  client_stunnel_port = 1195;
 
   # sudo openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=US' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
   # sudo chmod 600 /etc/stunnel/stunnel.pem
@@ -58,6 +59,10 @@
     if use_stunnel
     then "127.0.0.1"
     else remote;
+  client_port =
+    if use_stunnel
+    then client_stunnel_port
+    else openvpn_port;
 
   # Networking invariants in above config:
   # - ${eth} is the ethernet interface on sodium.
@@ -106,33 +111,32 @@ in {
         accept = stunnel_port;
         connect = openvpn_port;
       };
-      services.openvpn.servers.sodium.config =
-        ''
-          dev ${tun}
+      services.openvpn.servers.sodium.config = ''
+        dev ${tun}
 
-          server 10.8.0.0 255.255.255.0
-          push "route ${subnet} 255.255.255.0"
-          push "redirect-gateway def1"
+        server 10.8.0.0 255.255.255.0
+        push "route ${subnet} 255.255.255.0"
+        push "redirect-gateway def1"
 
-          push "dhcp-option DNS 1.1.1.1"
-          push "dhcp-option DNS 1.0.0.1"
+        push "dhcp-option DNS 1.1.1.1"
+        push "dhcp-option DNS 1.0.0.1"
 
-          port ${toString openvpn_port}
-          proto ${openvpn_proto}
-          cipher AES-256-GCM
+        port ${toString openvpn_port}
+        proto ${openvpn_proto}
+        cipher AES-256-GCM
 
-          ca ${pki}/ca.crt
-          dh ${pki}/dh.pem
-          cert ${pki}/sodium.crt
-          key ${pki}/private/sodium.key
-          tls-auth ${pki}/private/ta.key
+        ca ${pki}/ca.crt
+        dh ${pki}/dh.pem
+        cert ${pki}/sodium.crt
+        key ${pki}/private/sodium.key
+        tls-auth ${pki}/private/ta.key
 
-          key-direction 0
-          keepalive 10 120
-          auth-nocache
-          persist-key
-          persist-tun
-        '';
+        key-direction 0
+        keepalive 10 120
+        auth-nocache
+        persist-key
+        persist-tun
+      '';
     })
   ];
 
@@ -145,36 +149,35 @@ in {
     }: {
       services.stunnel.enable = use_stunnel;
       services.stunnel.clients.lithium = {
-        accept = openvpn_port;
+        accept = client_stunnel_port;
         connect = "${remote}:${toString stunnel_port}";
-        cert = stunnel;
+        cert = "/etc/stunnel/stunnel.pem";
       };
-      services.openvpn.servers.lithium.config =
-        ''
-          dev tun
-          client
-          nobind
+      services.openvpn.servers.lithium.config = ''
+        dev tun
+        client
+        nobind
 
-          remote "${client_remote}"
+        remote "${client_remote}"
 
-          remote-cert-tls server
-          resolv-retry infinite
+        remote-cert-tls server
+        resolv-retry infinite
 
-          port ${toString openvpn_port}
-          proto ${openvpn_proto}
-          cipher AES-256-GCM
+        port ${toString client_port}
+        proto ${openvpn_proto}
+        cipher AES-256-GCM
 
-          ca ${pki}/ca.crt
-          cert ${pki}/lithium.crt
-          key ${pki}/private/lithium.key
-          tls-auth ${pki}/private/ta.key
+        ca ${pki}/ca.crt
+        cert ${pki}/lithium.crt
+        key ${pki}/private/lithium.key
+        tls-auth ${pki}/private/ta.key
 
-          key-direction 1
-          keepalive 10 120
-          auth-nocache
-          persist-key
-          persist-tun
-        '';
+        key-direction 1
+        keepalive 10 120
+        auth-nocache
+        persist-key
+        persist-tun
+      '';
     })
   ];
 }
