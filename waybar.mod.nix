@@ -25,16 +25,8 @@ in {
       lib,
       ...
     }: {
-      # lol this breaks boot sequence
-      # home.activation.restart-waybar = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      #   run ${config.systemd.user.systemctlPath} --user restart waybar.service
-      # '';
-
-      # systemd.user.services.waybar.Service.ExecStart = lib.mkForce (builtins.concatStringsSep " " [
-      #   "${config.programs.waybar.package}/bin/waybar"
-      #   "-c ${config.xdg.configFile."waybar/config".source}"
-      #   "-s ${config.xdg.configFile."waybar/style.css".source}"
-      # ]);
+      systemd-fuckery.auto-restart = ["waybar"];
+      systemd-fuckery.start-with-niri = ["waybar"];
 
       programs.waybar = {
         enable = true;

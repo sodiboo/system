@@ -87,16 +87,10 @@
 
           hotkey-overlay.skip-at-startup = true;
 
-          spawn-at-startup =
-            map (cmd: {command = ["sh" "-c" cmd];})
-            [
-              # waybar is supposed to start with graphical-session.target
-              # but it seems to fail constantly on greeter, causing a timeout.
-              # so we reset the fail count so it'll try again immediately.
-              "systemctl --user reset-failed waybar.service"
-              # but, it still doesn't work always? so starting it here seems more reliable.
-              "systemctl --user restart waybar.service"
-            ];
+          spawn-at-startup = let
+            cmds = map (unit: "systemctl --user restart ${unit}.service") config.systemd-fuckery.start-with-niri;
+          in
+            map (cmd: {command = ["sh" "-c" cmd];}) cmds;
 
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";

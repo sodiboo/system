@@ -74,10 +74,13 @@ in {
       stylix.targets.vscode.enable = false;
     }
     ({
+      lib,
       pkgs,
       config,
       ...
     }: {
+      systemd-fuckery.auto-restart = ["swaybg"];
+      systemd-fuckery.start-with-niri = ["swaybg"];
       systemd.user.services."swaybg" = {
         Unit = {
           Description = "wallpapers! brought to you by stylix! :3";
