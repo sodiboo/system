@@ -13,6 +13,9 @@
       planets.url = "https://w.wallhaven.cc/full/z8/wallhaven-z8qe8g.jpg";
       planets.hash = "sha256-+7avaRAffJj781tXMGk5WiM2DDUi6l9idCIbzIYhkC4=";
 
+      ponies.url = "https://static1.e621.net/data/9d/90/9d90737d30897860ea6ec4de266a82ca.png";
+      ponies.hash = "sha256-MEAmM++DE1FYs1w9KV+ISdEbSYaUfT8rR8T1a9pcbos=";
+
       hex-lines.url = "https://w.wallhaven.cc/full/gj/wallhaven-gjkxke.png";
       hex-lines.hash = "sha256-qrTyeb54cfEuQIu4YDYilu9dydlFEAfgyMvMcdymtWw=";
 
@@ -51,7 +54,7 @@ in {
   ];
 
   sodium.modules = [
-    wallpapers.hex-lines
+    wallpapers.ponies
   ];
 
   lithium.modules = [
