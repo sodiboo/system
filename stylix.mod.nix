@@ -26,6 +26,7 @@
       firewatch-wide.hash = "sha256-IN1+5sIyuSOEilxsq/v5gxsSdCYCT3ZGrp0IzY64ICo=";
 
       hax.url = "https://w.wallhaven.cc/full/q2/wallhaven-q25ler.png";
+      hax.hash = "sha256-/ujHJLieuEXZUnOn981v/d1WynUi11cApgkEf8kln2E=";
     };
 in {
   shared.modules = [
@@ -59,7 +60,7 @@ in {
   ];
 
   sodium.modules = [
-    wallpapers.hax
+    wallpapers.firewatch-wide
   ];
 
   lithium.modules = [
