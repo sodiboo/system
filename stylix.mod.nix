@@ -1,14 +1,24 @@
 {stylix, ...}: let
-  wallpapers = builtins.mapAttrs (name: value: {pkgs, ...}: {stylix.image = pkgs.fetchurl value;}) {
-    planets.url = "https://w.wallhaven.cc/full/z8/wallhaven-z8qe8g.jpg";
-    planets.sha256 = "sha256-+7avaRAffJj781tXMGk5WiM2DDUi6l9idCIbzIYhkC4=";
+  wallpapers =
+    builtins.mapAttrs (name: value: {
+      lib,
+      pkgs,
+      ...
+    }: {
+      stylix.image = pkgs.fetchurl {
+        url = value.url;
+        hash = value.hash or lib.fakeHash;
+      };
+    }) {
+      planets.url = "https://w.wallhaven.cc/full/z8/wallhaven-z8qe8g.jpg";
+      planets.hash = "sha256-+7avaRAffJj781tXMGk5WiM2DDUi6l9idCIbzIYhkC4=";
 
-    hex-lines.url = "https://w.wallhaven.cc/full/gj/wallhaven-gjkxke.png";
-    hex-lines.sha256 = "sha256-qrTyeb54cfEuQIu4YDYilu9dydlFEAfgyMvMcdymtWw=";
+      hex-lines.url = "https://w.wallhaven.cc/full/gj/wallhaven-gjkxke.png";
+      hex-lines.hash = "sha256-qrTyeb54cfEuQIu4YDYilu9dydlFEAfgyMvMcdymtWw=";
 
-    firewatch.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
-    firewatch.sha256 = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
-  };
+      firewatch.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
+      firewatch.hash = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
+    };
 in {
   shared.modules = [
     stylix.nixosModules.stylix
