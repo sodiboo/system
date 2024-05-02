@@ -17,6 +17,8 @@
     # niri-working-tree.url = "github:sodiboo/niri";
     # niri-working-tree.flake = false;
 
+    sodipkgs.url = "github:sodiboo/nixpkgs/simutrans";
+
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
   };
