@@ -79,7 +79,7 @@
           prefer-no-csd = true;
 
           layout = {
-            gaps = 4;
+            gaps = 16;
             struts.left = 64;
             struts.right = 64;
             border.width = 4;
@@ -105,7 +105,10 @@
               {
                 "Mod+T".action = spawn "foot";
                 "Mod+D".action = spawn "fuzzel";
-                "Mod+W".action = sh "systemctl --user restart waybar.service";
+                "Mod+W".action = sh (builtins.concatStringsSep "; " [
+                  "systemctl --user restart waybar.service"
+                  "systemctl --user restart swaybg.service"
+                ]);
                 "Mod+L".action = spawn "blurred-locker";
 
                 "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
@@ -226,6 +229,24 @@
           window-rules = [
             {
               draw-border-with-background = false;
+              geometry-corner-radius = let
+                r = 8.0;
+              in {
+                top-left = r;
+                top-right = r;
+                bottom-left = r;
+                bottom-right = r;
+              };
+              clip-to-geometry = true;
+            }
+            {
+              matches = [{is-focused = false;}];
+              opacity = 0.95;
+            }
+            {
+              # the terminal is already transparent from stylix
+              matches = [{app-id = "^foot$";}];
+              opacity = 1.0;
             }
             {
               matches = [

@@ -18,7 +18,6 @@
         just
         file
         bc
-        btop
         dust
         moreutils
       ];

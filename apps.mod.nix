@@ -12,6 +12,7 @@
   shared.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
+        fastfetch
         fm-go
         appimage-run
         dolphin

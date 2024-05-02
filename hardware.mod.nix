@@ -1,4 +1,4 @@
-let
+{nixos-hardware, ...}: let
   config = name: system: additional: {
     inherit name;
     value = {
@@ -65,5 +65,6 @@ in
         boot.kernelModules = ["kvm-amd"];
         boot.extraModulePackages = [];
       }
+      nixos-hardware.nixosModules.common-gpu-amd-southern-islands
     ])
   ]
