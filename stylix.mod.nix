@@ -3,8 +3,8 @@
     planets.url = "https://w.wallhaven.cc/full/z8/wallhaven-z8qe8g.jpg";
     planets.sha256 = "sha256-+7avaRAffJj781tXMGk5WiM2DDUi6l9idCIbzIYhkC4=";
 
-    hex-lines.url = "https://wallhaven.cc/w/gjkxke";
-    hex-lines.sha256 = "sha256-Sem6rEvcGav9RpcxlJBZutPJoNp/tQ9UnwrIcRYrs2s=";
+    hex-lines.url = "https://w.wallhaven.cc/full/gj/wallhaven-gjkxke.png";
+    hex-lines.sha256 = "sha256-qrTyeb54cfEuQIu4YDYilu9dydlFEAfgyMvMcdymtWw=";
 
     firewatch.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
     firewatch.sha256 = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
@@ -41,7 +41,7 @@ in {
   ];
 
   sodium.modules = [
-    wallpapers.firewatch
+    wallpapers.hex-lines
   ];
 
   lithium.modules = [
@@ -54,5 +54,23 @@ in {
       # stylix.targets.firefox.enable = false;
       stylix.targets.vscode.enable = false;
     }
+    ({
+      pkgs,
+      config,
+      ...
+    }: {
+      systemd.user.services."swaybg" = {
+        Unit = {
+          Description = "wallpapers! brought to you by stylix! :3";
+          PartOf = ["graphical-session.target"];
+          After = ["graphical-session.target"];
+          Requisite = ["graphical-session.target"];
+        };
+        Service = {
+          ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image}";
+          Restart = "on-failure";
+        };
+      };
+    })
   ];
 }
