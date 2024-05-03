@@ -18,6 +18,7 @@
   # ./easyrsa init-pki
   # ./easyrsa build-ca # Common Name = carbon
   # ./easyrsa build-server-full sodium
+  # (store passphrase in /etc/openvpn/pki/private/sodium.pass)
   # ./easyrsa build-client-full lithium
   # ./easyrsa gen-dh
   # openssl pkcs12 -export -in ./pki/issued/lithium.crt -inkey ./pki/private/lithium.key -certfile ./pki/ca.crt -name lithium -out ./pki/lithium.p12
@@ -129,6 +130,7 @@ in {
         dh ${pki}/dh.pem
         cert ${pki}/sodium.crt
         key ${pki}/private/sodium.key
+        askpass ${pki}/private/sodium.pass
         tls-auth ${pki}/private/ta.key
 
         key-direction 0
