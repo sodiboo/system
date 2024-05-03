@@ -19,8 +19,11 @@
       hex-lines.url = "https://w.wallhaven.cc/full/gj/wallhaven-gjkxke.png";
       hex-lines.hash = "sha256-qrTyeb54cfEuQIu4YDYilu9dydlFEAfgyMvMcdymtWw=";
 
-      firewatch.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
-      firewatch.hash = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
+      firewatch-celshade.url = "https://w.wallhaven.cc/full/kx/wallhaven-kxj3l1.jpg";
+      firewatch-celshade.hash = "sha256-qNrWmpKvMoPVzHsQb6t87PN6ftja96hrBszXrB4GTAA=";
+
+      firewatch.url = "https://w.wallhaven.cc/full/x1/wallhaven-x1oe3d.jpg";
+      firewatch.hash = "sha256-qRRhJvbk09TATc3wShMwrr1Z9A020SWYRykzarvPLYQ=";
 
       firewatch-wide.url = "https://w.wallhaven.cc/full/o3/wallhaven-o3r9p7.png";
       firewatch-wide.hash = "sha256-IN1+5sIyuSOEilxsq/v5gxsSdCYCT3ZGrp0IzY64ICo=";
