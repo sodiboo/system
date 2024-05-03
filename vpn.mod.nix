@@ -20,6 +20,7 @@
   # ./easyrsa build-server-full sodium
   # (store passphrase in /etc/openvpn/pki/private/sodium.pass)
   # ./easyrsa build-client-full lithium
+  # (store passphrase in /etc/openvpn/pki/private/lithium.pass)
   # ./easyrsa gen-dh
   # openssl pkcs12 -export -in ./pki/issued/lithium.crt -inkey ./pki/private/lithium.key -certfile ./pki/ca.crt -name lithium -out ./pki/lithium.p12
   # -> ./pki contains all the good stuff.
@@ -172,6 +173,7 @@ in {
         ca ${pki}/ca.crt
         cert ${pki}/lithium.crt
         key ${pki}/private/lithium.key
+        askpass ${pki}/private/lithium.pass
         tls-auth ${pki}/private/ta.key
 
         key-direction 1
