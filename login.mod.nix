@@ -69,17 +69,15 @@
         waybar-config = toString home-config.xdg.configFile."waybar/config".source;
         waybar-style = toString home-config.xdg.configFile."waybar/style.css".source;
       in {
-        environment.systemPackages = [
-          pkgs.greetd.tuigreet
-        ];
-
         services.greetd = {
           enable = true;
           settings = {
             default_session = let
               niri = lib.getExe config.programs.niri.package;
+              niri-session = "${config.programs.niri.package}/bin/niri-session";
               foot = lib.getExe pkgs.foot;
               tuigreet = lib.getExe pkgs.greetd.tuigreet;
+              systemctl = home-config.systemd.user.systemctlPath;
             in {
               command = builtins.concatStringsSep " " [
                 niri
@@ -89,9 +87,19 @@
                 foot
                 "-c"
                 foot-config
+                # absolutely disgusting nested script hack
                 (pkgs.writeScript "greet-cmd" ''
-                  ${tuigreet} --remember --cmd niri-session
+                  # note: this part runs as greeter
+                  ${tuigreet} --remember --cmd ${pkgs.writeScript "init-session" ''
+                    # but this part is run as logged in user
+                    # so here we're trying to stop a previous niri session
+                    ${systemctl} --user is-active niri.service && ${systemctl} --user stop niri.service
+                    # and then we start a new one
+                    ${niri-session}
+                  ''}
+                  # this exits the greeter's niri (otherwise it hangs around for some seconds until greetd kills it)
                   ${niri} msg action quit --skip-confirmation
+                  # only after this point does init-session run
                 '')
               ];
               user = "greeter";
