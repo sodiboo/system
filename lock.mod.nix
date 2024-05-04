@@ -13,8 +13,8 @@ let
     niri = "${config.programs.niri.package}/bin/niri";
     # for quick iteration
     magick_args = [
-      "-filter Gaussian"
-      "-resize 2%"
+      "-scale 2%"
+      "-blur 0x.5"
       "-resize 5000%"
     ];
   in
