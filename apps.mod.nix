@@ -34,6 +34,8 @@
         ripgrep-all
         simutrans
         stackblur-go
+        dig
+        whois
       ];
     })
     (
