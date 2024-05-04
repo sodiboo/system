@@ -47,17 +47,19 @@
 
           each = f: builtins.concatStringsSep "\n" (map f config.systemd-fuckery.auto-restart);
         in
-          lib.hm.dag.entryAfter ["reloadSystemd"] ''
-            systemdStatus=$(${systemctl} --user is-system-running 2>&1 || true)
+          lib.mkIf (config.systemd-fuckery.auto-restart != []) (
+            lib.hm.dag.entryAfter ["reloadSystemd"] ''
+              systemdStatus=$(${systemctl} --user is-system-running 2>&1 || true)
 
-            if [[ $systemdStatus == 'running' || $systemdStatus == 'degraded' ]]; then
-              ${each (unit: ''
-              run ${systemctl} --user try-restart ${unit}.service
-            '')}
-            else
-              echo "User systemd daemon not running. Skipping reload."
-            fi
-          '';
+              if [[ $systemdStatus == 'running' || $systemdStatus == 'degraded' ]]; then
+                ${each (unit: ''
+                run ${systemctl} --user try-restart ${unit}.service
+              '')}
+              else
+                echo "User systemd daemon not running. Skipping reload."
+              fi
+            ''
+          );
       };
     })
   ];
