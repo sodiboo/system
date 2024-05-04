@@ -477,11 +477,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1714732044,
-        "narHash": "sha256-kXAU7FxV971BMMtdtHhYf1BIMZsICOv7aBPNpwwbu3k=",
+        "lastModified": 1714785180,
+        "narHash": "sha256-0qMPQlNchyEEEdRozCa9mmV1/2OLPFeyGTsZnUGWDFY=",
         "owner": "sodiboo",
         "repo": "niri-flake",
-        "rev": "43fbef2630031c91837784d3cffc7e93c1e0f9a2",
+        "rev": "9d58a269dc9b284fc4fccee26e67df40546fdb31",
         "type": "github"
       },
       "original": {
