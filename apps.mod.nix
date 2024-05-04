@@ -1,12 +1,7 @@
-{sodipkgs, ...}: {
+{
   shared.modules = [
     {
       programs.steam.enable = true;
-      nixpkgs.overlays = [
-        (final: prev: {
-          simutrans = prev.callPackage "${sodipkgs}/pkgs/games/simutrans" {};
-        })
-      ];
     }
   ];
   shared.home_modules = [
@@ -38,6 +33,7 @@
         pandoc
         ripgrep-all
         simutrans
+        stackblur-go
       ];
     })
     (

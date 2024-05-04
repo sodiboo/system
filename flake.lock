@@ -477,11 +477,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1714811354,
-        "narHash": "sha256-S8NGFxmNg6ZpT/EuwuPq2KG6M7G9YvdwCp/V7Yk2F6U=",
+        "lastModified": 1714844344,
+        "narHash": "sha256-E1oLDqFNKmd3NgqdHEoGm8X8nXLWQc0Fd+HJyhFL+So=",
         "owner": "sodiboo",
         "repo": "niri-flake",
-        "rev": "03c2d199a9e2ec3eba5c9a26e0d3ae5f6dae62bf",
+        "rev": "85699d0b146410320e1d861c339a85359350a252",
         "type": "github"
       },
       "original": {
@@ -510,11 +510,11 @@
     "niri-unstable": {
       "flake": false,
       "locked": {
-        "lastModified": 1714809292,
-        "narHash": "sha256-D6ZGL/1JcY+UqtiWvz6aNzPEEA4zCB9vlfatA0Lk0N8=",
+        "lastModified": 1714843003,
+        "narHash": "sha256-oMUnNzYoqx7hVpoMnHk3NQUSrbflVoGV19DZgO9xnS4=",
         "owner": "YaLTeR",
         "repo": "niri",
-        "rev": "314ad9d3e57fbf94772ab23ce77324042f79f680",
+        "rev": "23850e1c60a211965531e341befa419db809bb66",
         "type": "github"
       },
       "original": {
@@ -723,7 +723,8 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
         "secrets": "secrets",
-        "sodipkgs": "sodipkgs",
+        "sodipkgs-simutrans": "sodipkgs-simutrans",
+        "sodipkgs-stackblur": "sodipkgs-stackblur",
         "stylix": "stylix"
       }
     },
@@ -740,7 +741,7 @@
         "type": "path"
       }
     },
-    "sodipkgs": {
+    "sodipkgs-simutrans": {
       "locked": {
         "lastModified": 1714641627,
         "narHash": "sha256-FQbmpLpEsT2vXlyHQPmETqf98/WNRQeGF9e99mLndeg=",
@@ -752,6 +753,22 @@
       "original": {
         "owner": "sodiboo",
         "ref": "simutrans",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "sodipkgs-stackblur": {
+      "locked": {
+        "lastModified": 1714832696,
+        "narHash": "sha256-M/W1Jp7vHNbazzpprwvGznscHbEFq/tTfBuUefICcHQ=",
+        "owner": "sodiboo",
+        "repo": "nixpkgs",
+        "rev": "38c8e01fb2eb12956eaa3f1f8d88ea53a3c3853d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sodiboo",
+        "ref": "stackblur",
         "repo": "nixpkgs",
         "type": "github"
       }

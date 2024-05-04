@@ -19,7 +19,8 @@
     # niri-working-tree.url = "github:sodiboo/niri";
     # niri-working-tree.flake = false;
 
-    sodipkgs.url = "github:sodiboo/nixpkgs/simutrans";
+    sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
+    sodipkgs-stackblur.url = "github:sodiboo/nixpkgs/stackblur";
 
     secrets.url = "/etc/nixos/secrets";
     secrets.flake = false;
