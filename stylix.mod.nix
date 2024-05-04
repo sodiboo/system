@@ -28,6 +28,9 @@
       firewatch-wide.url = "https://w.wallhaven.cc/full/o3/wallhaven-o3r9p7.png";
       firewatch-wide.hash = "sha256-IN1+5sIyuSOEilxsq/v5gxsSdCYCT3ZGrp0IzY64ICo=";
 
+      triangles.url = "https://w.wallhaven.cc/full/0w/wallhaven-0werjp.jpg";
+      triangles.hash = "sha256-+ioD+OBpZg0HDrUGDWlDKJbjHHEVK2u92suXf72kRI0=";
+
       hax.url = "https://w.wallhaven.cc/full/q2/wallhaven-q25ler.png";
       hax.hash = "sha256-/ujHJLieuEXZUnOn981v/d1WynUi11cApgkEf8kln2E=";
     };
@@ -67,7 +70,7 @@ in {
   ];
 
   lithium.modules = [
-    wallpapers.firewatch
+    wallpapers.triangles
   ];
 
   shared.home_modules = [
