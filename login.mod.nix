@@ -41,7 +41,7 @@
                   };
 
                 spawn-at-startup = [
-                  {command = [(lib.getExe pkgs.swaybg) "-i" config.stylix.image];}
+                  {command = [(lib.getExe pkgs.swaybg) "-i" config.stylix.blurred-image];}
                   {command = [(lib.getExe pkgs.waybar) "-c" waybar-config "-s" waybar-style];}
                 ];
 

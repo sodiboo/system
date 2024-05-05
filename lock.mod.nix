@@ -1,5 +1,5 @@
 let
-  blurred-locker = {
+  scripts = {
     pkgs,
     config,
     ...
@@ -12,13 +12,13 @@ let
     swaylock = "${config.programs.swaylock.package}/bin/swaylock";
     niri = "${config.programs.niri.package}/bin/niri";
     # for quick iteration
-    magick_args = [
+    magick_args = builtins.concatStringsSep " " [
       "-scale 2%"
       "-blur 0x.5"
       "-resize 5000%"
     ];
-  in
-    pkgs.writeScriptBin "blurred-locker" ''
+  in {
+    lock = pkgs.writeScriptBin "blurred-locker" ''
       dir=/tmp/blurred-locker
 
       mkdir -p $dir
@@ -28,7 +28,7 @@ let
 
         ${grim} -o "$output" "$image"
 
-        ${convert} "$image" ${builtins.concatStringsSep " " magick_args} "$image"
+        ${convert} "$image" ${magick_args} "$image"
 
         args+=" -i $output:$image"
       done
@@ -37,7 +37,29 @@ let
 
       rm -r $dir
     '';
+
+    blur = image:
+      pkgs.runCommand "blurred.png" {} ''
+        ${convert} "${image}" ${magick_args} "$out"
+      '';
+  };
 in {
+  shared.modules = [
+    ({
+      lib,
+      pkgs,
+      config,
+      ...
+    }: {
+      options.stylix.blurred-image = with lib;
+        mkOption {
+          type = types.coercedTo types.package toString types.path;
+          default = (scripts {inherit pkgs config;}).blur config.stylix.image;
+          readOnly = true;
+        };
+    })
+  ];
+
   shared.home_modules = [
     ({
       pkgs,
@@ -46,7 +68,7 @@ in {
     }: {
       programs.swaylock.enable = true;
       home.packages = [
-        (blurred-locker {inherit pkgs config;})
+        (scripts {inherit pkgs config;}).lock
       ];
     })
   ];
