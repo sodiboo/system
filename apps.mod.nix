@@ -36,6 +36,7 @@
         stackblur-go
         dig
         whois
+        subversion
       ];
     })
     (
@@ -46,19 +47,14 @@
         ...
       }: {
         programs = {
-          # Shell prompt
-          # starship.enable = true;
-          # starship.settings = import ./starship.nix;
-
           bash.enable = true;
 
           helix.enable = true;
           micro.enable = true;
           vscode.enable = true;
 
-          # eww.enable = true;
-          # eww.package = pkgs.eww-wayland;
-          # eww.configDir = ~/.eww;
+          btop.enable = true;
+          btop.settings.theme_background = false;
         };
       }
     )
