@@ -22,6 +22,13 @@
         moreutils
       ];
     })
+    {
+      # This domain has improperly configured IPv6 for now
+      # And that causes svn to hang for at least 4 minutes
+      networking.extraHosts = ''
+        176.31.12.55 servers.simutrans.org
+      '';
+    }
   ];
 
   shared.home_modules = [
