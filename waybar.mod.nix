@@ -17,12 +17,14 @@ let
     volume.levels = ["󰕿" "󰖀" "󰕾"];
     idle.on = "󰈈 ";
     idle.off = "󰈉 ";
+    vpn = "󰌆 ";
   };
 in {
   shared.home_modules = [
     ({
-      config,
       lib,
+      pkgs,
+      config,
       ...
     }: {
       systemd-fuckery.auto-restart = ["waybar"];
@@ -36,7 +38,7 @@ in {
         layer = "top";
         modules-left = ["wireplumber" "wireplumber#source"];
         modules-center = ["clock#date" "clock"];
-        modules-right = ["network" "bluetooth" "bluetooth#battery" "battery"];
+        modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery"];
 
         battery = {
           interval = 5;
@@ -109,6 +111,18 @@ in {
             deactivated = icons.idle.off;
           };
         };
+
+        "custom/openvpn" = {
+          format = "{}";
+          exec = "${pkgs.writeScript "openvpn-status" ''
+            if ip addr show tun0; then
+              echo "${icons.vpn}"
+            else
+              echo
+            fi
+          ''}";
+          restart-interval = 5;
+        };
       };
       stylix.targets.waybar.enable = false;
       programs.waybar.style = let
@@ -165,7 +179,7 @@ in {
         }
 
         #battery.warning:not(.charging) {
-            color: #${colors.base0A};
+            color: #${colors.yellow};
         }
 
         #battery.critical:not(.charging) {
@@ -174,7 +188,7 @@ in {
 
         @keyframes critical-blink {
             to {
-                color: #${colors.base09};
+                color: #${colors.red};
             }
         }
       '';
