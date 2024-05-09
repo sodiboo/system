@@ -87,11 +87,6 @@
 
           hotkey-overlay.skip-at-startup = true;
 
-          spawn-at-startup = let
-            cmds = map (unit: "systemctl --user restart ${unit}.service") config.systemd-fuckery.start-with-niri;
-          in
-            map (cmd: {command = ["sh" "-c" cmd];}) cmds;
-
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";
           in
