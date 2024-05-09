@@ -354,6 +354,8 @@
   sodium.home_modules = [
     {
       programs.niri.settings = {
+        # On sodium, right super says "menu" and is between right alt and fn
+        input.keyboard.xkb.options = "compose:rwin";
         layout = {
           preset-column-widths = [
             {proportion = 1.0 / 6.0;}
@@ -373,6 +375,8 @@
   lithium.home_modules = [
     {
       programs.niri.settings = {
+        # On lithium, there is no right super key, but printscreen is next to right alt
+        input.keyboard.xkb.options = "compose:prsc";
         layout = {
           preset-column-widths = [
             {proportion = 1.0 / 3.0;}
