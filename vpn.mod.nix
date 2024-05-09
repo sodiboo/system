@@ -48,6 +48,30 @@
   openvpn_port = 1194;
   openvpn_proto = "tcp";
 
+  # Okay, so this is fucking annoying.
+  # One benefit of using a VPN is being able to access shit i need.
+  #
+  # Here's a portscan on my school network:
+  #
+  # $ for p in $(seq 65535); fish -c "if curl --connect-timeout 1 http://portquiz.net:$p >/dev/null 2>/dev/null; echo $p; end;" & end
+  # 80
+  # 110
+  # 123
+  # 143
+  # 443
+  # 500
+  # 993
+  # 995
+  # 3389
+  # 5222
+  # 5223
+  # 5228
+  # 35061
+  #
+  # Sysadmins may be unhappy with spamming 2^16 requests, but fuck 'em. They don't even allow DNS and i don't wish for them to see everything i do.
+  # So, at my home router, a rule routes (external 443) -> (sodium 1194)
+  external_port = 443;
+
   use_stunnel = stunnel_port != null;
   nat_port =
     if use_stunnel
@@ -61,10 +85,10 @@
     if use_stunnel
     then "127.0.0.1"
     else remote;
-  client_port =
-    if use_stunnel
-    then client_stunnel_port
-    else openvpn_port;
+  client_port = external_port;
+  # if use_stunnel
+  # then client_stunnel_port
+  # else openvpn_port;
 
   # Networking invariants in above config:
   # - ${eth} is the ethernet interface on sodium.
