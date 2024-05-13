@@ -7,10 +7,6 @@ h1 {
     text-align: center;
 }
 
-ol {
-    list-style: disc;
-}
-
 ol > li {
     margin-left: 20px
 }
