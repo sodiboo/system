@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/pico.purple.min.css" />
+    <link rel="stylesheet" href="/sodi.css" />
+    <link rel="stylesheet" href="/blog.css" />
+    <title>nix formatting is a fucking joke.</title>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h6>RSS feed coming soon maybe. blog under construction</h6>
+            <nav>
+                <ul>
+                    <li>
+                        <a href="/">sodi.boo</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <hr />
+
+        <aside class="container">
+            <p>
+                hey! sorry about the lack of syntax highlighting! i don't have a fancy blog engine, and this page is hand-written html. i don't wanna highlight it by hand.
+            </p>
+    
+            <p>
+                also, i originally wrote about this in <a href="https://github.com/sodiboo/nix-config/commit/353d3513f25a16c1eca8cddf2cfbe0a7d3d81154">my nix config</a>. i'm intentionally trying to present it differently here, but i'm not sure if it's better. you can read that for some of my initial thoughts on the matter
+            </p>
+            
+            <p>
+                that being said, let's talk about nix formatting.
+            </p>
+        </aside>
+    </header>
+
+    <hr />
+
+    <main class="container">
+
+        <hgroup>
+            <h1>nix formatting is a fucking joke.</h1>
+            <h6>because the only correct parser is in the nix package manager</h6>
+        </hgroup>
+        
+        <p>
+            the snippet in question is the following:
+        </p>
+
+<pre><code>1. / 3.</code></pre>
+
+        <p>
+            why would anyone do this? well, if you do <code>1 / 3</code> you get <code>0</code> because those are integers. but in this case, we want it to be a floating point literal. it's shorthand for <code>1.0 / 3.0</code>
+        </p>
+
+        <p>
+            my preferred nix formatter is <a href="https://github.com/kamadorueda/alejandra"><code>alejandra</code></a>. it's decent. so let's try passing it to <code>alejandra</code>
+        </p>
+
+<pre><code>$ echo "1. / 3." | alejandra --quiet
+1. / 3.
+
+Failed! 1 error found at:
+- &lt;anonymous file on stdin&gt;: unexpected TOKEN_DIV at 3..4, wanted any of [TOKEN_PAREN_OPEN, TOKEN_REC, TOKEN_CURLY_B_OPEN, TOKEN_SQUARE_B_OPEN, TOKEN_DYNAMIC_START, TOKEN_STRING_START, TOKEN_IDENT]
+</code></pre>
+
+        <p>
+            okay, not looking great. what. is this just not allowed in nix?
+        </p>
+
+<pre><code>$ nix eval --expr "1. / 3."
+0.333333
+</code></pre>
+
+        <p>
+            it is permitted, clearly. so why can't <code>alejandra</code> format this? it's because it uses <a href="https://github.com/nix-community/rnix-parser/"><code>rnix</code></a> to parse nix expressions.
+        </p>
+
+        <p>
+            this issue was fixed in a <a href="https://github.com/nix-community/rnix-parser/commit/fd1f0af8a3b0ea71ece5da8743cd14eee92e816b">commit on 2022-07-29</a>. this change was part of <code>v0.11.0</code> released on 2022-11-11.
+        </p>
+
+        <p>
+            today is 2024-05-14. it has been 655 days since the issue was fixed and 549 days since <code>v0.11.0</code> was published. 
+        </p>
+
+        <p>
+            and our dear friend <code>alejandra</code> is still using <code>v0.10.2</code>:
+        </p>
+
+        
+<a href="https://github.com/kamadorueda/alejandra/blob/bb688cc2c22e43b3cd710eadc0340399c2de3151/src/alejandra/Cargo.toml#L2"><code>alejandra/Cargo.toml</code></a>
+<pre><code>[dependencies]
+<mark>rnix = "0.10.2"</mark>
+rowan = "0.12.6" # follows rnix
+</code></pre>
+
+        <p>
+            so i guess <code>alejandra</code> needs to update <code>rnix</code>, end of story. right?
+        </p>
+
+        <hr />
+
+        <p>
+            "<code>alejandra</code> is not the only nix formatter", i hear you saying, "what about <a href="https://github.com/nix-community/nixpkgs-fmt"><code>nixpkgs-fmt</code></a>? that one does it just fine!". and you're right. it looks like it handles the snippet without issue.
+        </p>
+
+<pre><code>$ echo "1. / 3." | nixpkgs-fmt
+1. / 3.
+</code></pre>
+
+        <p>
+            you might think this is because it just uses an up-to-date rnix, but that's not the case!
+        </p>
+
+<a href="https://github.com/nix-community/nixpkgs-fmt/blob/f048515c9a98d7e2e4b034ec77641acc8a58098d/Cargo.toml#L17"><code>nixpkgs-fmt/Cargo.toml</code></a>
+<pre><code>[dependencies]
+<mark>rnix = "0.10.2"</mark>
+smol_str = "0.1.17"
+</code></pre>
+
+        <p>
+            and if you do <code>nixpkgs-fmt --parse</code>, you will see that it has the same error.
+        </p>
+
+<pre><code>$ echo "1. / 3." | nixpkgs-fmt --parse
+error: uexpected TOKEN_DIV at 3..4, wanted any of [TOKEN_PAREN_OPEN, TOKEN_REC, TOKEN_CURLY_B_OPEN, TOKEN_SQUARE_B_OPEN, TOKEN_DYNAMIC_START, TOKEN_STRING_START, TOKEN_IDENT]
+error: error node at 0..2
+error: error node at 5..7
+</code></pre>
+
+        <p>
+            so what's going on here? how can <code>nixpkgs-fmt</code> format this file just fine, without knowing how to parse it?
+        </p>
+        
+        <p>
+            it's because of a cool property of <code>rnix</code> mentioned in their README:
+        </p>
+
+        <blockquote>
+            rnix nowadays uses <a href="https://github.com/matklad">@matklad</a>'s <a href="https://crates.io/crates/rowan">rowan</a> crate to ensure:
+            <ul>
+                <li>all span information is preserved, meaning you can use the AST to for example apply highlighting</li>
+                <li>printing out the AST prints out 100% the original code. This is not an over-exaggeration, even completely invalid nix code such as this README can be intact after a parsing session (though the AST will mark errnous nodes)</li>
+                <li>easy ways to walk the tree without resorting to recursion</li>
+            </ul>
+            <footer>
+                <cite>- <a href="https://github.com/nix-community/rnix-parser/blob/01e65829a56b772ad37881ab51680ff8fcd45de3/README.md"><code>rnix/README.md</code></a></cite>
+            </footer>
+        </blockquote>
+
+        <p>
+            in other words, <code>rnix</code> doesn't generate an <abbr title="Abstract Syntax Tree">AST</abbr>, but a <abbr title="Concrete Syntax Tree">CST</abbr>. this means that it's able to generate <em>something</em> from any input, even if it's invalid.
+        </p>
+
+        <p>
+            <code>alejandra</code> will give up if it encounters an error. <code>nixpkgs-fmt</code> will not. we can see this with the following snippet:
+        </p>
+<code>floats.in</code>
+<pre><code>1.
+/
+3.</code></pre>
+
+<code>ints.in</code>
+<pre><code>1
+/
+3</code></pre>
+
+        <p>
+            if we try to format <code>ints.in</code> with <code>nixpkgs-fmt</code>, we get the following:
+        </p>
+
+<code>ints.nixpkgs-fmt.out</code>
+<pre><code>1
+  /
+3</code></pre>
+
+        <p>
+            that's an awful way to format it, if you ask me. but the point is it does <em>something</em>, so it "understands" the input.
+        </p>
+        
+        <p>
+            if we try to format <code>floats.in</code>, we get the following:
+        </p>
+
+<code>floats.nixpkgs-fmt.out</code>
+<pre><code>1.
+/
+3.</code></pre>
+
+        <p>
+            that's just unchanged. so clearly, it doesn't understand what it did. if it could parse it correctly, these two files would be formatted simiarly.
+        </p>
+
+        <p>
+            <code>alejandra</code> will just Die if it encounters an error, so <code>floats.in</code> will not be formatted at all. <code>ints.in</code> however?
+        </p>
+
+<code>ints.alejandra.out</code>
+<pre><code>1
+/ 3</code></pre>
+
+        <p>
+            fucking what. how is "The Uncompromising Nix Code Formatter" even worse. this is the worst way to format that snippet on <em>purpose</em>.
+        </p>
+
+        <hr />
+
+        <p>
+            for fun, let's ask <a href="https://github.com/NixOS/nixfmt"><code>nixfmt</code></a>
+        </p>
+
+<code>ints.nixfmt.out</code>
+<pre><code>1 / 3</code></pre>
+
+        <p>
+            and it's... beautiful? what the hell. how are you doing this, my friend?
+        </p>
+        
+        <p>
+            what's that, you're written in Haskell? ...and you maintain your own parser?
+        </p>
+
+        <p>
+            surely you can be The One That Parses Everything. you're under the <code>NixOS</code> organization, you're the <em>official</em> nix formatter.
+        </p>
+
+<pre><code>$ cat floats.in | nixfmt
+&lt;stdin&gt;:1:2:
+  |
+1 | 1.
+  |  ^
+unexpected '.'
+expecting digit, end of input, or operator
+</code></pre>
+
+        <p>
+            but no. our prophet dies as quickly as it was born. <code>nixfmt</code>, too, cannot parse this expression.
+        </p>
+        
+        <p>
+            it gets 2 bonus points for having a much nicer error message.
+            <br />
+            and those bonus points are immediately taken away because the error message is wrong. the dot is not unexpected! why can nobody parse this?
+        </p>
+
+        <hr />
+
+
+        <p>
+            you might at this point be feeling a sense of despair. at least if you're as heavily invested into this as i am.
+        </p>
+
+        <p>
+            but all hope is not lost. there is a light at the end of the tunnel. a savior, if you will.
+        </p>
+
+        <p>
+            enter scene: <a href="https://github.com/nix-community/tree-sitter-nix"><code>tree-sitter-nix</code></a>
+        </p>
+
+        <p>
+            <code>tree-sitter-nix</code> got it right from the very beginning.
+            their <a href="https://github.com/nix-community/tree-sitter-nix/blob/1324e9e4125e070946d2573f4389634891dcd7e1/grammar.js#L49">initial commit</a> has an accurate regex.
+        </p>
+
+        <p>
+            and at least two formatters use this grammar to parse nix.
+        </p>
+
+        <p>
+            i could not get <a href="https://github.com/justinwoo/format-nix"><code>format-nix</code></a> to run properly. i tried. i really did. the nix files are ancient and no longer evaluate properly (so much for reproducibility).
+            and the actual underlying node project doesn't work either. <code>npm</code> hangs if i try to install it, and <code>bun</code> doesn't seem to be able to find one dependency or something. i could not run it using modern toolchains.
+        </p>
+
+        <p>
+            given that <code>tree-sitter-nix</code> was always correct, i don't see a reason why it'd break on our input. one must imagine <code>format-nix</code> happy. content, with formatting such a code.
+        </p>
+
+        <p>
+            that leaves <a href="https://github.com/hercules-ci/canonix"><code>canonix</code></a>, which seems to be able to parse the document in question! it, uh, doesn't actually care about division. so it doesn't do much interesting with our expression.
+        </p>
+
+<pre><code>$ cat floats.in | canonix --pipe
+1.
+/
+3.
+</code></pre>
+
+        <p>
+            but you know how i can tell that it understands the code anyways? because it has a <code>--debug</code> flag.
+        </p>
+
+<pre><code>$ echo "1. / 3." | canonix --pipe --debug
+Expression(0,0)-(1,0)
+"1. / 3.\n"
+  Binary(0,0)-(0,7)
+  "1. / 3."
+    Float(0,0)-(0,2)
+    "1."
+    AnonSlash(0,3)-(0,4)
+    "/"
+    Float(0,5)-(0,7)
+    "3."
+Encountered these unknown node types: fromList []
+Verbatim fallback nodes: fromList [Node {startByte = 0, endByte = 7, startRow = 0, endRow = 0, typ = Binary}]
+1. / 3.
+</code></pre>
+
+        <p>
+            a quick breakdown on what this means: it's able to parse an expression on the first line, and that is a <em>binary</em> expression. this just means that it has two operands and an operator. you can see the slash in the middle, and two floating point literals on either side.
+        </p>
+
+        <p>
+            that's an accurate parse tree. it knows what our code means.
+        </p>
+
+        <hr />
+
+        <p>
+            but you know. both of those, <code>format-nix</code> and <code>canonix</code>, are abandoned. <code>format-nix</code> is ancient and doesn't work anymore. <code>canonix</code> is last updated 5 years ago. it's wildly incomplete, and doesn't do anything reasonable with most nix files, even if it can, in theory, parse them.
+        </p>
+
+        <p>
+            but that doesn't change the fact that these abandonded formatters got it right. and the ones we use today are incapable of correctly parsing nix.
+        </p>
+
+        <p>
+            because there is no spec for nix. there never was.
+        </p>
+
+        <p>
+            the only source of truth is in <a href="https://github.com/NixOS/nix/blob/master/src/libexpr/lexer.l">the sources of <code>nix</code></a> on github.
+        </p>
+
+        <p>
+            but when not even the official nix formatter can parse nix correctly - the one that is maintained by the same organization as the real nix parser - what hope does anyone else have?
+        </p>
+    </main>
+    
+    <hr />
+
+    <footer>
+        <div class="container">
+            if you liked these words, consider sending animal noises to me using a series of intricate rituals known as <a href="https://tech.lgbt/@terrain">the fediverse</a> or go to my <a href="/">homepage</a> for more of me.
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+main hr {
+    margin: 2.5em;
+}
+
+a code {
+    color: var(--pico-color);
+    text-decoration: var(--pico-text-decoration);
+    text-decoration-color: var(--pico-underline)
+}
