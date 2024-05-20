@@ -1,23 +1,33 @@
-use std::{fmt::Write, fs};
+use std::fs;
 
 use atom_syndication::{
-    Entry, EntryBuilder, FeedBuilder, Generator, GeneratorBuilder, LinkBuilder, PersonBuilder,
-    Text, TextBuilder, TextType, WriteConfig,
+    EntryBuilder, FeedBuilder, GeneratorBuilder, LinkBuilder, PersonBuilder, Text, WriteConfig,
 };
-use chrono::{Date, DateTime};
+use chrono::DateTime;
+use const_format::concatcp;
 use webpage::HTML;
+
+const BASE_URL: &str = "https://sodi.boo";
+const BLOG: &str = "/blog";
+const FEED: &str = "/blog/feed.atom";
+
+const HOME: &str = BASE_URL;
+const BLOG_URL: &str = concatcp!(BASE_URL, BLOG);
+const FEED_URL: &str = concatcp!(BASE_URL, FEED);
+
+const BLOG_PATH: &str = concatcp!(".", BLOG);
+const FEED_PATH: &str = concatcp!(".", FEED);
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let sodiboo = PersonBuilder::default()
         .name("sodiboo")
-        .uri(Some("https://sodi.boo".into()))
+        .uri(Some(HOME.into()))
         .build();
 
     let mut feed = FeedBuilder::default();
 
-    feed.title("sodiboo blog")
-        .subtitle(Some("it's where i infodump sometimes".into()))
-        .id("https://sodi.boo")
+    feed.title("sodiboo's infodumping garden")
+        .id(BLOG_URL)
         .generator(Some(
             GeneratorBuilder::default()
                 .value("custom; written in Rust; based on opengraph attributes")
@@ -25,13 +35,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ))
         .link(
             LinkBuilder::default()
-                .href("https://sodi.boo")
+                .href(BLOG_URL)
                 .mime_type(Some("text/html".into()))
                 .build(),
         )
         .link(
             LinkBuilder::default()
-                .href("https://sodi.boo/feed.atom")
+                .href(FEED_URL)
                 .rel("self")
                 .mime_type(Some("application/atom+xml".into()))
                 .build(),
@@ -40,10 +50,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut last_updated = None;
 
-    for article in fs::read_dir("./blog/")? {
+    for article in fs::read_dir(BLOG_PATH)? {
         let article = article?;
         if !article.file_type()?.is_file() {
             eprintln!("skipping {:?} because it's not a file", article.path());
+            continue;
+        }
+
+        if article.path().extension() != Some("html".as_ref()) {
+            eprintln!(
+                "skipping {:?} because it's not an HTML file",
+                article.path()
+            );
             continue;
         }
 
@@ -101,7 +119,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     feed.updated(last_updated.expect("at least one article should be present"));
 
     feed.build().write_with_config(
-        std::fs::File::create("./feed.atom")?,
+        std::fs::File::create(FEED_PATH)?,
         WriteConfig {
             write_document_declaration: false,
             indent_size: Some(2),
