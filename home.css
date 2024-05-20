@@ -1,14 +1,8 @@
 h1 {
     font-family: "Rubik", sans-serif;
-    font-size: clamp(2em, 2vw, 4em);
     font-weight: 400;
-    margin: 0px;
     padding: 20px;
     text-align: center;
-}
-
-ol > li {
-    margin-left: 20px
 }
 
 li:has(a[rel="me"][href *= "tech.lgbt"])::marker {
