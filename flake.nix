@@ -19,7 +19,6 @@
     # niri-working-tree.url = "github:sodiboo/niri";
     # niri-working-tree.flake = false;
 
-    sodipkgs-caligula.url = "github:sodiboo/nixpkgs/caligula";
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
 
