@@ -18,6 +18,12 @@ let
     idle.on = "󰈈 ";
     idle.off = "󰈉 ";
     vpn = "󰌆 ";
+
+    notification.red_badge = "<span foreground='red'><sup></sup></span>";
+    notification.bell = "󰂚";
+    notification.bell-badge = "󱅫";
+    notification.bell-outline = "󰂜";
+    notification.bell-outline-badge = "󰅸";
   };
 in {
   shared.home_modules = [
@@ -38,7 +44,7 @@ in {
         layer = "top";
         modules-left = ["wireplumber" "wireplumber#source"];
         modules-center = ["clock#date" "clock"];
-        modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery"];
+        modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery" "custom/swaync"];
 
         battery = {
           interval = 5;
@@ -122,6 +128,29 @@ in {
             fi
           ''}";
           restart-interval = 5;
+        };
+
+        "custom/swaync" = {
+          tooltip = false;
+          format = "{icon}";
+          format-icons = {
+            notification = "<span foreground='red'><sup></sup></span>";
+            none = icons.notification.bell-outline;
+            none-cc-open = icons.notification.bell;
+            dnd-notification = "<span foreground='red'><sup></sup></span>";
+            dnd-none = "";
+            inhibited-notification = "<span foreground='red'><sup></sup></span>";
+            inhibited-none = "";
+            dnd-inhibited-notification = "<span foreground='red'><sup></sup></span>";
+            dnd-inhibited-none = "";
+          };
+          return-type = "json";
+          exec-if = "which swaync-client";
+          exec = "swaync-client -swb";
+          # exec = ''swaync-client -swb | jq -c 'if .class | .[]? // . | contains("cc-open") then .alt += "-cc-open" else . end' '';
+          on-click = "swaync-client -t -sw";
+          on-click-right = "swaync-client -d -sw";
+          escape = true;
         };
       };
       stylix.targets.waybar.enable = false;

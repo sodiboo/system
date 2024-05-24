@@ -251,7 +251,6 @@
       })
     ({pkgs, ...}: {
       home.packages = with pkgs; [
-        mako
         libnotify
       ];
       programs.foot = {
@@ -262,6 +261,16 @@
       programs.fuzzel = {
         enable = true;
         settings.main.terminal = "foot";
+      };
+
+      # services.mako = {
+      #   enable = true;
+      #   borderRadius = 8;
+      #   format = "%a\n%s\n%b";
+      # };
+
+      services.swaync = {
+        enable = true;
       };
     })
   ];
