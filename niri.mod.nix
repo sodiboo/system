@@ -177,7 +177,7 @@
           #   {command = ["swww" "start"];}
           # ];
 
-          animations.window-resize-shader = ''
+          animations.shaders.window-resize = ''
             vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
                 vec3 coords_next_geo = niri_curr_geo_to_next_geo * coords_curr_geo;
 
