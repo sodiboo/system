@@ -6,11 +6,14 @@ in {
   universal.modules = [
     {
       nix.settings = {
-        access-tokens = ["github.com=${secrets.github-token}"];
         experimental-features = ["nix-command" "flakes"];
         substituters = builtins.attrNames caches;
         trusted-public-keys = builtins.attrValues caches;
       };
+      # will !include soon
+      nix.extraOptions = ''
+        access-tokens = github.com=${secrets.github-token}
+      '';
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "23.11";
     }
