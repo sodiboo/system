@@ -46,6 +46,7 @@
         stackblur-go
         simutrans
         subversion
+        wlvncc
       ];
     })
     (
