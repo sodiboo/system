@@ -1,6 +1,7 @@
-{secrets, ...}: {
+{
   personal.home_modules = [
     ({
+      nixosConfig,
       config,
       pkgs,
       lib,
@@ -21,9 +22,12 @@
         Service = {
           ExecStart = "${cfg.package}/bin/spotifyd ${lib.escapeShellArgs [
             "--no-daemon"
-            "--username" secrets.spotify-username
-            "--password" secrets.spotify-password
-            "--config-path" configFile
+            "--username-cmd"
+            "cat ${nixosConfig.sops.secrets."spotify/username".path}"
+            "--password-cmd"
+            "cat ${nixosConfig.sops.secrets."spotify/password".path}"
+            "--config-path"
+            configFile
           ]}";
           Restart = "always";
           RestartSec = 12;
@@ -31,10 +35,15 @@
       };
     })
     ({
+      nixosConfig,
       pkgs,
       ...
     }: {
-      services.spotifyd.enable = true;
+      services.spotifyd = {
+        enable = true;
+
+        settings.global.device_name = nixosConfig.networking.hostName;
+      };
 
       home.packages = with pkgs; [
         spotify-player
@@ -43,17 +52,5 @@
 
       programs.fish.shellAliases.sptlrx = "sptlrx --before faint";
     })
-  ];
-
-  sodium.home_modules = [
-    {
-      services.spotifyd.settings.global.device_name = "sodi computer";
-    }
-  ];
-
-  lithium.home_modules = [
-    {
-      services.spotifyd.settings.global.device_name = "sodi laptop";
-    }
   ];
 }

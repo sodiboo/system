@@ -8,6 +8,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    sops-nix.url = "github:Mic92/sops-nix";
+
     stylix.url = "github:danth/stylix";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
@@ -21,16 +23,11 @@
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
-
-    secrets.url = "/etc/nixos/secrets";
-    secrets.flake = false;
   };
 
   outputs = {
     self,
     nixpkgs,
-    home-manager,
-    secrets,
     ...
   } @ inputs:
     with nixpkgs.lib; let
@@ -45,22 +42,11 @@
             symlink = {};
           }) (builtins.readDir dir);
 
-      is-dotfile = flip pipe [
-        (splitString "/")
-        last
-        (hasPrefix ".")
-      ];
-
       # `const` helper function is used extensively: the function is constant in regards to the name of the attribute.
 
       params =
         inputs
         // {
-          secrets = (mapAttrs (const (p:
-            if is-dotfile p
-            then null
-            else fileContents p))) (read_dir_recursively "${secrets}");
-
           configs = raw_configs;
           inherit merge;
         };

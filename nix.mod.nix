@@ -1,22 +1,23 @@
-{secrets, ...}: let
+let
   caches = {
     # "https://niri.cachix.org" = "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=";
   };
 in {
   universal.modules = [
-    {
+    ({config, ...}: {
       nix.settings = {
         experimental-features = ["nix-command" "flakes"];
         substituters = builtins.attrNames caches;
         trusted-public-keys = builtins.attrValues caches;
       };
-      # will !include soon
+      # access-token-prelude contains:
+      # access-token = github.com=$SECRET
       nix.extraOptions = ''
-        access-tokens = github.com=${secrets.github-token}
+        !include ${config.sops.secrets.access-token-prelude.path}
       '';
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "23.11";
-    }
+    })
   ];
   universal.home_modules = [
     ({
