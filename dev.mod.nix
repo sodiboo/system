@@ -1,5 +1,5 @@
 {
-  shared.modules = [
+  universal.modules = [
     ({pkgs, ...}: {
       environment.systemPackages = with pkgs; [
         chase
@@ -12,7 +12,6 @@
         entr
         difftastic
         kakoune
-        micro
         socat
         jq
         just
@@ -31,7 +30,7 @@
     }
   ];
 
-  shared.home_modules = [
+  universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         rustup

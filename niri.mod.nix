@@ -3,7 +3,7 @@
   # niri-working-tree,
   ...
 }: {
-  shared.modules = [
+  personal.modules = [
     niri.nixosModules.niri
     ({pkgs, ...}: {
       programs.niri.enable = true;
@@ -24,7 +24,7 @@
     })
   ];
 
-  shared.home_modules = [
+  personal.home_modules = [
     ({
       config,
       lib,

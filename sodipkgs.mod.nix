@@ -2,7 +2,7 @@ let
   by-name = name: "/by-name/${builtins.substring 0 2 name}/${name}/package.nix";
 in
   inputs: {
-    shared.modules = [
+    personal.modules = [
       {
         nixpkgs.overlays = [
           (

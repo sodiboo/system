@@ -33,7 +33,7 @@ It has a 3840x2400 display (16:10 aspect ratio), and the most interesting parts 
 
 Modules have a `*.mod.nix` extension, which is loaded in [`flake.nix`](/flake.nix). The structure of `*.mod.nix` files is essentially `{ <system>.modules :: arrayOf(nixosModule), <system>.home_modules :: arrayOf(homeModule) }`. They can also take the flake inputs at the top.
 
-`<system>` is either `sodium`, `lithium` or more commonly `shared` which contains stuff common for both.
+`<system>` is either `sodium`, `lithium` or more commonly `personal` which contains stuff common for both. There is also `oxygen`, which is a VPS and `universal` which is common to all three. `universal` will generally contain stuff like a command line environment (prompts, editors, tooling), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games
 
 My secrets are managed using a very unsophisticated homemade solution. `secrets` is a flake input that is gitignored. It's preprocessed such that the files within are passed as strings of the `secrets` attrset; this is the only flake input that is modified before being passed to all modules.
 

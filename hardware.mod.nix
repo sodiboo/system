@@ -30,9 +30,13 @@
   swap = device: {swapDevices = [{inherit device;}];};
 
   cpu = brand: {hardware.cpu.${brand}.updateMicrocode = true;};
+
+  qemu = {modulesPath, ...}: {
+    imports = ["${modulesPath}/profiles/qemu-guest.nix"];
+  };
 in
   {
-    shared.modules = [
+    universal.modules = [
       ({lib, ...}: {
         hardware.enableRedistributableFirmware = true;
         networking.useDHCP = lib.mkDefault true;
@@ -66,5 +70,18 @@ in
         boot.extraModulePackages = [];
       }
       nixos-hardware.nixosModules.common-gpu-amd-southern-islands
+    ])
+
+    # Contabo VPS
+    (config "oxygen" "x86_64-linux" [
+      qemu
+      (fs.ext4 "/" "/dev/sda3" null)
+      {
+        boot.tmp.cleanOnBoot = true;
+        zramSwap.enable = true;
+        boot.loader.grub.device = "/dev/sda";
+        boot.initrd.availableKernelModules = ["ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi"];
+        boot.initrd.kernelModules = ["nvme"];
+      }
     ])
   ]

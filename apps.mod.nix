@@ -1,14 +1,30 @@
 {
-  shared.modules = [
+  personal.modules = [
     {
       programs.steam.enable = true;
     }
   ];
-  shared.home_modules = [
+
+  universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         fastfetch
         fm-go
+        python311
+        ffmpeg_6-full
+        p7zip
+        ripgrep-all
+        simutrans
+        dig
+        whois
+      ];
+
+      programs.micro.enable = true;
+    })
+  ];
+  personal.home_modules = [
+    ({pkgs, ...}: {
+      home.packages = with pkgs; [
         appimage-run
         dolphin
         firefox
@@ -25,17 +41,10 @@
         gsettings-desktop-schemas
         playerctl
         brightnessctl
-        python311
-        ffmpeg_6-full
         pairdrop
         swayimg
-        p7zip
         pandoc
-        ripgrep-all
-        simutrans
         stackblur-go
-        dig
-        whois
         subversion
       ];
     })
@@ -47,10 +56,7 @@
         ...
       }: {
         programs = {
-          bash.enable = true;
-
           helix.enable = true;
-          micro.enable = true;
           vscode.enable = true;
 
           btop.enable = true;

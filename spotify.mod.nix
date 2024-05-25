@@ -1,5 +1,5 @@
 {secrets, ...}: {
-  shared.home_modules = [
+  personal.home_modules = [
     ({
       pkgs,
       lib,

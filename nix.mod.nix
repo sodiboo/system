@@ -3,7 +3,7 @@
     # "https://niri.cachix.org" = "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=";
   };
 in {
-  shared.modules = [
+  universal.modules = [
     {
       nix.settings = {
         access-tokens = ["github.com=${secrets.github-token}"];
@@ -15,7 +15,7 @@ in {
       system.stateVersion = "23.11";
     }
   ];
-  shared.home_modules = [
+  universal.home_modules = [
     ({
       pkgs,
       lib,

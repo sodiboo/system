@@ -60,6 +60,9 @@
             if is-dotfile p
             then null
             else fileContents p))) (read_dir_recursively "${secrets}");
+
+          configs = raw_configs;
+          inherit merge;
         };
 
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
@@ -84,13 +87,7 @@
       raw_configs =
         builtins.zipAttrsWith (const (builtins.foldl' merge {})) (attrValues (read_all_modules "${self}"));
 
-      configs = mapAttrs (const (merge raw_configs.shared)) (builtins.removeAttrs raw_configs ["shared"]);
-    in {
-      # for use in nix repl
-      p = s: builtins.trace "\n\n${s}\n" "---";
-
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-      nixosConfigurations = builtins.mapAttrs (const (config:
+      configs = builtins.mapAttrs (const (config:
         nixpkgs.lib.nixosSystem {
           inherit (config) system;
           modules =
@@ -101,6 +98,14 @@
               }
             ];
         }))
-      configs;
+      raw_configs;
+    in {
+      # for use in nix repl
+      p = s: builtins.trace "\n\n${s}\n" "---";
+
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+      nixosConfigurations = {
+        inherit (configs) oxygen sodium lithium;
+      };
     };
 }

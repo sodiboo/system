@@ -1,5 +1,5 @@
 {
-  shared.modules = [
+  personal.modules = [
     ({pkgs, ...}: {
       boot.plymouth.enable = true;
       stylix.targets.plymouth.enable = false;

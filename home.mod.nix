@@ -1,5 +1,5 @@
 {home-manager, ...}: {
-  shared.modules = [
+  universal.modules = [
     home-manager.nixosModules.home-manager
     ({config, ...}: {
       users.users.sodiboo = {
@@ -21,7 +21,7 @@
     })
   ];
 
-  shared.home_modules = [
+  personal.home_modules = [
     ({
       lib,
       config,

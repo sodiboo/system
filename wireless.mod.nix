@@ -1,5 +1,5 @@
 {
-  shared.modules = [
+  personal.modules = [
     ({pkgs, ...}: {
       networking.networkmanager.enable = true;
       users.users.sodiboo.extraGroups = ["networkmanager"];

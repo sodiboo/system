@@ -1,5 +1,5 @@
 {nix-index-database, ...}: {
-  shared.modules = [
+  universal.modules = [
     nix-index-database.nixosModules.nix-index
 
     ({pkgs, ...}: {
@@ -22,7 +22,7 @@
     })
   ];
 
-  shared.home_modules = [
+  universal.home_modules = [
     {
       programs = {
         fish = {
@@ -35,9 +35,6 @@
           };
           shellAliases = {
             eza = "eza --long --all --icons --time-style long-iso";
-
-            bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
-            pki-pass = "bw list items | jq -r '.[] | select(.name == \"PKI '$(hostname)'\") | .notes'";
           };
         };
 
@@ -56,6 +53,15 @@
         ];
 
         bash.enable = true; # Sometimes, applications drop me into a bash shell against my will.
+      };
+    }
+  ];
+
+  personal.home_modules = [
+    {
+      programs.fish.shellAliases = {
+        bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
+        pki-pass = "bw list items | jq -r '.[] | select(.name == \"PKI '$(hostname)'\") | .notes'";
       };
     }
   ];

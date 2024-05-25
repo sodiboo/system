@@ -1,5 +1,5 @@
 {nari, ...}: {
-  shared.modules = [
+  personal.modules = [
     {
       programs.adb.enable = true;
       users.users.sodiboo.extraGroups = ["adbusers"];

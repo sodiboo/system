@@ -44,7 +44,7 @@ let
       '';
   };
 in {
-  shared.modules = [
+  personal.modules = [
     ({
       lib,
       pkgs,
@@ -60,7 +60,7 @@ in {
     })
   ];
 
-  shared.home_modules = [
+  personal.home_modules = [
     ({
       pkgs,
       config,

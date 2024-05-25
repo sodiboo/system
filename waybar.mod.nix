@@ -26,7 +26,7 @@ let
     notification.bell-outline-badge = "󰅸";
   };
 in {
-  shared.home_modules = [
+  personal.home_modules = [
     ({
       lib,
       pkgs,

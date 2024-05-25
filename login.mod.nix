@@ -1,5 +1,5 @@
 {niri, ...}: {
-  shared.modules = [
+  personal.modules = [
     {
       boot.loader.systemd-boot = {
         enable = true;

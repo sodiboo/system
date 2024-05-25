@@ -35,7 +35,7 @@
       hax.hash = "sha256-/ujHJLieuEXZUnOn981v/d1WynUi11cApgkEf8kln2E=";
     };
 in {
-  shared.modules = [
+  personal.modules = [
     stylix.nixosModules.stylix
     ({
       pkgs,
@@ -73,7 +73,7 @@ in {
     wallpapers.triangles
   ];
 
-  shared.home_modules = [
+  personal.home_modules = [
     {
       # stylix.targets.gtk.enable = false;
       # stylix.targets.firefox.enable = false;

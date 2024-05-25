@@ -20,7 +20,7 @@ let
         settings;
     };
 in {
-  shared.modules = [
+  universal.modules = [
     module
     ({config, ...}: {
       time.timeZone = config.locale.timezone;
@@ -43,5 +43,5 @@ in {
     })
   ];
 
-  shared.home_modules = [module];
+  universal.home_modules = [module];
 }

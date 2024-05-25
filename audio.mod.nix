@@ -1,5 +1,5 @@
 {
-  shared.modules = [
+  personal.modules = [
     {
       sound.enable = true;
       hardware.pulseaudio.enable = false;
