@@ -2,7 +2,7 @@
   oxygen.modules = [
     {
       services.openssh.enable = true;
-      users.users.root.authorizedKeys.keys = [
+      users.users.root.openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN8eWTRBpEegdAdTkPeBJXmyi7o2WQFL3mdWf2FRoXdo sodiboo@contabo-vps"
       ];
     }
