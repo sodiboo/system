@@ -2,7 +2,7 @@
   oxygen.modules = [
     {
       services.openssh.enable = true;
-      users.users.root.openssh.authorizedKeys.keys = [
+      users.users.sodiboo.openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN8eWTRBpEegdAdTkPeBJXmyi7o2WQFL3mdWf2FRoXdo sodiboo@contabo-vps"
       ];
     }
@@ -15,7 +15,7 @@
         extraConfig = ''
           Host oxygen
             HostName 85.190.241.69
-            User root
+            User sodiboo
             IdentityFile ~/.ssh/contabo-vps-2024-05
         '';
       };
