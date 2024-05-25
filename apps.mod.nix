@@ -14,7 +14,6 @@
         ffmpeg_6-full
         p7zip
         ripgrep-all
-        simutrans
         dig
         whois
       ];
@@ -45,6 +44,7 @@
         swayimg
         pandoc
         stackblur-go
+        simutrans
         subversion
       ];
     })
