@@ -2,6 +2,7 @@
   personal.modules = [
     {
       programs.steam.enable = true;
+      users.users.sodiboo.extraGroups = ["video"];
     }
   ];
 
