@@ -19,7 +19,12 @@
         whois
       ];
 
-      programs.micro.enable = true;
+      programs = {
+        micro.enable = true;
+
+        btop.enable = true;
+        btop.settings.theme_background = false;
+      };
     })
   ];
   personal.home_modules = [
@@ -50,21 +55,11 @@
         wlvncc
       ];
     })
-    (
-      {
-        config,
-        pkgs,
-        lib,
-        ...
-      }: {
-        programs = {
-          helix.enable = true;
-          vscode.enable = true;
-
-          btop.enable = true;
-          btop.settings.theme_background = false;
-        };
-      }
-    )
+    {
+      programs = {
+        helix.enable = true;
+        vscode.enable = true;
+      };
+    }
   ];
 }
