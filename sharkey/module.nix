@@ -122,7 +122,7 @@ in {
       preStart = ''
         SHARKEY_DB_PASSWORD="$(cat ${lib.escapeShellArg cfg.database.passwordFile})" \
         SHARKEY_REDIS_PASSWORD="$(cat ${lib.escapeShellArg cfg.redis.passwordFile})" \
-        ${pkgs.envsubst}/bin/envsubst -i "${configFile}" | tee $MISSKEY_CONFIG_YML
+        ${pkgs.envsubst}/bin/envsubst -i "${configFile}" > $MISSKEY_CONFIG_YML
       '';
 
       environment.MISSKEY_CONFIG_YML = "/run/sharkey/config.yml";
@@ -138,6 +138,7 @@ in {
         RuntimeDirectoryMode = "0700";
         ExecStart = "${pkgs.sharkey}/bin/sharkey migrateandstart";
         TimeoutSec = 60;
+        Restart = "always";
 
         StandardOutput = "journal";
         StandardError = "journal";

@@ -132,17 +132,16 @@ stdenv.mkDerivation (finalAttrs: {
   in ''
     runHook preInstall
 
-    mkdir -p $out/data
+    mkdir -p $out/Sharkey
 
-    mkdir -p $out/data/packages/client
-    ln -s /var/lib/sharkey $out/data/files
-    ln -s /run/sharkey $out/data/.config
-    cp -r * $out/data
+    ln -s /var/lib/sharkey $out/Sharkey/files
+    ln -s /run/sharkey $out/Sharkey/.config
+    cp -r * $out/Sharkey
 
     # https://gist.github.com/MikaelFangel/2c36f7fd07ca50fac5a3255fa1992d1a
 
     makeWrapper ${nodePackages.pnpm}/bin/pnpm $out/bin/sharkey \
-      --chdir $out/data \
+      --chdir $out/Sharkey \
       --prefix PATH : ${binPath} \
       --prefix LD_LIBRARY_PATH : ${libPath}
 
