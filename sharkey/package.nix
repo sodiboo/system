@@ -100,11 +100,11 @@ stdenv.mkDerivation (finalAttrs: {
     )
     (
       cd node_modules/.pnpm/node_modules/re2
-      pnpm run rebuild --
+      pnpm run rebuild
     )
     (
       cd node_modules/.pnpm/node_modules/sharp
-      pnpm run install --offline
+      pnpm run install
     )
 
     runHook postConfigure
