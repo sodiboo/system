@@ -175,7 +175,7 @@ in {
       group = "sharkey";
       isSystemUser = true;
       home = cfg.package;
-      packages = [cfg.package pkgs.nodePackages.pnpm];
+      packages = [cfg.package];
     };
 
     users.groups.sharkey = {};

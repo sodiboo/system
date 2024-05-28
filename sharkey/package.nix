@@ -3,6 +3,7 @@
   stdenv,
   stdenvNoCC,
   fetchFromGitLab,
+  bash,
   makeWrapper,
   copyDesktopItems,
   jemalloc,
@@ -125,6 +126,7 @@ stdenv.mkDerivation (finalAttrs: {
     ];
 
     binPath = lib.makeBinPath [
+      bash
       nodePackages.pnpm
     ];
   in ''
