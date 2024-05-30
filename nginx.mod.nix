@@ -1,9 +1,17 @@
 {
   oxygen.modules = [
     ({config, ...}: {
-      networking.firewall = {
-        enable = true;
-        allowedTCPPorts = [80 443];
+      networking = {
+        firewall.enable = true;
+        firewall.allowedTCPPorts = [80 443];
+
+        enableIPv6 = true;
+        interfaces.ens18.ipv6.addresses = [
+          {
+            address = "2a02:c202:2189:7245::1";
+            prefixLength = 64;
+          }
+        ];
       };
       services.nginx = {
         enable = true;
@@ -27,7 +35,7 @@
               "/".proxyWebsockets = true;
             };
         in {
-          "gaysex.cloud" = proxy config.services.sharkey.settings.port // {default = true;};
+          "gaysex.cloud" = proxy config.services.sharkey.settings.port;
           "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
         };
       };
