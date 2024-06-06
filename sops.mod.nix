@@ -12,18 +12,31 @@
   ];
 
   oxygen.modules = [
-    ({config, ...}: {
-      users.groups.sharkey-db-password = {};
-      users.users.sharkey.extraGroups = [config.users.groups.sharkey-db-password.name];
-      users.users.postgres.extraGroups = [config.users.groups.sharkey-db-password.name];
+    ({
+      lib,
+      config,
+      ...
+    }:
+      lib.mkIf config.services.sharkey.enable {
+        users.groups.sharkey-db-password = {};
+        users.users.sharkey.extraGroups = [config.users.groups.sharkey-db-password.name];
+        users.users.postgres.extraGroups = [config.users.groups.sharkey-db-password.name];
 
-      sops.secrets.sharkey-db-password = {
-        mode = "0440";
-        group = config.users.groups.sharkey-db-password.name;
-      };
+        sops.secrets.sharkey-db-password = {
+          mode = "0440";
+          group = config.users.groups.sharkey-db-password.name;
+        };
 
-      sops.secrets.sharkey-redis-password.owner = config.users.users.sharkey.name;
-    })
+        sops.secrets.sharkey-redis-password.owner = config.users.users.sharkey.name;
+      })
+    ({
+      lib,
+      config,
+      ...
+    }:
+      lib.mkIf config.services.writefreely.enable {
+        sops.secrets.writefreely-db-password.owner = config.users.users.writefreely.name;
+      })
   ];
 
   personal.modules = [

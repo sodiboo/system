@@ -40,10 +40,6 @@ in {
         conf = ''env NIX_CONFIG="warn-dirty = false"'';
         rebuild = verb: dry: "fish -c '${builtins.concatStringsSep " && " [
           "cd /etc/nixos"
-          # The secrets are synced out-of-band, and timestamps are not guaranteed to be accurate.
-          # Nix considers a changed timestamp to be lockfile-worthy, so we reset them to the epoch.
-          # This ensures that between systems, nix will not keep trying to update the lockfile.
-          "touch -d $(date -d @0) secrets{,/{,.}*}"
           "${conf} nix fmt -- --quiet *"
           "git add ."
           (

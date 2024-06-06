@@ -15,6 +15,8 @@
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
+
     nari.url = "github:sodiboo/nixos-razer-nari";
 
     niri.url = "github:sodiboo/niri-flake";
@@ -23,6 +25,9 @@
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
+
+    picocss.url = "github:picocss/pico";
+    picocss.flake = false;
   };
 
   outputs = {

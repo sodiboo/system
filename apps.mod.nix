@@ -1,4 +1,4 @@
-{
+{vscode-server, ...}: {
   personal.modules = [
     {
       programs.steam.enable = true;
@@ -13,6 +13,7 @@
         fm-go
         python311
         ffmpeg_6-full
+        pandoc
         p7zip
         ripgrep-all
         dig
@@ -26,6 +27,10 @@
         btop.settings.theme_background = false;
       };
     })
+    vscode-server.homeModules.default
+    {
+      services.vscode-server.enable = true;
+    }
   ];
   personal.home_modules = [
     ({pkgs, ...}: {
@@ -48,7 +53,6 @@
         brightnessctl
         pairdrop
         swayimg
-        pandoc
         stackblur-go
         simutrans
         subversion
