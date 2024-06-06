@@ -38,19 +38,22 @@
           };
         };
 
-        powerline-go.enable = true;
-        powerline-go.modules = [
-          "ssh"
-          "cwd"
-          "perms"
-          "git"
-          "hg"
-          "nix-shell"
-          "jobs"
-          # "duration" # not working
-          "exit"
-          "root"
-        ];
+        powerline-go = {
+          enable = true;
+          settings.hostname-only-if-ssh = true;
+          modules = [
+            "host"
+            "cwd"
+            "perms"
+            "git"
+            "hg"
+            "nix-shell"
+            "jobs"
+            # "duration" # not working
+            "exit"
+            "root"
+          ];
+        };
 
         bash.enable = true; # Sometimes, applications drop me into a bash shell against my will.
       };
