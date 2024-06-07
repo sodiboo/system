@@ -15,7 +15,7 @@
         enable = true;
         extraConfig = ''
           Host oxygen
-            HostName 85.190.241.69
+            HostName vps.sodi.boo
             User sodiboo
             IdentityFile ~/.ssh/contabo-vps-2024-05
         '';

@@ -10,8 +10,12 @@
         mkdir $out && cp -r ${picocss}/css $out
       '';
 
-      oxygen-ipv4 = "85.190.241.69";
-      oxygen-ipv6 = "2a02:c202:2189:7245::1";
+      # These should match `vps.sodi.boo` DNS records.
+      # All other domains are (flattened) CNAMEs to `vps.sodi.boo`.
+
+      oxygen-ipv4 = "85.190.241.69"; # IPv4 is unused here,
+      oxygen-ipv6 = "2a02:c202:2189:7245::1"; # But DHCP doesn't give me IPv6.
+
       rapid-testing = false;
       generated-site = pkgs.callPackage ./nginx/gen.nix {};
       static-root =
