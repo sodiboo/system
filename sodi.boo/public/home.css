@@ -2,6 +2,9 @@ h1 {
     font-family: "Rubik", sans-serif;
     font-weight: 400;
     padding: 20px;
+}
+
+hgroup {
     text-align: center;
 }
 

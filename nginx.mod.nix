@@ -61,6 +61,21 @@
             default 1;
             "06" 0;
           }
+
+          map $request_uri $is_domain_specific_well_known {
+            default "0";
+            "~^/.well-known/(discord|acme-challenge)" "1";
+          }
+
+          map "$is_gay$is_domain_specific_well_known" $is_gay_redirectable {
+            default 0;
+            "10" 1;
+          }
+
+          map "$isnt_gay$is_domain_specific_well_known" $isnt_gay_redirectable {
+            default 0;
+            "10" 1;
+          }
         '';
 
         virtualHosts = let
@@ -74,11 +89,13 @@
                 + conf.extraConfig or "";
             });
           base-http = locations: {
-            extraConfig = ''
-              error_page 502 /.nginx/502.html;
-            '';
+            extraConfig =
+              ''
+                error_page 502 /.nginx/502.html;
+              ''
+              + locations.extraConfig or "";
             locations =
-              locations
+              (builtins.removeAttrs locations ["extraConfig"])
               // static {
                 "/.nginx/" = {
                   root = static-root;
@@ -102,6 +119,20 @@
               "/".proxyPass = "http://127.0.0.1:${toString port}/";
               "/".proxyWebsockets = true;
             };
+          personal-website = inactive: status: redirect: ''
+            location = /blog {
+              return 301 /blog/;
+            }
+
+            location / {
+              root ${./sodi.boo/public};
+              try_files $uri/index.html $uri.html $uri @picocss;
+            }
+
+            if (${inactive}) {
+              return ${toString status} https://${redirect}$request_uri;
+            }
+          '';
         in {
           "0-sort-first" =
             base-http {
@@ -110,6 +141,13 @@
               '';
             }
             // {rejectSSL = true;};
+          "sodi.boo" = base {
+            "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
+            extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
+          };
+          "sodi.gay" = base {
+            extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
+          };
           "gaysex.cloud" = proxy config.services.sharkey.settings.port;
           "infodumping.place" = proxy config.services.writefreely.settings.server.port;
           "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
