@@ -41,11 +41,12 @@ in {
         rebuild = verb: dry: "fish -c '${builtins.concatStringsSep " && " [
           "cd /etc/nixos"
           "${conf} nix fmt -- --quiet *"
+          "${conf} nix flake update"
           "git add ."
           (
             if dry
-            then "${conf} nh os ${verb} --update --dry ."
-            else "${conf} nh os ${verb} --update ."
+            then "${conf} nh os ${verb} --dry ."
+            else "${conf} nh os ${verb} ."
           )
         ]}'";
       in
