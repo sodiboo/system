@@ -1,6 +1,7 @@
-Heya! This is my personal system configuration. It might contain more stuff in the future.
+Heya! This repo contains the system configuration for all the computers i control.
 
-For now, it handles two computers:
+Currently, it handles three computers: `sodium`, `lithium`, and `oxygen`.
+The first two are personal machines i own, and the third is a VPS.
 
 ### sodium
 
@@ -28,6 +29,12 @@ It has a 3840x2400 display (16:10 aspect ratio), and the most interesting parts 
 - It has a fingerprint reader, which i use to authenticate with sudo and polkit.
 - The touchpad doesn't fucking work. It used to, but it's genuinely just awful. I disabled it.
 - It has a TrackPoint instead, but i prefer using my bluetooth mouse.
+
+### oxygen
+
+This is a VPS with Contabo. It's their "VPS 1" with an external SSD, because that gives me more storage capcity than an NVMe drive and the performance difference likely won't ever matter to me. I installed NixOS on it using `nixos-infect`, because they charge for object storage if i want to upload a custom iso.
+
+It doesn't really have any unique hardware; it's just a qemu guest. See [`nginx.mod.nix`](./nginx.mod.nix) for a more complete overview of the stuff i host on it; nginx handles all communication with the outside world.
 
 ## Files
 
