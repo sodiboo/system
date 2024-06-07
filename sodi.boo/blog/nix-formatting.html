@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/pico.purple.min.css" />
+    <link rel="stylesheet" href="/sodi.css" />
+    <link rel="stylesheet" href="/blog.css" />
+    <title>nix formatting is a fucking joke.</title>
+    <meta property="og:title" content="nix formatting is a fucking joke." />
+    <meta property="og:url" content="https://sodi.boo/blog/nix-formatting" />
+    <meta property="og:type" content="article" />
+    <meta property="og:article:author" content="sodiboo" />
+    <meta property="og:article:published_time" content="2024-05-14T15:00:00+02:00" />
+    <meta property="og:article:modified_time" content="2024-05-15T09:00:00+02:00" />
+    <!-- <meta property="og:article:expiration_time" content="when these bugs are fixed" /> -->
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><strong>infodumping garden</strong></li>
+                </ul>
+                <ul>
+                    <li><a href="/">me</a></li>
+                    <li><a href="/blog">blog</a></li>
+                    <li><a href="/blog/feed.atom">rss</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <hr />
+
+        <aside class="container">
+            <p>
+                hey! sorry about the lack of syntax highlighting! i don't have a fancy blog engine, and this page is hand-written html. i don't wanna highlight it by hand.
+            </p>
+    
+            <p>
+                i originally wrote about this in <a href="https://github.com/sodiboo/nix-config/commit/353d3513f25a16c1eca8cddf2cfbe0a7d3d81154">my nix config</a>. i'm intentionally trying to present it differently here, but i'm not sure if it's better. you can read that for some of my initial thoughts on the matter
+            </p>
+            
+            <p>
+                that being said, let's talk about nix formatting.
+            </p>
+            <hr />
+        </aside>
+    </header>
+
+
+    <main class="container">
+
+        <hgroup>
+            <h1>nix formatting is a fucking joke.</h1>
+            <h6>because the only correct parser is in the nix package manager</h6>
+        </hgroup>
+        
+        <p>
+            the snippet in question is the following:
+        </p>
+
+<pre><code>1. / 3.</code></pre>
+
+        <p>
+            why would anyone do this? well, if you do <code>1 / 3</code> you get <code>0</code> because those are integers. but in this case, we want it to be a floating point literal. it's shorthand for <code>1.0 / 3.0</code>
+        </p>
+
+        <p>
+            my preferred nix formatter is <a href="https://github.com/kamadorueda/alejandra"><code>alejandra</code></a>. it's decent. so let's try passing it to <code>alejandra</code>
+        </p>
+
+<pre><code>$ echo "1. / 3." | alejandra --quiet
+1. / 3.
+
+Failed! 1 error found at:
+- &lt;anonymous file on stdin&gt;: unexpected TOKEN_DIV at 3..4, wanted any of [TOKEN_PAREN_OPEN, TOKEN_REC, TOKEN_CURLY_B_OPEN, TOKEN_SQUARE_B_OPEN, TOKEN_DYNAMIC_START, TOKEN_STRING_START, TOKEN_IDENT]
+</code></pre>
+
+        <p>
+            okay, not looking great. what. is this just not allowed in nix?
+        </p>
+
+<pre><code>$ nix eval --expr "1. / 3."
+0.333333
+</code></pre>
+
+        <p>
+            it is permitted, clearly. so why can't <code>alejandra</code> format this? it's because it uses <a href="https://github.com/nix-community/rnix-parser/"><code>rnix</code></a> to parse nix expressions.
+        </p>
+
+        <p>
+            this issue was fixed in a <a href="https://github.com/nix-community/rnix-parser/commit/fd1f0af8a3b0ea71ece5da8743cd14eee92e816b">commit on 2022-07-29</a>. this change was part of <code>v0.11.0</code> released on 2022-11-11.
+        </p>
+
+        <p>
+            today is 2024-05-14. it has been 655 days since the issue was fixed and 549 days since <code>v0.11.0</code> was published. 
+        </p>
+
+        <p>
+            and our dear friend <code>alejandra</code> is still using <code>v0.10.2</code>:
+        </p>
+
+        
+<a href="https://github.com/kamadorueda/alejandra/blob/bb688cc2c22e43b3cd710eadc0340399c2de3151/src/alejandra/Cargo.toml#L2"><code>alejandra/Cargo.toml</code></a>
+<pre><code>[dependencies]
+<mark>rnix = "0.10.2"</mark>
+rowan = "0.12.6" # follows rnix
+</code></pre>
+
+        <p>
+            so i guess <code>alejandra</code> needs to update <code>rnix</code>, end of story. right?
+        </p>
+
+        <hr />
+
+        <h2>there's more to life than <code>alejandra</code></h2>
+
+        <p>
+            "<code>alejandra</code> is not the only nix formatter", i hear you saying, "what about <a href="https://github.com/nix-community/nixpkgs-fmt"><code>nixpkgs-fmt</code></a>? that one does it just fine!". and you're right. it looks like it handles the snippet without issue.
+        </p>
+
+<pre><code>$ echo "1. / 3." | nixpkgs-fmt
+1. / 3.
+</code></pre>
+
+        <p>
+            you might think this is because it just uses an up-to-date rnix, but that's not the case!
+        </p>
+
+<a href="https://github.com/nix-community/nixpkgs-fmt/blob/f048515c9a98d7e2e4b034ec77641acc8a58098d/Cargo.toml#L17"><code>nixpkgs-fmt/Cargo.toml</code></a>
+<pre><code>[dependencies]
+<mark>rnix = "0.10.2"</mark>
+smol_str = "0.1.17"
+</code></pre>
+
+        <p>
+            and if you do <code>nixpkgs-fmt --parse</code>, you will see that it has the same error.
+        </p>
+
+<pre><code>$ echo "1. / 3." | nixpkgs-fmt --parse
+error: uexpected TOKEN_DIV at 3..4, wanted any of [TOKEN_PAREN_OPEN, TOKEN_REC, TOKEN_CURLY_B_OPEN, TOKEN_SQUARE_B_OPEN, TOKEN_DYNAMIC_START, TOKEN_STRING_START, TOKEN_IDENT]
+error: error node at 0..2
+error: error node at 5..7
+</code></pre>
+
+        <p>
+            so what's going on here? how can <code>nixpkgs-fmt</code> format this file just fine, without knowing how to parse it?
+        </p>
+        
+        <p>
+            it's because of a cool property of <code>rnix</code> mentioned in their README:
+        </p>
+
+        <blockquote>
+            rnix nowadays uses <a href="https://github.com/matklad">@matklad</a>'s <a href="https://crates.io/crates/rowan">rowan</a> crate to ensure:
+            <ul>
+                <li>all span information is preserved, meaning you can use the AST to for example apply highlighting</li>
+                <li>printing out the AST prints out 100% the original code. This is not an over-exaggeration, even completely invalid nix code such as this README can be intact after a parsing session (though the AST will mark errnous nodes)</li>
+                <li>easy ways to walk the tree without resorting to recursion</li>
+            </ul>
+            <footer>
+                <cite>- <a href="https://github.com/nix-community/rnix-parser/blob/01e65829a56b772ad37881ab51680ff8fcd45de3/README.md"><code>rnix/README.md</code></a></cite>
+            </footer>
+        </blockquote>
+
+        <p>
+            in other words, <code>rnix</code> doesn't generate an <abbr title="Abstract Syntax Tree">AST</abbr>, but a <abbr title="Concrete Syntax Tree">CST</abbr>. this means that it's able to generate <em>something</em> from any input, even if it's invalid.
+        </p>
+
+        <p>
+            <code>alejandra</code> will give up if it encounters an error. <code>nixpkgs-fmt</code> will not. we can see this with the following snippet:
+        </p>
+<code>floats.in</code>
+<pre><code>1.
+/
+3.</code></pre>
+
+<code>ints.in</code>
+<pre><code>1
+/
+3</code></pre>
+
+        <p>
+            if we try to format <code>ints.in</code> with <code>nixpkgs-fmt</code>, we get the following:
+        </p>
+
+<code>ints.nixpkgs-fmt.out</code>
+<pre><code>1
+  /
+3</code></pre>
+
+        <p>
+            that's an awful way to format it, if you ask me. but the point is it does <em>something</em>, so it "understands" the input.
+        </p>
+        
+        <p>
+            if we try to format <code>floats.in</code>, we get the following:
+        </p>
+
+<code>floats.nixpkgs-fmt.out</code>
+<pre><code>1.
+/
+3.</code></pre>
+
+        <p>
+            that's just unchanged. so clearly, it doesn't understand what it did. if it could parse it correctly, these two files would be formatted simiarly.
+        </p>
+
+        <p>
+            <code>alejandra</code> will just Die if it encounters an error, so <code>floats.in</code> will not be formatted at all. <code>ints.in</code> however?
+        </p>
+
+<code>ints.alejandra.out</code>
+<pre><code>1
+/ 3</code></pre>
+
+        <p>
+            at first, i disliked this reslt. but in the comments of this post, <a href="https://unstable.solutions/objects/716212da-90b1-4e65-9caf-4ae56778b661">aprzn defended this formatting</a> in a way that makes a lot of sense, and i'd like to detail it here:
+        </p>
+
+        <p>
+            it does look objectively bad for such a short snippet, and there's definitely some heuristic that is missing here. but in general? it's not an overall bad way to format it.
+        </p>
+
+        <p>
+            imagine if instead of <code>1</code> and <code>3</code>, the operands were long expressions.
+        </p>
+
+        <p>
+            you might have opinions about storing stuff in variables, and simplifying the expression. but put yourself in the shoes of a code formatter, where you cannot arbitrary rewrite code. what do you actually do?
+        </p>
+
+        <hr />
+
+        <h2>POV: you are a nix formatter</h2>
+
+        <p>
+            "my name is alexandra," you say to yourself, being similar to <code>alejandra</code> even though that's not your name, so you think of the next best thing. after establishing your name, you continue, "and my purpose is to format code."
+        </p>
+
+        <p>
+            you're given the snippet <code>ints.in</code> and told that the developer has put these expressions on mutliple lines. you think to yourself, for a moment, and come to the realization that "the developer probably meant something by putting the operands on separate lines," so you decide to keep that intent.
+        </p>
+
+        <p>
+            after all, code formatting is not an objective job, and it would be ridiculous to pretend it is. who are you to say that the developer is wrong for wanting to separate these expressions visually?
+        </p>
+
+        <p>
+            but you think for a moment. you come to the realization that "the slash being on its own separate line is kind of wasteful". this is like putting a semicolon on its own line. why would anyone do that?
+        </p>
+
+        <p>
+            so, you decide, after a lot of thinking, that the second operand goes after the slash. you remove the second linebreak. but you don't make any more assumptions about the code. "surely the developer meant to separate these operands on separate lines," you say, coming to the conclusion that formatting is done for the day.
+        </p>
+
+        <p>
+            new character is introduced to the story. that character's name is sodiboo. let's say this ungrateful consumer is writing a blog post about nix formatting, and thought that "hey, putting these on a single line isn't really working because all the formatters just do nothing with it". sodiboo also realizes that removing the spaces ends up actually creating a different expression, a single path literal without any operators.    
+        </p>
+
+        <p>
+            so our consumer adds newlines to the input, thinking nothing of it, assuming that the only correct way to format it is to collapse it to a single line. or at the very least, this user is pretty sure that using 3 lines is something all formatters will object to. but it's important to note, that these newlines were not added for any stylistic reason; so the person who added them does not realize that it's even possible to interpret as such.
+        </p>
+
+        <h2>Judgement Day</h2>
+
+        <p>
+            remember, your name is alexandra. your job is done. but what does sodiboo think of your work?
+        </p>
+
+        <blockquote>
+            fucking what. how is "The Uncompromising Nix Code Formatter" even worse. this is the worst way to format that snippet on <em>purpose</em>.
+
+            <footer>
+                <cite>- original text of this post</cite>
+            </footer>
+        </blockquote>
+
+        <p>
+            but you never got a chance to defend yourself. because you can't talk. you're a computer program, remember? because alexandra is a fictional entity; alexandra doesn't really exist. but i hope, through this detour, that i could make alexandra's feelings a bit more real for you.
+        </p>
+
+        <p>
+            next time your code formatter - any program, really - does something weird, don't get angry right away. stop for a moment, and think, <em>why did it do that?</em>
+        </p>
+
+        <p>
+            because chances are, it probably didn't do it badly on purpose.
+        </p>
+
+        <p>
+            next time someone - anyone - does something weird, just remember that they probably didn't do it on purpose. try to understand why they did what they did - ask if you need to - and only then can you make a true judgement. you might learn something new. that's never a bad thing.
+        </p>
+
+        <hr />
+
+        <p>
+            ok, so what was this post about? right, floating point literals. and divison i guess? let's get back to nix formatting.
+        </p>
+
+        <h2>The Official Nix Formatter</h2>
+
+        <p>
+            it's time to ask <a href="https://github.com/NixOS/nixfmt"><code>nixfmt</code></a>. does it make something strange of our snippet? will we learn another life lesson? what secrets does it hold?
+        </p>
+
+        <p>
+            we've seen the other two, let's see this one as well:
+        </p>
+
+<code>ints.nixfmt.out</code>
+<pre><code>1 / 3</code></pre>
+
+        <p>
+            it's... beautiful? what the hell. how are you doing this, my friend?
+        </p>
+        
+        <p>
+            what's that, you're written in Haskell? ...and you maintain your own parser?
+        </p>
+
+        <p>
+            surely you can be The One That Parses Everything. you're under the <code>NixOS</code> organization, you're the <em>official</em> nix formatter.
+        </p>
+
+<pre><code>$ cat floats.in | nixfmt
+&lt;stdin&gt;:1:2:
+  |
+1 | 1.
+  |  ^
+unexpected '.'
+expecting digit, end of input, or operator
+</code></pre>
+
+        <p>
+            but no. our prophet dies as quickly as it was born. <code>nixfmt</code>, too, cannot parse this expression.
+        </p>
+        
+        <p>
+            it gets 2 bonus points for having a much nicer error message.
+            <br />
+            and those bonus points are immediately taken away because the error message is wrong. the dot is not unexpected! why can nobody parse this?
+        </p>
+
+        <hr />
+
+
+        <p>
+            you might at this point be feeling a sense of despair. at least if you're as heavily invested into this as i am.
+        </p>
+
+        <p>
+            but all hope is not lost. there is a light at the end of the tunnel. a savior, if you will.
+        </p>
+
+        <h2>a glimpse of hope from the past</h2>
+
+        <p>
+            enter scene: <a href="https://github.com/nix-community/tree-sitter-nix"><code>tree-sitter-nix</code></a>
+        </p>
+
+        <p>
+            <code>tree-sitter-nix</code> got it right from the very beginning.
+            their <a href="https://github.com/nix-community/tree-sitter-nix/blob/1324e9e4125e070946d2573f4389634891dcd7e1/grammar.js#L49">initial commit</a> has an accurate regex.
+        </p>
+
+        <p>
+            and at least two formatters use this grammar to parse nix.
+        </p>
+
+        <p>
+            i could not get <a href="https://github.com/justinwoo/format-nix"><code>format-nix</code></a> to run properly. i tried. i really did. the nix files are ancient and no longer evaluate properly (so much for reproducibility).
+            and the actual underlying node project doesn't work either. <code>npm</code> hangs if i try to install it, and <code>bun</code> doesn't seem to be able to find one dependency or something. i could not run it using modern toolchains.
+        </p>
+
+        <p>
+            given that <code>tree-sitter-nix</code> was always correct, i don't see a reason why it'd break on our input. one must imagine <code>format-nix</code> happy. content, with formatting such a code.
+        </p>
+
+        <p>
+            that leaves <a href="https://github.com/hercules-ci/canonix"><code>canonix</code></a>, which seems to be able to parse the document in question! it, uh, doesn't actually care about division. so it doesn't do much interesting with our expression.
+        </p>
+
+<pre><code>$ cat floats.in | canonix --pipe
+1.
+/
+3.
+</code></pre>
+
+        <p>
+            but you know how i can tell that it understands the code anyways? because it has a <code>--debug</code> flag.
+        </p>
+
+<pre><code>$ echo "1. / 3." | canonix --pipe --debug
+Expression(0,0)-(1,0)
+"1. / 3.\n"
+  Binary(0,0)-(0,7)
+  "1. / 3."
+    Float(0,0)-(0,2)
+    "1."
+    AnonSlash(0,3)-(0,4)
+    "/"
+    Float(0,5)-(0,7)
+    "3."
+Encountered these unknown node types: fromList []
+Verbatim fallback nodes: fromList [Node {startByte = 0, endByte = 7, startRow = 0, endRow = 0, typ = Binary}]
+1. / 3.
+</code></pre>
+
+        <p>
+            a quick breakdown on what this means: it's able to parse an expression on the first line, and that is a <em>binary</em> expression. this just means that it has two operands and an operator. you can see the slash in the middle, and two floating point literals on either side.
+        </p>
+
+        <p>
+            that's an accurate parse tree. it knows what our code means.
+        </p>
+
+        <hr />
+
+        <h2>the current state of things</h2>
+
+        <p>
+            but you know. both of those, <code>format-nix</code> and <code>canonix</code>, are abandoned. <code>format-nix</code> is ancient and doesn't work anymore. <code>canonix</code> is last updated 5 years ago. it's wildly incomplete, and doesn't do anything reasonable with most nix files, even if it can, in theory, parse them.
+        </p>
+
+        <p>
+            but that doesn't change the fact that these abandonded formatters got it right. and the ones we use today are incapable of correctly parsing nix.
+        </p>
+
+        <p>
+            because there is no spec for nix. there never was.
+        </p>
+
+        <p>
+            the only source of truth is in <a href="https://github.com/NixOS/nix/blob/master/src/libexpr/lexer.l">the sources of <code>nix</code></a> on github.
+        </p>
+
+        <p>
+            but when not even the official nix formatter can parse nix correctly - the one that is maintained by the same organization as the real nix parser - what hope does anyone else have?
+        </p>
+    </main>
+    
+    <hr />
+
+    <footer>
+        <div class="container">
+            if you liked these words, consider sending animal noises to me using a series of intricate rituals known as <a href="https://tech.lgbt/@terrain/112439569351863781">the fediverse</a> or go to my <a href="/">homepage</a> for more of me.
+        </div>
+    </footer>
+</body>
+
+</html>

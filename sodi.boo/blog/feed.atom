@@ -1,0 +1,23 @@
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>sodiboo&apos;s infodumping garden</title>
+  <id>https://sodi.boo/blog</id>
+  <updated>2024-05-15T09:00:00+02:00</updated>
+  <author>
+    <name>sodiboo</name>
+    <uri>https://sodi.boo</uri>
+  </author>
+  <generator>custom; written in Rust; based on opengraph attributes</generator>
+  <link href="https://sodi.boo/blog" rel="alternate" type="text/html"/>
+  <link href="https://sodi.boo/blog/feed.atom" rel="self" type="application/atom+xml"/>
+  <entry>
+    <title>nix formatting is a fucking joke.</title>
+    <id>https://sodi.boo/blog/nix-formatting</id>
+    <updated>2024-05-15T09:00:00+02:00</updated>
+    <author>
+      <name>sodiboo</name>
+      <uri>https://sodi.boo</uri>
+    </author>
+    <link href="https://sodi.boo/blog/nix-formatting" rel="alternate" type="text/html" title="nix formatting is a fucking joke."/>
+    <published>2024-05-14T15:00:00+02:00</published>
+  </entry>
+</feed>

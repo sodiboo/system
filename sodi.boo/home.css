@@ -1,0 +1,18 @@
+h1 {
+    font-family: "Rubik", sans-serif;
+    font-weight: 400;
+    padding: 20px;
+    text-align: center;
+}
+
+li:has(a[rel="me"][href *= "tech.lgbt"])::marker {
+    content: "fedi: ";
+}
+
+li:has(a[rel="me"][href *= "github.com"])::marker {
+    content: "github: ";
+}
+
+li:has(a[rel="me"][href *= "matrix.to"])::marker {
+    content: "[m]: ";
+}
