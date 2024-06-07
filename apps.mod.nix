@@ -55,6 +55,7 @@
         swayimg
         stackblur-go
         simutrans
+        prismlauncher
         subversion
         wlvncc
       ];
