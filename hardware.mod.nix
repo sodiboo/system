@@ -25,6 +25,7 @@
   };
 
   fs.btrfs = filesystem "btrfs";
+  fs.ntfs = filesystem "ntfs-3g";
   fs.ext4 = filesystem "ext4";
   fs.vfat = filesystem "vfat";
   swap = device: {swapDevices = [{inherit device;}];};
@@ -61,6 +62,7 @@ in
     (config "sodium" "x86_64-linux" [
       (cpu "amd")
       (fs.btrfs "/" "/dev/disk/by-uuid/95fa9d93-08ac-4812-b61b-2a035be81de3" ["subvol=@"])
+      (fs.ntfs "/mnt/win" "/dev/disk/by-uuid/764227D842279C3D" ["rw" "uid=1000"])
       (fs.vfat "/boot" "/dev/disk/by-uuid/8F90-3604" null)
       (swap "/dev/disk/by-uuid/1169f8ac-71d2-4b99-a5a3-b0391f015062")
       {
@@ -68,6 +70,7 @@ in
         boot.initrd.kernelModules = [];
         boot.kernelModules = ["kvm-amd"];
         boot.extraModulePackages = [];
+        boot.supportedFilesystems = ["ntfs"];
       }
       nixos-hardware.nixosModules.common-gpu-amd-southern-islands
     ])
