@@ -26,8 +26,9 @@
 
   personal.home_modules = [
     ({
-      config,
       lib,
+      config,
+      pkgs,
       ...
     }:
       with lib; let
@@ -89,6 +90,18 @@
 
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";
+
+            screenshot-area-script = pkgs.writeShellScript "screenshot-area" ''
+              grim - | swayimg --config=info.mode=off --fullscreen - &
+              SWAYIMG=$!
+              niri msg action do-screen-transition -d 1200
+              sleep 1.2
+              grim -g "$(slurp)" - | wl-copy -t image/png
+              niri msg action do-screen-transition
+              kill $SWAYIMG
+            '';
+
+            screenshot-area = spawn "${screenshot-area-script}";
           in
             lib.attrsets.mergeAttrsList [
               {
@@ -98,7 +111,10 @@
                   "systemctl --user restart waybar.service"
                   "systemctl --user restart swaybg.service"
                 ]);
+
                 "Mod+L".action = spawn "blurred-locker";
+                "Mod+Shift+S".action = screenshot-area;
+                "Mod+Print".action = screenshot-window;
 
                 "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
                 "XF86AudioLowerVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
@@ -158,9 +174,6 @@
                 "Mod+Plus".action = set-column-width "+10%";
                 "Mod+Shift+Minus".action = set-window-height "-10%";
                 "Mod+Shift+Plus".action = set-window-height "+10%";
-
-                "Mod+Shift+S".action = sh ''grim -g "$(slurp)" - | wl-copy -t image/png'';
-                "Mod+Print".action = screenshot-window;
 
                 "Mod+Shift+E".action = quit;
                 "Mod+Shift+P".action = power-off-monitors;
