@@ -49,6 +49,7 @@
         gnome.seahorse
         obs-studio
         vlc
+        mpv
         audacity
         vesktop
         element-desktop
