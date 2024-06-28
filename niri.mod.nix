@@ -288,91 +288,9 @@
     })
   ];
 
-  # alejandra gives up formatting these if you remove trailing zeros
-  # i.e. can't do `1. / 3.` even though it's valid nix
-  # but you know what's kinda messed up?
-  # this issue was fixed! (commit 2022-07-29)
-  # https://github.com/nix-community/rnix-parser/commit/fd1f0af8a3b0ea71ece5da8743cd14eee92e816b
-  # this commit is part of v0.11.0 (released 2022-11-11)
-  # the current date as i write this is 2024-03-01.
-  # it's been 476 days, which github renders as "2 years ago" (?)
-  # and alejandra still uses v0.10.2:
-  # https://github.com/kamadorueda/alejandra/blob/e53c2c6c6c103dc3f848dbd9fbd93ee7c69c109f/src/alejandra/Cargo.toml#L2
-  # this link is to a tree from the master branch right now (latest commit 2023-09-12)
-  # nixpkgs-fmt also uses rnix, and it can format this file just fine.
-  # what gives?
-  # get this: nixpkgs-fmt **also** uses the outdated, incorrect rnix v0.10.2
-  # https://github.com/nix-community/nixpkgs-fmt/blob/7301bc9f2ba29fe693c04cbcaa12110eb9685c71/Cargo.toml#L17
-  # but why does it work? how can it format a file that it can't parse?
-  # nixpkgs-fmt ignores syntax errors. in this way, it's more robust.
-  # you can format files that are like, in the middle of being edited or such.
-  # so what is its behaviour here? it treats the expression `1. / 3.` as an opaque span.
-  # you can tell there's a difference, if you add newlines
-  # ```
-  # 1
-  # /
-  # 3
-  # ```
-  # will result in the following formatted file:
-  # ```
-  # 1
-  #   /
-  # 3
-  # ```
-  # but if we do it with floating point, like so:
-  # ```
-  # 1.
-  # /
-  # 3.
-  # ```
-  # the output is the same as input.
-  #
-  # why are both formatters running outdated parsers??
-  # this issue was fixed over a year before the latest commit to both!!
-  #
-  #
-  #
-  # ... but you know what's REALLY fucked up?
-  #
-  # nixfmt is a completely separate project, which does not use rnix.
-  # it's written in Haskell, with its own parser.
-  # and **they too** have the same bug!
-  #
-  # no nix formatting tooling can format expressions like `1. / 3.`
-  #
-  # what??? that can't be right!
-  #
-  # and yeah, it's not!
-  #
-  # tree-sitter-nix got this correct in **the very first commit**:
-  # https://github.com/nix-community/tree-sitter-nix/blob/1324e9e4125e070946d2573f4389634891dcd7e1/grammar.js#L49
-  #
-  # at least two formatters use this grammar to parse:
-  #
-  # justinwoo/format-nix:
-  # i could not get format-nix to run. i tried. i really did.
-  # the nix files included in the repo do not evaluate properly anymore.
-  # and i also couldn't get it to run with current tooling
-  # - npm hangs; bun misses a dependency(?)
-  # but given that tree-sitter-nix was *always* correct,
-  # one must imagine format-nix happy with this input
-  #
-  # hercules-ci/canonix:
-  # canonix does not seem to care about formatting of divisions
-  # but it is *not* because of floats.
-  # `1/3` -> `1/3`, just as `1./3.` -> `1./3.`
-  # though it does at least seem to understand them.
-  # `[1.[]3.]` -> `[ 1. [] 3. ]`.
-  # this preserves semantics, showing it understands how to parse it.
-  #
-  # both of these are abandoned.
-  #
-  # i could also find a formatter based on emacs lisp at taktoa/nix-format.
-  # it seems to only like, match brackets? it only indents; but does not wrap lines.
-  # it's not a very useful formatter, but at least it doesn't crash?
-  #
-  # how did the ABANDONED formatters get it right?
-  # but the ones still in use are incapable of correctly parsing nix??
+  # i would like to format these as `1. / 3.` but can't
+  # because alejandra no likey.
+  # https://sodi.boo/blog/nix-formatting
   sodium.home_modules = [
     {
       programs.niri.settings = {
