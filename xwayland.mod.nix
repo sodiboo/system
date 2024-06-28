@@ -6,11 +6,14 @@
           sodi-x-run-env = let
             wl-copy = "${final.wl-clipboard}/bin/wl-copy";
             wl-paste = "${final.wl-clipboard}/bin/wl-paste";
-            xsel = lib.getExe final.xsel;
             xclip = lib.getExe final.xclip;
             clipnotify = lib.getExe final.clipnotify;
             metacity = lib.getExe final.gnome.metacity;
           in
+            # Here, we use xclip over xsel because it supports binary data.
+            # Additionally, we sha256sum that binary data so no shell fuckery happens to null bytes.
+            # Doing so ensures we don't overwrite image/png data, among others.
+            # See also: https://gaysex.cloud/notes/9v1o3sc3q66f0mrr
             final.writeShellScriptBin "x-run-env" ''
 
               primary-wl-to-x () {
