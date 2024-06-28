@@ -73,8 +73,15 @@
           enable = true;
           settings = {
             default_session = let
-              niri = lib.getExe config.programs.niri.package;
-              niri-session = "${config.programs.niri.package}/bin/niri-session";
+              # These are like that, because we want to use the currently-installed versions.
+              # If they are store paths, they might get outdated.
+              # This mainly concerns high-uptime usage.
+              # That's because greetd doesn't restart when system services are restarted.
+              # So you get new versions of mesa, new niri to match, but greetd still uses the old ones.
+              # and then you get a black screen when you log out.
+              # This is because the greeter owns the session, so restarting the greeter restarts the session.
+              niri = "/run/current-system/sw/bin/niri";
+              niri-session = "/run/current-system/sw/bin/niri-session";
               foot = lib.getExe pkgs.foot;
               tuigreet = lib.getExe pkgs.greetd.tuigreet;
               systemctl = home-config.systemd.user.systemctlPath;
