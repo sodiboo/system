@@ -63,6 +63,7 @@ in
       (cpu "amd")
       (fs.btrfs "/" "/dev/disk/by-uuid/95fa9d93-08ac-4812-b61b-2a035be81de3" ["subvol=@"])
       (fs.ntfs "/mnt/win" "/dev/disk/by-uuid/764227D842279C3D" ["rw" "uid=1000"])
+      (fs.ntfs "/mnt/games" "/dev/disk/by-uuid/5480A73980A7208A" ["rw" "uid=1000"])
       (fs.vfat "/boot" "/dev/disk/by-uuid/8F90-3604" null)
       (swap "/dev/disk/by-uuid/6341aab8-dcda-444e-9e21-40236ae1ccd8")
       {
