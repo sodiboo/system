@@ -56,12 +56,13 @@
         subversion
         wlvncc
       ];
-    })
-    {
+      xdg.mimeApps.enable = true;
+      xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
+
       programs = {
         helix.enable = true;
         vscode.enable = true;
       };
-    }
+    })
   ];
 }
