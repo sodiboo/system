@@ -1,9 +1,4 @@
 {vscode-server, ...}: {
-  personal.modules = [
-    {
-      users.users.sodiboo.extraGroups = ["video"];
-    }
-  ];
   universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
@@ -30,6 +25,21 @@
       services.vscode-server.enable = true;
     }
   ];
+
+  personal.modules = [
+    {
+      users.users.sodiboo.extraGroups = ["video"];
+    }
+    ({lib, ...}: {
+      nixpkgs.overlays = [
+        (final: prev: {
+          sodi-vscode-fhs = final.writeShellScriptBin "code-fhs" ''
+            exec ${lib.getExe final.vscode-fhs} $@
+          '';
+        })
+      ];
+    })
+  ];
   personal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
@@ -55,6 +65,7 @@
         stackblur-go
         subversion
         wlvncc
+        sodi-vscode-fhs
       ];
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
@@ -62,6 +73,7 @@
       programs = {
         helix.enable = true;
         vscode.enable = true;
+        # vscode.package = pkgs.vscode-fhs;
       };
     })
   ];
