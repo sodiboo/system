@@ -292,7 +292,7 @@
   # because alejandra no likey.
   # https://sodi.boo/blog/nix-formatting
   sodium.home_modules = [
-    {
+    ({config, ...}: {
       programs.niri.settings = {
         # On sodium, right super says "menu" and is between right alt and fn
         input.keyboard.xkb.options = "compose:rwin";
@@ -308,8 +308,26 @@
           ];
           default-column-width = {proportion = 1.0 / 3.0;};
         };
+
+        outputs = let
+          cfg = config.programs.niri.settings.outputs;
+        in {
+          "HDMI-A-1" = {
+            mode.width = 3840;
+            mode.height = 2160;
+            mode.refresh = 60.0;
+            position.x = 0;
+            position.y = -cfg."HDMI-A-1".mode.height;
+          };
+          "DP-1" = {
+            mode.width = 5120;
+            mode.height = 1440;
+            position.x = 0;
+            position.y = 0;
+          };
+        };
       };
-    }
+    })
   ];
 
   lithium.home_modules = [
