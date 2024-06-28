@@ -92,7 +92,7 @@
             sh = spawn "sh" "-c";
 
             screenshot-area-script = pkgs.writeShellScript "screenshot-area" ''
-              grim - | swayimg --config=info.mode=off --fullscreen - &
+              grim -o $(niri msg --json focused-output | jq -r .name) - | swayimg --config=info.mode=off --fullscreen - &
               SWAYIMG=$!
               niri msg action do-screen-transition -d 1200
               sleep 1.2
