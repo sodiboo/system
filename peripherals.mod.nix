@@ -20,6 +20,8 @@
         openrazer-daemon
         polychromatic
       ];
+
+      programs.droidcam.enable = true;
     })
   ];
   lithium.modules = [
