@@ -17,6 +17,9 @@ in {
       '';
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "23.11";
+
+      networking.firewall.allowedUDPPorts = [25565 25577];
+      networking.firewall.allowedTCPPorts = [25565 25577];
     })
   ];
   universal.home_modules = [
