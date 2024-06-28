@@ -64,7 +64,7 @@ in
       (fs.btrfs "/" "/dev/disk/by-uuid/95fa9d93-08ac-4812-b61b-2a035be81de3" ["subvol=@"])
       (fs.ntfs "/mnt/win" "/dev/disk/by-uuid/764227D842279C3D" ["rw" "uid=1000"])
       (fs.vfat "/boot" "/dev/disk/by-uuid/8F90-3604" null)
-      (swap "/dev/disk/by-uuid/1169f8ac-71d2-4b99-a5a3-b0391f015062")
+      (swap "/dev/disk/by-uuid/6341aab8-dcda-444e-9e21-40236ae1ccd8")
       {
         boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];
         boot.initrd.kernelModules = [];
