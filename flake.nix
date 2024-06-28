@@ -24,6 +24,7 @@
     # niri-working-tree.flake = false;
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
+    sodipkgs-wootility.url = "github:sodiboo/nixpkgs/wootility-extras";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
 
     picocss.url = "github:picocss/pico";
