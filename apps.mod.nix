@@ -1,18 +1,9 @@
 {vscode-server, ...}: {
   personal.modules = [
     {
-      nixpkgs.overlays = [
-        (final: prev: {
-          # You still have to override it in settings so ig this doesn't work?
-          # But at least it prevents the wrong glfw from being discovered in that case.
-          prismlauncher = prev.prismlauncher.override {glfw = final.glfw-wayland-minecraft;};
-        })
-      ];
-      programs.steam.enable = true;
       users.users.sodiboo.extraGroups = ["video"];
     }
   ];
-
   universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
@@ -62,8 +53,6 @@
         pairdrop
         swayimg
         stackblur-go
-        simutrans
-        prismlauncher
         subversion
         wlvncc
       ];
