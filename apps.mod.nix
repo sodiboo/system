@@ -52,6 +52,7 @@
         vlc
         mpv
         audacity
+        caligula
         vesktop
         element-desktop
         bitwarden-cli

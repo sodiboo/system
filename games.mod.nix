@@ -12,7 +12,7 @@
     ({pkgs, ...}: {
       programs.steam = {
         enable = true;
-        extest.enable = true;
+        # extest.enable = true;
         extraPackages = with pkgs; [
           sodi-x-run
           gamescope
