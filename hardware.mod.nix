@@ -76,6 +76,19 @@ in
       nixos-hardware.nixosModules.common-gpu-amd-southern-islands
     ])
 
+    (config "nitrogen" "x86_64-linux" [
+      (cpu "intel")
+      (fs.ext4 "/" "/dev/disk/by-uuid/5cca29ad-a848-417e-9bd8-31b0f3be0543" null)
+      (fs.vfat "/boot" "/dev/disk/by-uuid/1202-D996" null)
+      (swap "/dev/disk/by-uuid/310e4198-ae8a-44f2-ac58-9da6ea3dbcd7")
+      {
+        boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_usb_sdmmc"];
+        boot.initrd.kernelModules = [];
+        boot.kernelModules = ["kvm-intel"];
+        boot.extraModulePackages = [];
+      }
+    ])
+
     # Contabo VPS
     (config "oxygen" "x86_64-linux" [
       qemu

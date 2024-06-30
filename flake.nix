@@ -97,7 +97,7 @@
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
       nixosConfigurations = {
-        inherit (configs) oxygen sodium lithium;
+        inherit (configs) oxygen sodium lithium nitrogen;
       };
     };
 }

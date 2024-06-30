@@ -356,4 +356,27 @@
       };
     }
   ];
+
+  nitrogen.home_modules = [
+    {
+      programs.niri.settings = {
+        input.keyboard.xkb.options = "compose:rctrl";
+        layout = {
+          preset-column-widths = [
+            {proportion = 1.0 / 3.0;}
+            {proportion = 1.0 / 2.0;}
+            {proportion = 2.0 / 3.0;}
+          ];
+          default-column-width = {proportion = 1.0 / 3.0;};
+        };
+
+        # internal laptop display
+        outputs."eDP-1".scale = 1.5;
+        # a TV i sometimes use to display stuff
+        outputs."DP-2".scale = 2.0;
+        # nested niri window for development should match
+        outputs.winit.scale = 1.5;
+      };
+    }
+  ];
 }

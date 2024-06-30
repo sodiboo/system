@@ -43,4 +43,10 @@
       '';
     }
   ];
+
+  nitrogen.modules = [
+    {
+      services.upower.enable = true;
+    }
+  ];
 }

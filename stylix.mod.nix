@@ -72,7 +72,11 @@ in {
   ];
 
   lithium.modules = [
-    wallpapers.triangles
+    wallpapers.firewatch-wide
+  ];
+
+  nitrogen.modules = [
+    wallpapers.firewatch-wide
   ];
 
   personal.home_modules = [

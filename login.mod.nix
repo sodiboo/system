@@ -129,4 +129,10 @@
       login.tuigreet-width.proportion = 1.0;
     }
   ];
+
+  nitrogen.modules = [
+    {
+      login.tuigreet-width.proportion = 1.0;
+    }
+  ];
 }
