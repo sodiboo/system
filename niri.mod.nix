@@ -127,6 +127,9 @@
 
                 "XF86AudioNext".action = focus-column-right;
                 "XF86AudioPrev".action = focus-column-left;
+
+                "Mod+Tab".action = focus-window-down-or-column-right;
+                "Mod+Shift+Tab".action = focus-window-up-or-column-left;
               }
               (binds {
                 suffixes."Left" = "column-left";
