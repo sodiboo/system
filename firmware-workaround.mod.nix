@@ -1,6 +1,7 @@
 {nixpkgs-with-linux-firmware-at-20240220, ...}: {
   nitrogen.modules = [
     {
+      boot.kernelParams = ["iomem=relaxed"];
       nixpkgs.overlays = [
         (final: prev: {
           linux-firmware-20240220 = final.callPackage "${nixpkgs-with-linux-firmware-at-20240220}/pkgs/os-specific/linux/firmware/linux-firmware" {};
