@@ -29,6 +29,8 @@
 
     picocss.url = "github:picocss/pico";
     picocss.flake = false;
+
+    nixpkgs-with-linux-firmware-at-20240220.url = "github:NixOS/nixpkgs/8363e9657fe4333e9f728cb32bedbb3762debd64";
   };
 
   outputs = {
