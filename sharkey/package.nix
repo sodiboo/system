@@ -19,14 +19,14 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
-  version = "2024.3.3";
+  version = "2024.5.1";
 
   src = fetchFromGitLab {
     owner = "TransFem-org";
     repo = "Sharkey";
     domain = "activitypub.software";
     rev = finalAttrs.version;
-    hash = "sha256-5kxIsabOuLcmkFTZlpYx0mj0Lpy7NWpzcH5SMNae+0c="; # "sha256-+lu0l/TA2Ge/flTUyyV/i0uzh4aycSGVCSQMkush8zA=";
+    hash = "sha256-7x7zT88mncxc5jy+6E4uO+7ZNSBCOrIpxY9IxGV0UxM=";
     fetchSubmodules = true;
   };
 
@@ -63,7 +63,7 @@ stdenv.mkDerivation (finalAttrs: {
 
       dontBuild = true;
       outputHashMode = "recursive";
-      outputHash = "sha256-MOqgSlVryJQPi1sPehLIhQjKF8nCin5kPZCZNCfrBkU="; # "sha256-foRIx8j+HVzJe7DKlKlI4S5xtK76H1B2VgFlWNpDw6g=";
+      outputHash = "sha256-8cRTY76ATnvrhWe+Hz1iUWnvnN7Zimr7wBEsgpC1Knc=";
     };
 
   nativeBuildInputs = [
