@@ -1,7 +1,6 @@
 {
   lib,
   stdenv,
-  stdenvNoCC,
   fetchFromGitLab,
   bash,
   makeWrapper,
@@ -128,6 +127,7 @@ stdenv.mkDerivation (finalAttrs: {
     binPath = lib.makeBinPath [
       bash
       nodePackages.pnpm
+      nodePackages.nodejs
     ];
   in ''
     runHook preInstall
