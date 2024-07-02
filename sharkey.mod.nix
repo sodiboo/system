@@ -20,6 +20,8 @@
         signToActivityPubGet = true;
         CheckActivityPubGetSigned = false;
       };
+
+      services.meilisearch.masterKeyEnvironmentFile = config.sops.secrets.meili-master-key-env.path;
     })
   ];
 }

@@ -28,6 +28,8 @@
         };
 
         sops.secrets.sharkey-redis-password.owner = config.users.users.sharkey.name;
+
+        sops.secrets.meili-master-key-env = {};
       })
     ({
       lib,

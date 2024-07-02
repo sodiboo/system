@@ -8,6 +8,9 @@
 
   createDB = cfg.database.host == "127.0.0.1" && cfg.database.createLocally;
   createRedis = cfg.redis.host == "127.0.0.1" && cfg.redis.createLocally;
+  createMeili = cfg.meilisearch.host == "127.0.0.1" && cfg.meilisearch.createLocally;
+
+  createMeiliKey = cfg.meilisearch.key == lib.fakeSha256;
 
   settingsFormat = pkgs.formats.yaml {};
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
@@ -84,6 +87,28 @@ in {
         };
       };
 
+      meilisearch = {
+        createLocally = mkOption {
+          type = lib.types.bool;
+          default = true;
+        };
+
+        host = mkOption {
+          type = lib.types.str;
+          default = "127.0.0.1";
+        };
+
+        port = mkOption {
+          type = lib.types.port;
+          default = 7700;
+        };
+
+        key = mkOption {
+          type = lib.types.str;
+          default = lib.fakeSha256;
+        };
+      };
+
       settings = mkOption {
         type = settingsFormat.type;
         default = {};
@@ -98,6 +123,13 @@ in {
 
   config = lib.mkIf cfg.enable {
     documentation.enable = false;
+
+    assertions = [
+      {
+        assertion = createMeiliKey -> createMeili;
+        message = "services.sharkey.meilisearch.key is required to be set when connecting to a remote meilisearch instance";
+      }
+    ];
 
     services.sharkey.settings = {
       db.host = cfg.database.host;
@@ -171,6 +203,13 @@ in {
     systemd.services.postgresql.postStart = lib.mkIf createDB ''
       $PSQL -tAc "ALTER ROLE ${cfg.database.name} WITH ENCRYPTED PASSWORD '$(printf "%s" $(cat ${cfg.database.passwordFile} | tr -d "\n"))';"
     '';
+
+    services.meilisearch = lib.mkIf createMeili {
+      enable = true;
+      listenAddress = "127.0.0.1";
+      listenPort = cfg.meilisearch.port;
+      environment = "production";
+    };
 
     users.users.sharkey = {
       group = "sharkey";
