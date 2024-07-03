@@ -105,7 +105,7 @@
           in
             lib.attrsets.mergeAttrsList [
               {
-                "Mod+T".action = spawn "foot";
+                "Mod+T".action = spawn "kitty";
                 "Mod+D".action = spawn "fuzzel";
                 "Mod+W".action = sh (builtins.concatStringsSep "; " [
                   "systemctl --user restart waybar.service"
@@ -231,7 +231,9 @@
             }
           '';
 
-          window-rules = [
+          window-rules = let
+            colors = config.lib.stylix.colors.withHashtag;
+          in [
             {
               draw-border-with-background = false;
               geometry-corner-radius = let
@@ -250,8 +252,17 @@
             }
             {
               # the terminal is already transparent from stylix
-              matches = [{app-id = "^foot$";}];
+              matches = [{app-id = "^kitty$";}];
               opacity = 1.0;
+            }
+            {
+              matches = [
+                {
+                  app-id = "^kitty$";
+                  title = ''^\[oxygen\]'';
+                }
+              ];
+              border.active.color = colors.base0B;
             }
             {
               matches = [
@@ -260,7 +271,7 @@
                   title = "Private Browsing";
                 }
               ];
-              border.active.color = "purple";
+              border.active.color = colors.base0E;
             }
           ];
         };
@@ -272,6 +283,17 @@
       programs.foot = {
         enable = true;
         settings.csd.preferred = "none";
+      };
+
+      programs.kitty = {
+        enable = true;
+        settings = {
+          window_border_width = "0px";
+          tab_bar_edge = "top";
+          tab_bar_margin_width = "0.0";
+          tab_bar_style = "fade";
+          placement_strategy = "top-left";
+        };
       };
 
       programs.fuzzel = {

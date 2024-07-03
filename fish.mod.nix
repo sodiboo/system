@@ -29,6 +29,7 @@
           enable = true;
           shellAliases = {
             eza = "eza --long --all --icons --time-style long-iso";
+            "@" = "kitten ssh";
           };
         };
 
