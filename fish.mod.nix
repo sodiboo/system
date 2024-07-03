@@ -27,12 +27,6 @@
       programs = {
         fish = {
           enable = true;
-          shellAbbrs = {
-            ls = "eza";
-            exa = "eza";
-            tree = "eza --tree";
-            cat = "bat";
-          };
           shellAliases = {
             eza = "eza --long --all --icons --time-style long-iso";
           };
