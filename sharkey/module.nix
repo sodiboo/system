@@ -19,6 +19,11 @@ in {
     services.sharkey = with lib; {
       enable = mkEnableOption "sharkey";
 
+      domain = mkOption {
+        type = lib.types.str;
+        example = "shonk.social";
+      };
+
       package = lib.mkOption {
         type = lib.types.package;
         default = pkgs.sharkey;
@@ -103,9 +108,14 @@ in {
           default = 7700;
         };
 
+        index = mkOption {
+          type = lib.types.str;
+          default = replaceStrings ["."] ["_"] cfg.domain;
+        };
+
         key = mkOption {
           type = lib.types.str;
-          default = lib.fakeSha256;
+          default = "$MEILI_MASTER_KEY";
         };
       };
 
@@ -132,6 +142,7 @@ in {
     ];
 
     services.sharkey.settings = {
+      url = "https://${cfg.domain}/";
       db.host = cfg.database.host;
       db.port = cfg.database.port;
       db.db = cfg.database.name;
@@ -140,6 +151,12 @@ in {
       redis.host = cfg.redis.host;
       redis.port = cfg.redis.port;
       redis.pass = "$SHARKEY_REDIS_PASSWORD";
+      meilisearch.host = cfg.meilisearch.host;
+      meilisearch.port = cfg.meilisearch.port;
+      meilisearch.apiKey = cfg.meilisearch.key;
+      meilisearch.index = cfg.meilisearch.index;
+      meilisearch.ssl = !createMeili;
+      meilisearch.scope = "global";
     };
 
     environment.etc."sharkey.yml".source = configFile;
@@ -148,7 +165,8 @@ in {
       after =
         ["network-online.target"]
         ++ lib.optionals createDB ["postgresql.service"]
-        ++ lib.optionals createRedis ["redis-sharkey.service"];
+        ++ lib.optionals createRedis ["redis-sharkey.service"]
+        ++ lib.optionals createMeili ["meilisearch.service"];
       wantedBy = ["multi-user.target"];
 
       preStart = ''
@@ -161,6 +179,7 @@ in {
       environment.NODE_ENV = "production";
 
       serviceConfig = {
+        EnvironmentFile = lib.mkIf (config.services.meilisearch.masterKeyEnvironmentFile != null) config.services.meilisearch.masterKeyEnvironmentFile;
         Type = "simple";
         User = "sharkey";
 
