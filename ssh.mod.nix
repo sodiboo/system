@@ -32,7 +32,7 @@
           Host oxygen
             HostName vps.sodi.boo
             User sodiboo
-            IdentityFile ~/.ssh/contabo-vps-2024-06
+            IdentityFile ~/.ssh/id_ed25519-2024-06
         '';
       };
     }
