@@ -44,6 +44,10 @@
             HostName vps.sodi.boo
             User sodiboo
             IdentityFile ~/.ssh/id_ed25519-2024-06
+          Host iridium
+            HostName iridium.lan
+            User sodiboo
+            IdentityFile ~/.ssh/id_ed25519-2024-06
         '';
       };
     }
