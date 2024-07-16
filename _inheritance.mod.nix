@@ -7,4 +7,5 @@
   sodium = merge configs.universal configs.personal;
   lithium = merge configs.universal configs.personal;
   nitrogen = merge configs.universal configs.personal;
+  iridium = configs.universal;
 }

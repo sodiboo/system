@@ -89,6 +89,21 @@ in
       }
     ])
 
+    (config "iridium" "x86_64-linux" [
+      (cpu "intel")
+      (fs.ext4 "/" "/dev/disk/by-uuid/8fa79a3b-aebf-4be7-8698-f59f3db0752f" null)
+      {
+        boot.loader.grub.enable = true;
+        boot.loader.grub.device = "/dev/disk/by-id/wwn-0x5000c5004f368909";
+
+        boot.initrd.availableKernelModules = ["ahci" "ohci_pci" "ehci_pci" "usb_storage" "usbhid" "sd_mod"];
+        boot.initrd.kernelModules = [];
+        boot.kernelModules = ["kvm-amd"];
+        boot.extraModulePackages = [];
+        boot.supportedFilesystems = ["ntfs"];
+      }
+    ])
+
     # Contabo VPS
     (config "oxygen" "x86_64-linux" [
       qemu
