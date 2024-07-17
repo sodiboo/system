@@ -31,6 +31,7 @@
     picocss.flake = false;
 
     nixpkgs-with-linux-firmware-at-20240220.url = "github:NixOS/nixpkgs/8363e9657fe4333e9f728cb32bedbb3762debd64";
+    nixpkgs-with-meilisearch-at-1-8-3.url = "github:NixOS/nixpkgs/6edd5cc7bd8eb73d2e7c2f05b34c04a7a4d02de9";
   };
 
   outputs = {
