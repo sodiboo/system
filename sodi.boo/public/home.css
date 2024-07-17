@@ -8,7 +8,7 @@ hgroup {
     text-align: center;
 }
 
-li:has(a[rel="me"][href *= "tech.lgbt"])::marker {
+li:has(a[rel="me"][href *= "gaysex.cloud"])::marker {
     content: "fedi: ";
 }
 
