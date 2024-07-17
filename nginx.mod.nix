@@ -78,6 +78,8 @@
           }
         '';
 
+        clientMaxBodySize = "1G";
+
         virtualHosts = let
           static = builtins.mapAttrs (path: conf:
             conf
