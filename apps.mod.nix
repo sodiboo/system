@@ -11,6 +11,7 @@
         ripgrep-all
         dig
         whois
+        libqalculate
       ];
 
       programs = {
@@ -67,6 +68,7 @@
         subversion
         wlvncc
         sodi-vscode-fhs
+        krita
       ];
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
