@@ -23,6 +23,8 @@
     # niri-working-tree.url = "github:sodiboo/niri";
     # niri-working-tree.flake = false;
 
+    conduwuit.url = "github:girlbossceo/conduwuit";
+
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
     sodipkgs-wootility.url = "github:sodiboo/nixpkgs/wootility-extras";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";

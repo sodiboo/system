@@ -40,6 +40,13 @@
       services.nginx = {
         enable = true;
 
+        # !!! If you are referencing my config for Sharkey and/or Matrix, !!!
+        # !!!               do not underestimate this line.               !!!
+        # !!!                                                             !!!
+        # !!!                     You need to have it                     !!!
+        # !!!         or media uploads won't work for files >10M.         !!!
+        clientMaxBodySize = "1G";
+
         recommendedGzipSettings = true;
         recommendedOptimisation = true;
         recommendedProxySettings = true;
@@ -78,8 +85,6 @@
           }
         '';
 
-        clientMaxBodySize = "1G";
-
         virtualHosts = let
           static = builtins.mapAttrs (path: conf:
             conf
@@ -116,10 +121,13 @@
               forceSSL = true;
               enableACME = true;
             };
+          proxy' = port: {
+            proxyPass = "http://127.0.0.1:${toString port}";
+            proxyWebsockets = true;
+          };
           proxy = port:
             base {
-              "/".proxyPass = "http://127.0.0.1:${toString port}/";
-              "/".proxyWebsockets = true;
+              "/" = proxy' port;
             };
           personal-website = inactive: status: redirect: ''
             location = /blog {
@@ -150,7 +158,21 @@
           "sodi.gay" = base {
             extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
           };
-          "gaysex.cloud" = proxy config.services.sharkey.settings.port;
+          "gaysex.cloud" =
+            base {
+              "/" = proxy' config.services.sharkey.settings.port;
+              "/_matrix" = proxy' config.services.matrix-conduit.settings.global.port;
+            }
+            // {
+              listen = let
+                l = addr: port: ssl: {inherit addr port ssl;};
+                p = port: ssl: [
+                  (l "0.0.0.0" port ssl)
+                  (l "[::0]" port ssl)
+                ];
+              in
+                p 80 false ++ p 443 true ++ p 8448 true;
+            };
           "infodumping.place" = proxy config.services.writefreely.settings.server.port;
           "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
         };
