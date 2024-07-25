@@ -17,5 +17,5 @@ li:has(a[rel="me"][href *= "github.com"])::marker {
 }
 
 li:has(a[rel="me"][href *= "matrix.to"])::marker {
-    content: "[m]: ";
+    content: "matrix: ";
 }
