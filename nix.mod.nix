@@ -5,16 +5,19 @@ let
 in {
   universal.modules = [
     ({config, ...}: {
-      nix.settings = {
-        experimental-features = ["nix-command" "flakes"];
-        substituters = builtins.attrNames caches;
-        trusted-public-keys = builtins.attrValues caches;
+      nix = {
+        settings = {
+          experimental-features = ["nix-command" "flakes"];
+          substituters = builtins.attrNames caches;
+          trusted-public-keys = builtins.attrValues caches;
+        };
+        package = pkgs.lix;
+        # access-token-prelude contains:
+        # access-token = github.com=$SECRET
+        extraOptions = ''
+          !include ${config.sops.secrets.access-token-prelude.path}
+        '';
       };
-      # access-token-prelude contains:
-      # access-token = github.com=$SECRET
-      nix.extraOptions = ''
-        !include ${config.sops.secrets.access-token-prelude.path}
-      '';
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "23.11";
 
