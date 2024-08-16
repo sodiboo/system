@@ -42,7 +42,7 @@ This is an old Fujitsu "PRIMERGY MX130 S2" functioning as a NAS. It has a 500 GB
 
 Modules have a `*.mod.nix` extension, which is loaded in [`flake.nix`](/flake.nix). The structure of `*.mod.nix` files is essentially `{ <system>.modules :: arrayOf(nixosModule), <system>.home_modules :: arrayOf(homeModule) }`. They can also take the flake inputs at the top.
 
-`<system>` is either `sodium`, `nitrogen` or more commonly `personal` which contains stuff common for both. There is also `oxygen`, which is a VPS and `universal` which is common to all three. `universal` will generally contain stuff like a command line environment (prompts, editors, tooling), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games
+`<system>` is either `sodium`, `nitrogen` or more commonly `personal` which contains stuff common for both. There is also `oxygen` and `iridium`, which are headless servers and `universal` which is common to all four. `universal` will generally contain stuff like a command line environment (prompts, editors, tooling), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games.
 
 My secrets are managed using `sops-nix`, which encrypts the secrets into `secrets.yaml` and a key is storerd in my home directory to decrypt them at boot-time. You can still run my configuration without the secret key, but the secrets will be missing and some services will not work as a result.
 
