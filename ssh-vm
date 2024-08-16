@@ -1,0 +1,2 @@
+#!/bin/sh
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -o User=sodiboo localhost -p 2222 "$@"
