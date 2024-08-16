@@ -143,39 +143,44 @@
               return ${toString status} https://${redirect}$request_uri;
             }
           '';
-        in {
-          "0-sort-first" =
-            base-http {
-              "= /".extraConfig = ''
-                rewrite . /.nginx/raw-ip.html last;
-              '';
-            }
-            // {rejectSSL = true;};
-          "sodi.boo" = base {
-            "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
-            extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
-          };
-          "sodi.gay" = base {
-            extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
-          };
-          "gaysex.cloud" =
-            base {
-              "/" = proxy' config.services.sharkey.settings.port;
-              "/_matrix" = proxy' config.services.matrix-conduit.settings.global.port;
-            }
-            // {
-              listen = let
-                l = addr: port: ssl: {inherit addr port ssl;};
-                p = port: ssl: [
-                  (l "0.0.0.0" port ssl)
-                  (l "[::0]" port ssl)
-                ];
-              in
-                p 80 false ++ p 443 true ++ p 8448 true;
+
+          unknown."= /".extraConfig = ''
+            rewrite . /.nginx/raw-ip.html last;
+          '';
+          unused-domains = ["catboy.rocks" "mrrp.ing" "enby.lol" "sodi.lol" "girlcock.party"];
+        in
+          builtins.listToAttrs (map (name: {
+              inherit name;
+              value = base unknown;
+            })
+            unused-domains)
+          // {
+            "0-sort-first" = base-http unknown // {rejectSSL = true;};
+            "sodi.boo" = base {
+              "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
+              extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
             };
-          "infodumping.place" = proxy config.services.writefreely.settings.server.port;
-          "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
-        };
+            "sodi.gay" = base {
+              extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
+            };
+            "gaysex.cloud" =
+              base {
+                "/" = proxy' config.services.sharkey.settings.port;
+                "/_matrix" = proxy' config.services.matrix-conduit.settings.global.port;
+              }
+              // {
+                listen = let
+                  l = addr: port: ssl: {inherit addr port ssl;};
+                  p = port: ssl: [
+                    (l "0.0.0.0" port ssl)
+                    (l "[::0]" port ssl)
+                  ];
+                in
+                  p 80 false ++ p 443 true ++ p 8448 true;
+              };
+            "infodumping.place" = proxy config.services.writefreely.settings.server.port;
+            "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
+          };
       };
       security.acme = {
         acceptTerms = true;
