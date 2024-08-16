@@ -36,6 +36,10 @@ This is a VPS with Contabo. It's their "VPS 1" with an external SSD, because tha
 
 It doesn't really have any unique hardware; it's just a qemu guest. See [`nginx.mod.nix`](./nginx.mod.nix) for a more complete overview of the stuff i host on it; nginx handles all communication with the outside world.
 
+### iridium
+
+This is an old Fujitsu "PRIMERGY MX130 S2" functioning as a NAS. It has a 500 GB hard drive for the OS, and then i crammed another five hard drives inside it, stuffing it completely full because it only likes to have 3 non-OS hard drives. These suckers are held in place by friction! No duct tape needed! I will trust it with all my data. There's not much to say about this, other than that i have "non-genuine RAM" that isn't "covered by warranty" so,, uh, lol. Currently i don't do much with it, but i will be using it to host backups, Jellyfin, and maybe some other stuff. Might become the brains for home automation and/or personal infrastucture stuff (e.g. wireguard/tailscale, DNS, etc).
+
 ## Files
 
 Modules have a `*.mod.nix` extension, which is loaded in [`flake.nix`](/flake.nix). The structure of `*.mod.nix` files is essentially `{ <system>.modules :: arrayOf(nixosModule), <system>.home_modules :: arrayOf(homeModule) }`. They can also take the flake inputs at the top.
