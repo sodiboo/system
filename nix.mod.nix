@@ -36,7 +36,7 @@ in {
         nh
         nix-output-monitor
         nvd
-        nix-init
+        # nix-init
       ];
 
       programs.fish.shellAliases = let
