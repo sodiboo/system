@@ -85,6 +85,11 @@
             struts.left = 64;
             struts.right = 64;
             border.width = 4;
+            # border.active.gradient = {
+            #   from = "red";
+            #   to = "blue";
+            #   in' = "oklch shorter hue";
+            # };
           };
 
           hotkey-overlay.skip-at-startup = true;
