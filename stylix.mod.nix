@@ -71,10 +71,6 @@ in {
     wallpapers.firewatch-wide
   ];
 
-  lithium.modules = [
-    wallpapers.firewatch-wide
-  ];
-
   nitrogen.modules = [
     wallpapers.firewatch-wide
   ];

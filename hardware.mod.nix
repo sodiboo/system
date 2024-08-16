@@ -45,26 +45,14 @@ in
     ];
   }
   // builtins.listToAttrs [
-    (config "lithium" "x86_64-linux" [
-      (cpu "intel")
-      (fs.ext4 "/" "/dev/disk/by-uuid/64d05a5c-e962-4fb4-9c16-9185dcff2dad" null)
-      (fs.vfat "/boot" "/dev/disk/by-uuid/FC03-65D6" null)
-      (swap "/dev/disk/by-uuid/4c073557-45f2-43f3-8c77-c5254917c2de")
-      {
-        # Not sure where these belong, or what they do. Just put here for now. TODO: cleanup.
-        boot.initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod"];
-        boot.initrd.kernelModules = [];
-        boot.kernelModules = ["kvm-intel"];
-        boot.extraModulePackages = [];
-      }
-    ])
-
     (config "sodium" "x86_64-linux" [
       (cpu "amd")
       (fs.btrfs "/" "/dev/disk/by-uuid/95fa9d93-08ac-4812-b61b-2a035be81de3" ["subvol=@"])
       (fs.ntfs "/mnt/win" "/dev/disk/by-uuid/764227D842279C3D" ["rw" "uid=1000"])
       (fs.ntfs "/mnt/games" "/dev/disk/by-uuid/5480A73980A7208A" ["rw" "uid=1000"])
       (fs.vfat "/boot" "/dev/disk/by-uuid/8F90-3604" null)
+      (fs.ext4 "/mnt/lithium-graveyard" "/dev/disk/by-uuid/64d05a5c-e962-4fb4-9c16-9185dcff2dad" null)
+      (fs.vfat "/mnt/lithium-graveyard/boot" "/dev/disk/by-uuid/FC03-65D6" null)
       (swap "/dev/disk/by-uuid/6341aab8-dcda-444e-9e21-40236ae1ccd8")
       {
         boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "sd_mod"];

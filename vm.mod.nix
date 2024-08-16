@@ -41,10 +41,4 @@
       virtualisation.vmVariant.services.openvpn.servers.sodium.autoStart = false;
     }
   ];
-
-  lithium.modules = [
-    {
-      virtualisation.vmVariant.services.openvpn.servers.lithium.autoStart = false;
-    }
-  ];
 }

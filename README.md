@@ -1,7 +1,7 @@
 Heya! This repo contains the system configuration for all the computers i control.
 
-Currently, it handles three computers: `sodium`, `lithium`, and `oxygen`.
-The first two are personal machines i own, and the third is a VPS.
+Currently, it handles four computers: `sodium`, `nitrogen`, `oxygen`, and `iridium`.
+The first two are personal machines i own, a custom PC and a StarLite 5. The third is a VPS and the fourth is a custom-built NAS.
 
 ### sodium
 
@@ -20,15 +20,13 @@ It also has the following unique hardware:
 - Some other Razer peripherals, namely a mouse and a mousepad, but they're not really unique.
   At least, i don't do anything special with them.
 
-### lithium
+### nitrogen
 
-This is my laptop. It's a ThinkPad X1 Carbon Gen 9, and is less interesting than sodium. I use it more, though, because i'm literally not at home for 12 hours a day most days.
+This is my laptop. It's a StarLite 5, and is less interesting than sodium.
 
-It has a 3840x2400 display (16:10 aspect ratio), and the most interesting parts about it are the following:
+It has a 2880x1920 display (3:2 aspect ratio), and the most interesting parts about it is the fact that it has a touch screen and a pen.
 
-- It has a fingerprint reader, which i use to authenticate with sudo and polkit.
-- The touchpad doesn't fucking work. It used to, but it's genuinely just awful. I disabled it.
-- It has a TrackPoint instead, but i prefer using my bluetooth mouse.
+niri doesn't work extremely well with a touch screen, so it's mostly a regular laptop. I use it for school and when i'm not at my desk.
 
 ### oxygen
 
@@ -44,7 +42,7 @@ This is an old Fujitsu "PRIMERGY MX130 S2" functioning as a NAS. It has a 500 GB
 
 Modules have a `*.mod.nix` extension, which is loaded in [`flake.nix`](/flake.nix). The structure of `*.mod.nix` files is essentially `{ <system>.modules :: arrayOf(nixosModule), <system>.home_modules :: arrayOf(homeModule) }`. They can also take the flake inputs at the top.
 
-`<system>` is either `sodium`, `lithium` or more commonly `personal` which contains stuff common for both. There is also `oxygen`, which is a VPS and `universal` which is common to all three. `universal` will generally contain stuff like a command line environment (prompts, editors, tooling), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games
+`<system>` is either `sodium`, `nitrogen` or more commonly `personal` which contains stuff common for both. There is also `oxygen`, which is a VPS and `universal` which is common to all three. `universal` will generally contain stuff like a command line environment (prompts, editors, tooling), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games
 
 My secrets are managed using a very unsophisticated homemade solution. `secrets` is a flake input that is gitignored. It's preprocessed such that the files within are passed as strings of the `secrets` attrset; this is the only flake input that is modified before being passed to all modules.
 

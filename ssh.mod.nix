@@ -21,20 +21,6 @@
     }
   ];
 
-  lithium.home_modules = [
-    {
-      programs.ssh = {
-        enable = true;
-        extraConfig = ''
-          Host oxygen
-            HostName vps.sodi.boo
-            User sodiboo
-            IdentityFile ~/.ssh/contabo-vps-2024-05
-        '';
-      };
-    }
-  ];
-
   sodium.home_modules = [
     {
       programs.ssh = {

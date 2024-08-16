@@ -361,30 +361,6 @@
     })
   ];
 
-  lithium.home_modules = [
-    {
-      programs.niri.settings = {
-        # On lithium, there is no right super key, but printscreen is next to right alt
-        input.keyboard.xkb.options = "compose:prsc";
-        layout = {
-          preset-column-widths = [
-            {proportion = 1.0 / 3.0;}
-            {proportion = 1.0 / 2.0;}
-            {proportion = 2.0 / 3.0;}
-          ];
-          default-column-width = {proportion = 1.0 / 3.0;};
-        };
-
-        # internal laptop display
-        outputs."eDP-1".scale = 2.0;
-        # a TV i sometimes use to display stuff
-        outputs."DP-2".scale = 2.0;
-        # nested niri window for development should match
-        outputs.winit.scale = 2.0;
-      };
-    }
-  ];
-
   nitrogen.home_modules = [
     {
       programs.niri.settings = {
