@@ -38,7 +38,7 @@
         prismlauncher
         lutris
         gnome.adwaita-icon-theme
-        # itch
+        itch
       ];
     })
   ];

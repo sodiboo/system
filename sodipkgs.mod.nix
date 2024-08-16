@@ -12,8 +12,8 @@ in
                   prev.callPackage "${inputs."sodipkgs-${name}"}/pkgs/${path}" {}
               ) {
                 simutrans = "/games/simutrans";
-                wootility = "/tools/misc/wootility";
                 stackblur-go = by-name "stackblur-go";
+                itch = by-name "itch";
               }
           )
         ];
