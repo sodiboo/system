@@ -56,6 +56,7 @@
         caligula
         vesktop
         element-desktop
+        signal-desktop
         bitwarden-cli
         grim
         slurp
