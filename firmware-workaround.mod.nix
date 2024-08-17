@@ -11,11 +11,13 @@
           # if you copy from the nix store obviously it won't be writable!
           # it took me 50 (!!!) fucking minutes to figure out that i need chmod +w
           # kill me now
-          linux-firmware = final.runCommand "linux-firmware-patched" {} ''
-            cp -R ${prev.linux-firmware} $out
-            chmod -R +w $out
-            install ${final.linux-firmware-20240220}/lib/firmware/intel/ibt-0040-2120.{sfi,ddc} $out/lib/firmware/intel
-          '';
+          # linux-firmware = final.runCommand "linux-firmware-patched" {} ''
+          #   cp -R ${prev.linux-firmware} $out
+          #   chmod -R +w $out
+          #   install ${final.linux-firmware-20240220}/lib/firmware/intel/ibt-0040-2120.{sfi,ddc} $out/lib/firmware/intel
+          # '';
+
+          linux-firmware = final.linux-firmware-20240220;
         })
       ];
     }
