@@ -1617,22 +1617,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-with-linux-firmware-at-20240220": {
-      "locked": {
-        "lastModified": 1708443367,
-        "narHash": "sha256-dw21ICQQ3vimZAkpwd17fmQ1cLgeqJSHwLSCuxV/pkQ=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "8363e9657fe4333e9f728cb32bedbb3762debd64",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "8363e9657fe4333e9f728cb32bedbb3762debd64",
-        "type": "github"
-      }
-    },
     "nixpkgs-with-meilisearch-at-1-8-3": {
       "locked": {
         "lastModified": 1720424647,
@@ -2066,7 +2050,6 @@
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_12",
-        "nixpkgs-with-linux-firmware-at-20240220": "nixpkgs-with-linux-firmware-at-20240220",
         "nixpkgs-with-meilisearch-at-1-8-3": "nixpkgs-with-meilisearch-at-1-8-3",
         "picocss": "picocss",
         "sodipkgs-itch": "sodipkgs-itch",

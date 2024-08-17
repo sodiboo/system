@@ -43,6 +43,12 @@ in
         networking.useDHCP = lib.mkDefault true;
       })
     ];
+
+    personal.modules = [
+      {
+        services.fwupd.enable = true;
+      }
+    ];
   }
   // builtins.listToAttrs [
     (config "sodium" "x86_64-linux" [
@@ -73,6 +79,7 @@ in
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_usb_sdmmc"];
         boot.initrd.kernelModules = [];
         boot.kernelModules = ["kvm-intel"];
+        boot.kernelParams = ["iomem=relaxed"];
         boot.extraModulePackages = [];
       }
     ])
