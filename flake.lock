@@ -329,11 +329,11 @@
         "rocksdb": "rocksdb"
       },
       "locked": {
-        "lastModified": 1723151906,
-        "narHash": "sha256-EFUG2y6IkCCKR5BxFRoHyiBZ1eDkl2RQXfR6Cc0gTNw=",
+        "lastModified": 1723861150,
+        "narHash": "sha256-Px5wNTHVgTAYKCoyaBn8HCuzjBhz/xBXZwMJLLcIxqs=",
         "owner": "girlbossceo",
         "repo": "conduwuit",
-        "rev": "6662aa21ef4ab8e444fd3c62470fc090f23679fb",
+        "rev": "28cd784972f9e6e78a77ee54ca07d998ca15a788",
         "type": "github"
       },
       "original": {
@@ -1263,11 +1263,11 @@
         "xwayland-satellite": "xwayland-satellite"
       },
       "locked": {
-        "lastModified": 1723797834,
-        "narHash": "sha256-xQPwjAVbxgknZeMOJguxq3CrpQdQO1yYGynNTaORbUw=",
+        "lastModified": 1723829823,
+        "narHash": "sha256-mnizV/ni9LrLc7iXSIgTOy2YCtcv2Yztow8ibxAqR9E=",
         "owner": "sodiboo",
         "repo": "niri-flake",
-        "rev": "7770599f906c05a6d38b0d65c7fc56924615f09d",
+        "rev": "4cac74d2ddab7d2b7769e9dd30616de9decfc474",
         "type": "github"
       },
       "original": {
@@ -1279,16 +1279,16 @@
     "niri-stable": {
       "flake": false,
       "locked": {
-        "lastModified": 1719642458,
-        "narHash": "sha256-EdlOGL9RdO77HnZxv2UpPwrJdFH8qPrPSRtkBBV167s=",
+        "lastModified": 1723290956,
+        "narHash": "sha256-13xynDWoOqogUKZTf6lz267hEQGdCE+BE6acs2G3j8k=",
         "owner": "YaLTeR",
         "repo": "niri",
-        "rev": "e7c201abba6fedaa57001639810af3b6bd9b852e",
+        "rev": "9063a5dbdc0d4470dc1e13ce5749838e32af6a44",
         "type": "github"
       },
       "original": {
         "owner": "YaLTeR",
-        "ref": "v0.1.7",
+        "ref": "v0.1.8",
         "repo": "niri",
         "type": "github"
       }
@@ -2176,11 +2176,11 @@
         "nixpkgs": "nixpkgs_14"
       },
       "locked": {
-        "lastModified": 1722946882,
-        "narHash": "sha256-mxtnMye8gs82tdQbVC+g6v3aPOZlH150f9WyntHIkTg=",
+        "lastModified": 1723834469,
+        "narHash": "sha256-PkJTr9DWBQcR5Ru1fJpG80dtw0MLSxAZlKnhHHFAGIA=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "5853f1a8bd072f2ebabfc3de3973084353cf6f1e",
+        "rev": "6858d08ed012bc6491cc92c13142104e56badf31",
         "type": "github"
       },
       "original": {
