@@ -20,7 +20,7 @@
     oxygen = ip 4;
   };
 
-  ips' = builtins.mapAttrs (name: ip: "${ip}/32");
+  ips' = builtins.mapAttrs (name: ip: "${ip}/32") ips;
 
   port-for = builtins.mapAttrs (machine: {config, ...}: toString config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
   # Some network topology here:
