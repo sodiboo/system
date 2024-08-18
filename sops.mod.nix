@@ -11,6 +11,11 @@
 
       sops.secrets.access-token-prelude.mode = "0444";
     }
+    ({config, ...}: {
+      sops.secrets.wireguard-private-key = {
+        key = "wireguard-private-keys/${config.networking.hostName}";
+      };
+    })
   ];
 
   oxygen.modules = [

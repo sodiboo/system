@@ -38,7 +38,7 @@
 
   sodium.modules = [
     {
-      virtualisation.vmVariant.services.openvpn.servers.sodium.autoStart = false;
+      # virtualisation.vmVariant.services.openvpn.servers.sodium.autoStart = false;
     }
   ];
 }

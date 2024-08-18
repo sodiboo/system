@@ -1,211 +1,146 @@
-# !! UNDER CONSTRUCTION !!
-# This was originally for connecting an Android device to my home network.
-# Most of it is from around january, probably (timestamp is missing). It predates my flakes migration.
-# I gave up on connecting my phone. Now, i'm aiming to connect my laptop to my home network.
-# But if you're reading this and it's the latest commit, then i'm still working on making that happen.
-{nixpkgs, ...}: let
-  # carbon in PKI is the CA
-  # sodium is the server
-  # carbon and sodium live on the same machine. (they were roommates <3)
-  # all others are clients. currently only lithium
-  stunnel_port = null;
-  client_stunnel_port = 1195;
+{
+  self,
+  nixpkgs,
+  ...
+}: let
+  public-keys = {
+    iridium = "MKPEkYG4Kk26pLP4RwBE9LZKbPlwEzw3gqkbE+NRVwg=";
+    sodium = "bEhUkNvrV2lvMKz1QaS8xpipgRq0gaASMH6maKe6vwA=";
+    nitrogen = "jCaI67FtevJIFOCiSoe40LSORMhmQ5b14h/DG/8THms=";
+    oxygen = "/C3FBaSjRXh2ln9sbTJETb3Dj5masxOAzi3xawdcSiA=";
+  };
 
-  # sudo openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 -sha256 -subj '/CN=127.0.0.1/O=localhost/C=US' -keyout /etc/stunnel/stunnel.pem -out /etc/stunnel/stunnel.pem
-  # sudo chmod 600 /etc/stunnel/stunnel.pem
-  stunnel = /etc/stunnel/stunnel.pem;
+  ip = i: "10.8.0.${toString i}";
+  subnet = "${ip 0}/24";
 
-  # ./easyrsa init-pki
-  # ./easyrsa build-ca # Common Name = carbon
-  # ./easyrsa build-server-full sodium
-  # (store passphrase in /etc/openvpn/pki/private/sodium.pass)
-  # ./easyrsa build-client-full lithium
-  # (store passphrase in /etc/openvpn/pki/private/lithium.pass)
-  # ./easyrsa gen-dh
-  # openssl pkcs12 -export -in ./pki/issued/lithium.crt -inkey ./pki/private/lithium.key -certfile ./pki/ca.crt -name lithium -out ./pki/lithium.p12
-  # -> ./pki contains all the good stuff.
-  #
-  # (move ./pki/ca.crt, ./pki/dh.pem, and ./pki/issued/*.crt to /etc/openvpn/pki)
-  # (move ./pki/private/*.key to /etc/openvpn/pki/private)
-  # (transfer ./pki/lithium.p12 to Android device)
-  #
-  # sudo chmod 644 -R /etc/openvpn/pki/
-  # sudo chmod 600 -R /etc/openvpn/pki/private
-  #
-  # (import this file to configuration.nix)
-  # (transfer /etc/openvpn/lithium.ovpn to Android device)
-  # (import lithium.p12 to OpenVPN Connect)
-  # (import lithium.ovpn to OpenVPN, selecting lithium certificate)
-  pki = "/etc/openvpn/pki";
+  ips = {
+    iridium = ip 1;
+    sodium = ip 2;
+    nitrogen = ip 3;
+    oxygen = ip 4;
+  };
 
-  remote = "vpn.sodi.boo";
-  # subnet of my home network
-  subnet = "192.168.86.0";
+  ips' = builtins.mapAttrs (name: ip: "${ip}/32");
 
-  tun = "tun0";
-  eth = "eno1";
-
-  openvpn_port = 1194;
-  openvpn_proto = "tcp";
-
-  # Okay, so this is fucking annoying.
-  # One benefit of using a VPN is being able to access shit i need.
+  port-for = builtins.mapAttrs (machine: {config, ...}: config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
+  # Some network topology here:
+  # - My home network has a subnet of 192.168.86.0/24
+  # - My private wireguard network has a subnet of 10.8.0.0/24
+  # - sodium and iridium are on the home network
+  # - The home network has a public IP, but it is not mine to use. For all intents and purposes, i don't have a public IP.
+  # - The home network routes {hostname}.lan to the corresponding IP on 192.168.86.x
+  # - sodium and iridium can therefore view each other as {sodium,iridium}.lan
   #
-  # Here's a portscan on my school network:
+  # - oxygen is a VPS with a public IP. Everyone can see it as vps.sodi.boo
+  # - oxygen cannot directly access sodium or iridium
   #
-  # $ for p in $(seq 65535); fish -c "if curl --connect-timeout 1 http://portquiz.net:$p >/dev/null 2>/dev/null; echo $p; end;" & end
-  # 80
-  # 110
-  # 123
-  # 143
-  # 443
-  # 500
-  # 993
-  # 995
-  # 3389
-  # 5222
-  # 5223
-  # 5228
-  # 35061
+  # - nitrogen is a laptop that is sometimes on the home network as nitrogen.lan, and sometimes not.
+  # - it cannot reliably access sodium or iridium through lan, but can always see oxygen.
+  # - nobody can reliably access nitrogen with a given hostname
   #
-  # Sysadmins may be unhappy with spamming 2^16 requests, but fuck 'em. They don't even allow DNS and i don't wish for them to see everything i do.
-  # So, at my home router, a rule routes (external 443) -> (sodium 1194)
-  external_port = 443;
-
-  use_stunnel = stunnel_port != null;
-  nat_port =
-    if use_stunnel
-    then stunnel_port
-    else openvpn_port;
-  nat_proto =
-    if use_stunnel
-    then "TCP"
-    else nixpkgs.lib.toUpper openvpn_proto;
-  client_remote =
-    if use_stunnel
-    then "127.0.0.1"
-    else remote;
-  client_port = external_port;
-  # if use_stunnel
-  # then client_stunnel_port
-  # else openvpn_port;
-
-  # Networking invariants in above config:
-  # - ${eth} is the ethernet interface on sodium.
-  # - ${remote} is a public hostname that points to sodium.
-  # - ${remote}:${nat_port} is forwarded to sodium.
-  #
-  # Filesystem invariants:
-  #
-  # The following files exist on sodium:
-  # - ${pki}/ca.crt
-  # - ${pki}/dh.pem
-  # - ${pki}/sodium.crt
-  # - ${pki}/private/sodium.key
-  # - ${pki}/private/ta.key
-  #
-  # The following files exist on lithium:
-  # - ${pki}/ca.crt
-  # - ${pki}/lithium.crt
-  # - ${pki}/private/lithium.key
-  # - ${pki}/private/ta.key
-
-  ignore = x: "";
+  # Therefore:
+  # - iridium is the main server
+  # - sodium connects to iridium always
+  # - oxygen needs a weird reverse proxy thing to connect to iridium (really, iridium needs to connect to oxygen, but oxygen acts like the client)
+  # - nitrogen wants to connect to iridium, but can't always. so it connects to oxygen when iridium is unavailable, taking a performance hit
 in {
-  sodium.modules = [
-    ({
-      config,
-      lib,
-      pkgs,
-      ...
-    }: {
-      # boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
-      networking.nat = {
-        enable = true;
-        externalInterface = eth;
-        internalInterfaces = [tun];
-        extraCommands = ''
-          iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o ${eth} -j MASQUERADE
-        '';
+  universal.modules = [
+    ({config, ...}: {
+      networking = {
+        nat = {
+          enable = true;
+          externalInterface = "eth0";
+          internalInterfaces = ["wg0"];
+        };
+        firewall.allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
+        extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: ip: "${ip} ${name}.wg") ips);
+        wireguard.interfaces.wg0 = {
+          ips = ["${ips.${config.networking.hostName}}/24"];
+          listenPort = 51820;
+          privateKeyFile = config.sops.secrets.wireguard-private-key.path;
+        };
       };
-      networking.firewall.trustedInterfaces = [tun];
-      networking.firewall."allowed${nat_proto}Ports" = [nat_port];
-      environment.systemPackages = with pkgs; [openvpn openssl];
-      services.stunnel.enable = use_stunnel;
-      services.stunnel.servers.sodium = {
-        cert = "/etc/stunnel/stunnel.pem";
-        accept = stunnel_port;
-        connect = openvpn_port;
-      };
-      services.openvpn.servers.sodium.config = ''
-        dev ${tun}
-
-        server 10.8.0.0 255.255.255.0
-        push "route ${subnet} 255.255.255.0"
-        push "redirect-gateway def1"
-
-        push "dhcp-option DNS 1.1.1.1"
-        push "dhcp-option DNS 1.0.0.1"
-
-        port ${toString openvpn_port}
-        proto ${openvpn_proto}
-        cipher AES-256-GCM
-
-        ca ${pki}/ca.crt
-        dh ${pki}/dh.pem
-        cert ${pki}/sodium.crt
-        key ${pki}/private/sodium.key
-        askpass ${pki}/private/sodium.pass
-        tls-auth ${pki}/private/ta.key
-
-        key-direction 0
-        keepalive 10 120
-        auth-nocache
-        persist-key
-        persist-tun
-      '';
     })
   ];
 
-  lithium.modules = [
+  iridium.modules = [
     ({
-      config,
-      lib,
       pkgs,
+      config,
       ...
     }: {
-      services.stunnel.enable = use_stunnel;
-      services.stunnel.clients.lithium = {
-        accept = client_stunnel_port;
-        connect = "${remote}:${toString stunnel_port}";
-        cert = "/etc/stunnel/stunnel.pem";
+      networking.wireguard.interfaces.wg0 = {
+        postSetup = ''
+          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+        '';
+        postShutdown = ''
+          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+        '';
+
+        peers = [
+          {
+            publicKey = public-keys.sodium;
+            allowedIPs = [ips'.sodium];
+          }
+          {
+            publicKey = public-keys.nitrogen;
+            allowedIPs = [ips'.nitrogen];
+          }
+          {
+            publicKey = public-keys.oxygen;
+            allowedIPs = [subnet];
+            endpoint = "vps.sodi.boo:${port-for.oxygen}";
+            persistentKeepalive = 25;
+          }
+        ];
       };
-      services.openvpn.servers.lithium.config = ''
-        dev tun
-        client
-        nobind
-
-        remote "${client_remote}"
-
-        remote-cert-tls server
-        resolv-retry infinite
-
-        port ${toString client_port}
-        proto ${openvpn_proto}
-        cipher AES-256-GCM
-
-        ca ${pki}/ca.crt
-        cert ${pki}/lithium.crt
-        key ${pki}/private/lithium.key
-        askpass ${pki}/private/lithium.pass
-        tls-auth ${pki}/private/ta.key
-
-        key-direction 1
-        keepalive 10 120
-        auth-nocache
-        persist-key
-        persist-tun
-      '';
     })
+  ];
+
+  oxygen.modules = [
+    {
+      networking.wireguard.interfaces.wg0.peers = [
+        {
+          publicKey = public-keys.iridium;
+          allowedIPs = [subnet];
+        }
+        {
+          publicKey = public-keys.nitrogen;
+          allowedIPs = [ips'.nitrogen];
+        }
+      ];
+    }
+  ];
+
+  sodium.modules = [
+    {
+      networking.wireguard.interfaces.wg0.peers = [
+        {
+          publicKey = public-keys.iridium;
+          allowedIPs = [subnet];
+          endpoint = "iridium.lan:${port-for.iridium}";
+          persistentKeepalive = 25;
+        }
+      ];
+    }
+  ];
+
+  nitrogen.modules = [
+    {
+      networking.wireguard.interfaces.wg0.peers = [
+        {
+          publicKey = public-keys.iridium;
+          allowedIPs = [subnet];
+          endpoint = "iridium.lan:${port-for.iridium}";
+          persistentKeepalive = 25;
+        }
+        {
+          publicKey = public-keys.oxygen;
+          allowedIPs = [subnet];
+          endpoint = "vps.sodi.boo:${port-for.oxygen}";
+          persistentKeepalive = 25;
+        }
+      ];
+    }
   ];
 }
