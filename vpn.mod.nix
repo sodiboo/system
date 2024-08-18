@@ -22,7 +22,7 @@
 
   ips' = builtins.mapAttrs (name: ip: "${ip}/32");
 
-  port-for = builtins.mapAttrs (machine: {config, ...}: config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
+  port-for = builtins.mapAttrs (machine: {config, ...}: toString config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
   # Some network topology here:
   # - My home network has a subnet of 192.168.86.0/24
   # - My private wireguard network has a subnet of 10.8.0.0/24
