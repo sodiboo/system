@@ -110,7 +110,7 @@ in {
           }
           {
             publicKey = public-keys.nitrogen;
-            allowedIPs = [subnet];
+            allowedIPs = [ips'.nitrogen];
           }
         ];
       };
