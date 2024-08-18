@@ -64,11 +64,7 @@ in {
   ];
 
   iridium.modules = [
-    ({
-      pkgs,
-      config,
-      ...
-    }: {
+    ({pkgs, ...}: {
       networking.wireguard.interfaces.wg0 = {
         postSetup = ''
           ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
@@ -98,18 +94,27 @@ in {
   ];
 
   oxygen.modules = [
-    {
-      networking.wireguard.interfaces.wg0.peers = [
-        {
-          publicKey = public-keys.iridium;
-          allowedIPs = [subnet];
-        }
-        {
-          publicKey = public-keys.nitrogen;
-          allowedIPs = [ips'.nitrogen];
-        }
-      ];
-    }
+    ({pkgs, ...}: {
+      networking.wireguard.interfaces.wg0 = {
+        postSetup = ''
+          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+        '';
+        postShutdown = ''
+          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+        '';
+
+        peers = [
+          {
+            publicKey = public-keys.iridium;
+            allowedIPs = [subnet];
+          }
+          {
+            publicKey = public-keys.nitrogen;
+            allowedIPs = [ips'.nitrogen];
+          }
+        ];
+      };
+    })
   ];
 
   sodium.modules = [
