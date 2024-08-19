@@ -11,6 +11,8 @@
             , $argv
           end
 
+          set machines "iridium" "sodium" "nitrogen" "oxygen"
+
           set EDITOR kak
         '';
       };
