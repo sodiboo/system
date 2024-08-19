@@ -10,46 +10,26 @@
     }
   ];
 
-  sodium.home_modules = [
+  personal.home_modules = [
     {
       programs.ssh = {
         enable = true;
-        extraConfig = ''
-          Host oxygen
-            HostName vps.sodi.boo
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-06
-          Host iridium
-            HostName iridium.lan
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-06
-          Host nitrogen
-            HostName nitrogen.wg
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-06
-        '';
-      };
-    }
-  ];
-
-  nitrogen.home_modules = [
-    {
-      programs.ssh = {
-        enable = true;
-        extraConfig = ''
-          Host oxygen
-            HostName oxygen.wg
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-08
-          Host iridium
-            HostName iridium.wg
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-08
-          Host sodium
-            HostName sodium.wg
-            User sodiboo
-            IdentityFile ~/.ssh/id_ed25519-2024-08
-        '';
+        matchBlocks = let
+          to = hostname: {
+            inherit hostname;
+            user = "sodiboo";
+            identityFile = "~/.ssh/id_ed25519";
+          };
+        in {
+          iridium = to "iridium.wg";
+          sodium = to "sodium.wg";
+          nitrogen = to "nitrogen.wg";
+          oxygen = to "oxygen.wg";
+          "+iridium" = to "iridium.lan";
+          "+sodium" = to "sodium.lan";
+          "+nitrogen" = to "nitrogen.lan";
+          "+oxygen" = to "vps.sodi.boo";
+        };
       };
     }
   ];
