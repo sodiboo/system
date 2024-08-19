@@ -16,6 +16,9 @@ in {
         !include ${config.sops.secrets.access-token-prelude.path}
       '';
       nixpkgs.config.allowUnfree = true;
+      nixpkgs.config.permittedInsecurePackages = [
+        "jitsi-meet-1.0.8043"
+      ];
       system.stateVersion = "23.11";
 
       networking.firewall.allowedUDPPorts = [25565 25577];
