@@ -84,7 +84,7 @@ in {
           }
           {
             publicKey = public-keys.oxygen;
-            allowedIPs = [subnet];
+            allowedIPs = [ips'.oxygen subnet];
             endpoint = "vps.sodi.boo:${port-for.oxygen}";
             persistentKeepalive = 25;
           }
