@@ -139,18 +139,18 @@ in {
   nitrogen.modules = [
     {
       networking.wireguard.interfaces.wg0.peers = [
-        {
-          publicKey = public-keys.iridium;
-          allowedIPs = [subnet];
-          endpoint = "iridium.lan:${port-for.iridium}";
-          persistentKeepalive = 25;
-        }
         # {
-        #   publicKey = public-keys.oxygen;
+        #   publicKey = public-keys.iridium;
         #   allowedIPs = [subnet];
-        #   endpoint = "vps.sodi.boo:${port-for.oxygen}";
+        #   endpoint = "iridium.lan:${port-for.iridium}";
         #   persistentKeepalive = 25;
         # }
+        {
+          publicKey = public-keys.oxygen;
+          allowedIPs = [subnet];
+          endpoint = "vps.sodi.boo:${port-for.oxygen}";
+          persistentKeepalive = 25;
+        }
       ];
     }
   ];
