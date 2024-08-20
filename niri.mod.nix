@@ -119,7 +119,9 @@
                 ]);
 
                 "Mod+L".action = spawn "blurred-locker";
-                "Mod+Shift+S".action = screenshot-area;
+
+                "Mod+Shift+S".action = screenshot;
+                "Print".action = screenshot-screen;
                 "Mod+Print".action = screenshot-window;
 
                 "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
