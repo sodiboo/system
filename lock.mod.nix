@@ -33,6 +33,7 @@ let
         args+=" -i $output:$image"
       done
 
+      niri msg action do-screen-transition
       ${swaylock} $args
 
       rm -r $dir
