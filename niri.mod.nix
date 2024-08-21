@@ -377,7 +377,7 @@
         };
 
         # internal laptop display
-        outputs."eDP-1".scale = 1.6;
+        outputs."eDP-1".scale = 1.5;
         # a TV i sometimes use to display stuff
         outputs."DP-2".scale = 2.0;
         # nested niri window for development should match
