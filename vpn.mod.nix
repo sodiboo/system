@@ -128,12 +128,6 @@ in {
           endpoint = "iridium.lan:${port-for.iridium}";
           persistentKeepalive = 25;
         }
-        {
-          publicKey = public-keys.oxygen;
-          allowedIPs = [ips'.oxygen];
-          endpoint = "vps.sodi.boo:${port-for.oxygen}";
-          persistentKeepalive = 25;
-        }
       ];
     }
   ];
