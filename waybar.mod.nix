@@ -42,7 +42,7 @@ in {
       };
       programs.waybar.settings.mainBar = {
         layer = "top";
-        modules-left = ["wireplumber" "wireplumber#source"];
+        modules-left = ["wireplumber" "wireplumber#source" "idle_inhibitor"];
         modules-center = ["clock#date" "clock"];
         modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery" "custom/swaync"];
 
@@ -201,6 +201,14 @@ in {
         ${module ":not(last-child)"} {
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;
+        }
+
+        #wireplumber:not(.source).muted {
+            color: #${colors.yellow};
+        }
+
+        #idle_inhibitor.activated {
+          color: #${colors.yellow};
         }
 
         #battery.charging {
