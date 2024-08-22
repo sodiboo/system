@@ -65,6 +65,7 @@ in {
 
   iridium.modules = [
     ({pkgs, ...}: {
+      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
       networking.wireguard.interfaces.wg0 = {
         postSetup = ''
           ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
@@ -95,6 +96,7 @@ in {
 
   oxygen.modules = [
     ({pkgs, ...}: {
+      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
       networking.wireguard.interfaces.wg0 = {
         postSetup = ''
           ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
