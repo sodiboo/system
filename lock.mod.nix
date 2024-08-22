@@ -51,26 +51,56 @@ in {
       pkgs,
       config,
       ...
-    }: {
+    }: let
+      scripts' = scripts {
+        inherit pkgs;
+        config = config.home-manager.users.sodiboo;
+      };
+    in {
       options.stylix.blurred-image = with lib;
         mkOption {
           type = types.coercedTo types.package toString types.path;
-          default = (scripts {inherit pkgs config;}).blur config.stylix.image;
+          default = scripts'.blur config.stylix.image;
           readOnly = true;
         };
+
+      config = {
+      };
     })
   ];
 
   personal.home_modules = [
     ({
+      lib,
       pkgs,
       config,
       ...
-    }: {
-      programs.swaylock.enable = true;
+    }: let
+      scripts' = scripts {
+        inherit pkgs config;
+      };
+      niri = lib.getExe config.programs.niri.package;
+    in {
       home.packages = [
-        (scripts {inherit pkgs config;}).lock
+        scripts'.lock
       ];
+      programs.swaylock.enable = true;
+
+      services.swayidle.enable = true;
+      services.swayidle.timeouts = [
+        {
+          timeout = 300;
+          command = "${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
+        }
+        {
+          timeout = 360;
+          command = "${niri} msg action power-off-monitors";
+        }
+      ];
+      systemd.user.services.swayidle.Unit = {
+        Wants = ["niri.service"];
+        After = "niri.service";
+      };
     })
   ];
 }
