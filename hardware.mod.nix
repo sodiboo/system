@@ -85,7 +85,7 @@ in
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "usbhid" "usb_storage" "sd_mod" "rtsx_usb_sdmmc"];
         boot.initrd.kernelModules = [];
         boot.kernelModules = ["kvm-intel"];
-        boot.kernelParams = ["iomem=relaxed"];
+        boot.kernelParams = ["iomem=relaxed" "mem_sleep_default=s2idle"];
         boot.extraModulePackages = [];
       }
     ])
