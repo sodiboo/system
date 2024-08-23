@@ -89,11 +89,21 @@ in {
       services.swayidle.enable = true;
       services.swayidle.timeouts = [
         {
-          timeout = 300;
-          command = "${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
+          timeout = 30;
+          command = "pidof swaylock && systemctl suspend";
         }
         {
-          timeout = 360;
+          timeout = 300;
+          command = "pidof swaylock || ${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
+        }
+        {
+          timeout = 330;
+          command = "pidof swaylock && systemctl suspend";
+        }
+      ];
+      services.swayidle.events = [
+        {
+          event = "before-sleep";
           command = "${niri} msg action power-off-monitors";
         }
       ];
