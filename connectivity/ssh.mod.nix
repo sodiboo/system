@@ -25,6 +25,8 @@
           sodium = to "sodium.wg";
           nitrogen = to "nitrogen.wg";
           oxygen = to "oxygen.wg";
+          # These are backup hosts for when wireguard fails.
+          # Generally, i'll be connecting to SSH via wireguard.
           "+iridium" = to "iridium.lan";
           "+sodium" = to "sodium.lan";
           "+nitrogen" = to "nitrogen.lan";
