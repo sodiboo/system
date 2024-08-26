@@ -1,8 +1,13 @@
-{lan-mouse, ...}: let
+{
+  lan-mouse,
+  extras,
+  ...
+}: let
+  inherit (extras) wireguard-ips;
   with-port = port: hosts: {
     modules = [
       {
-        networking.firewall = {
+        networking.firewall.interfaces.wg0 = {
           allowedUDPPorts = [port];
           allowedTCPPorts = [port];
         };
@@ -20,10 +25,12 @@
   };
 in {
   sodium = with-port 4242 {
-    bottom.hostname = "nitrogen.wg";
+    bottom.hostname = "nitrogen";
+    bottom.ips = [wireguard-ips.nitrogen];
   };
 
   nitrogen = with-port 4242 {
-    top.hostname = "sodium.wg";
+    top.hostname = "sodium";
+    top.ips = [wireguard-ips.sodium];
   };
 }

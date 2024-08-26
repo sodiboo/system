@@ -44,6 +44,8 @@
   # - oxygen needs a weird reverse proxy thing to connect to iridium (really, iridium needs to connect to oxygen, but oxygen acts like the client)
   # - nitrogen wants to connect to iridium, but can't always. so it connects to oxygen when iridium is unavailable, taking a performance hit
 in {
+  extras = {wireguard-ips = ips;};
+
   universal.modules = [
     ({config, ...}: {
       networking = {

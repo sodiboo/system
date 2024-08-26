@@ -60,7 +60,7 @@
         inputs
         // {
           configs = raw_configs;
-          inherit merge;
+          inherit merge extras;
         };
 
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
@@ -82,8 +82,17 @@
           system = prev.system or this.system;
         });
 
-      raw_configs =
-        builtins.zipAttrsWith (const (builtins.foldl' merge {})) (attrValues (read_all_modules "${self}"));
+      all_modules = attrValues (read_all_modules "${self}");
+
+      raw_configs' = builtins.zipAttrsWith (machine:
+        if machine == "extras"
+        then mergeAttrsList
+        else builtins.foldl' merge {})
+      all_modules;
+
+      raw_configs = builtins.removeAttrs raw_configs' ["extras"];
+
+      extras = raw_configs'.extras or {};
 
       configs = builtins.mapAttrs (const (config:
         nixpkgs.lib.nixosSystem {
