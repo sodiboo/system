@@ -1,6 +1,6 @@
 {
   niri,
-  # niri-working-tree,
+  niri-working-tree,
   ...
 }: {
   personal.modules = [
@@ -8,8 +8,8 @@
     ({pkgs, ...}: {
       programs.niri.enable = true;
       nixpkgs.overlays = [niri.overlays.niri];
-      programs.niri.package = pkgs.niri-unstable;
-      # programs.niri.package = pkgs.niri-unstable.override {src = niri-working-tree;};
+      # programs.niri.package = pkgs.niri-unstable;
+      programs.niri.package = pkgs.niri-unstable.override {src = niri-working-tree;};
       environment.variables.NIXOS_OZONE_WL = "1";
       environment.systemPackages = with pkgs; [
         wl-clipboard

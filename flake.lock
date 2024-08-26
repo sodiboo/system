@@ -1367,6 +1367,23 @@
         "type": "github"
       }
     },
+    "niri-working-tree": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1724681963,
+        "narHash": "sha256-wOPt0HFntUVXKJ0ByIffjob1bEn59uLH2eSqB994nXw=",
+        "owner": "sodiboo",
+        "repo": "niri",
+        "rev": "b298e49e035cfa186782c48d4028b2cd70c9fefe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sodiboo",
+        "ref": "support-lan-mouse",
+        "repo": "niri",
+        "type": "github"
+      }
+    },
     "nix": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -2122,6 +2139,7 @@
         "lan-mouse": "lan-mouse",
         "nari": "nari",
         "niri": "niri",
+        "niri-working-tree": "niri-working-tree",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_13",
