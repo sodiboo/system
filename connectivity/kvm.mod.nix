@@ -2,7 +2,7 @@
   with-port = port: hosts: {
     modules = [
       {
-        networking.firewall.interfaces.wg0 = {
+        networking.firewall = {
           allowedUDPPorts = [port];
           allowedTCPPorts = [port];
         };
