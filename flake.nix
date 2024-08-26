@@ -23,6 +23,8 @@
     # niri-working-tree.url = "github:sodiboo/niri";
     # niri-working-tree.flake = false;
 
+    lan-mouse.url = "github:feschber/lan-mouse";
+
     conduwuit.url = "github:girlbossceo/conduwuit";
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
