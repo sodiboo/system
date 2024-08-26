@@ -94,6 +94,8 @@
 
           hotkey-overlay.skip-at-startup = true;
 
+          screenshot-path = "~/Pictures/Screenshots/%Y-%m-%dT%H:%M:%S.png";
+
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";
 
