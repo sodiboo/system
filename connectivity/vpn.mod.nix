@@ -77,10 +77,6 @@ in {
             allowedIPs = [ips'.sodium];
           }
           {
-            publicKey = public-keys.nitrogen;
-            allowedIPs = [ips'.nitrogen];
-          }
-          {
             publicKey = public-keys.oxygen;
             allowedIPs = [subnet];
             endpoint = "vps.sodi.boo:${port-for.oxygen}";
