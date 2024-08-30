@@ -60,6 +60,12 @@
         inputs
         // {
           configs = raw_configs;
+          elements = {
+            nitrogen = 7;
+            oxygen = 8;
+            sodium = 11;
+            iridium = 77;
+          };
           inherit merge extras;
         };
 
@@ -111,8 +117,6 @@
       p = s: builtins.trace "\n\n${s}\n" "---";
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-      nixosConfigurations = {
-        inherit (configs) sodium nitrogen oxygen iridium;
-      };
+      nixosConfigurations = builtins.mapAttrs (name: const configs.name) params.elements;
     };
 }

@@ -1,6 +1,7 @@
 {
   self,
   nixpkgs,
+  elements,
   ...
 }: let
   public-keys = {
@@ -10,16 +11,10 @@
     oxygen = "/C3FBaSjRXh2ln9sbTJETb3Dj5masxOAzi3xawdcSiA=";
   };
 
-  ip = i: "10.8.0.${toString i}";
+  ip = i: "10.74.62.${toString i}";
   subnet = "${ip 0}/24";
 
-  ips = {
-    iridium = ip 1;
-    sodium = ip 2;
-    nitrogen = ip 3;
-    oxygen = ip 4;
-  };
-
+  ips = builtins.mapAttrs (nixpkgs.lib.const ip) elements;
   ips' = builtins.mapAttrs (name: ip: "${ip}/32") ips;
 
   port-for = builtins.mapAttrs (machine: {config, ...}: toString config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
