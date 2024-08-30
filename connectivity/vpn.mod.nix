@@ -53,7 +53,8 @@ in {
         extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: ip: "${ip} ${name}.wg") ips);
         wireguard.interfaces.wg0 = {
           ips = ["${ips.${config.networking.hostName}}/24"];
-          listenPort = 51820;
+          # School network seems to block UDP ports above 28000?
+          listenPort = 27462;
           privateKeyFile = config.sops.secrets.wireguard-private-key.path;
         };
       };
