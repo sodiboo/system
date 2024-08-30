@@ -117,6 +117,6 @@
       p = s: builtins.trace "\n\n${s}\n" "---";
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-      nixosConfigurations = builtins.mapAttrs (name: const configs.name) params.elements;
+      nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
     };
 }
