@@ -48,6 +48,12 @@
       })
   ];
 
+  iridium.modules = [
+    ({config, ...}: {
+      sops.secrets.binary-cache-secret.owner = "nix-serve";
+    })
+  ];
+
   personal.modules = [
     ({config, ...}: {
       sops.secrets."spotify/username".owner = config.users.users.sodiboo.name;

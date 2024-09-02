@@ -1,4 +1,8 @@
-{nix-monitored, ...}: let
+{
+  nix-monitored,
+  extras,
+  ...
+}: let
   caches = {
   };
 in {
@@ -21,7 +25,30 @@ in {
       ];
       system.stateVersion = "23.11";
     })
+    ({
+      config,
+      lib,
+      ...
+    }:
+      lib.mkIf (config.networking.hostName != "iridium") {
+        nix.settings = {
+          substituters = ["http://${extras.wireguard-ips.iridium}:5020"];
+          trusted-public-keys = ["sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw="];
+        };
+      })
   ];
+
+  iridium.modules = [
+    ({config, ...}: {
+      services.nix-serve = {
+        enable = true;
+        port = 5020;
+        openFirewall = true;
+        secretKeyFile = config.sops.secrets.binary-cache-secret.path;
+      };
+    })
+  ];
+
   universal.home_modules = [
     ({
       pkgs,
