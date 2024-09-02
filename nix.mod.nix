@@ -1,6 +1,6 @@
 {nix-monitored, ...}: let
   caches = {
-    # "https://niri.cachix.org" = "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=";
+    "https://sodiboo.cachix.org" = "sodiboo.cachix.org-1:OYvR3VK0IKqu+iE5T6cE7rNENoKgNQv++tkiv4oJkII=";
   };
 in {
   universal.modules = [
