@@ -124,8 +124,7 @@
       nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
 
       # This is useful to rebuild all systems at once, for substitution
-      all-systems =
-        nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" {} (''
+      all-systems = nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" {} (''
           mkdir $out
         ''
         + (builtins.concatStringsSep "\n" (mapAttrsToList (
