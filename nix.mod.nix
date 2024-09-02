@@ -1,6 +1,5 @@
 {nix-monitored, ...}: let
   caches = {
-    "https://sodiboo.cachix.org" = "sodiboo.cachix.org-1:OYvR3VK0IKqu+iE5T6cE7rNENoKgNQv++tkiv4oJkII=";
   };
 in {
   universal.modules = [
