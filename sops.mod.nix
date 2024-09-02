@@ -50,7 +50,7 @@
 
   iridium.modules = [
     ({config, ...}: {
-      sops.secrets.binary-cache-secret.owner = "nix-serve";
+      sops.secrets.binary-cache-secret = {};
     })
   ];
 
