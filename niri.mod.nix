@@ -3,8 +3,9 @@
   niri-working-tree,
   ...
 }: {
+  # enable the binary cache on all systems; useful for remote build
+  universal.modules = [niri.nixosModules.niri];
   personal.modules = [
-    niri.nixosModules.niri
     ({pkgs, ...}: {
       programs.niri.enable = true;
       nixpkgs.overlays = [niri.overlays.niri];
