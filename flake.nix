@@ -134,6 +134,6 @@
               ln -s ${config.config.system.build.toplevel} $out/${name}
             ''
           )
-          nixosConfigurations));
+          self.nixosConfigurations));
     };
 }
