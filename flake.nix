@@ -123,10 +123,9 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
       nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
 
-      # This derivation is the one that is cached.
-      # It's not useful on its own, but its dependencies are.
-      __cached =
-        nixpkgs.legacyPackages.x86_64-linux.runCommand "cached" {} (''
+      # This is useful to rebuild all systems at once, for substitution
+      all-systems =
+        nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" {} (''
           mkdir $out
         ''
         + (builtins.concatStringsSep "\n" (mapAttrsToList (
