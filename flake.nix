@@ -126,7 +126,7 @@
       # This derivation is the one that is cached.
       # It's not useful on its own, but its dependencies are.
       __cached =
-        nixpkgs.legacyPackages.x86_64-linux.runCommand "cached" {} ''
+        nixpkgs.legacyPackages.x86_64-linux.runCommand "cached" {} (''
           mkdir $out
         ''
         + (builtins.concatStringsSep "\n" (mapAttrsToList (
@@ -134,6 +134,6 @@
               ln -s ${config.config.system.build.toplevel} $out/${name}
             ''
           )
-          self.nixosConfigurations));
+          self.nixosConfigurations)));
     };
 }
