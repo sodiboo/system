@@ -21,9 +21,6 @@ in {
         "jitsi-meet-1.0.8043"
       ];
       system.stateVersion = "23.11";
-
-      networking.firewall.allowedUDPPorts = [25565 25577];
-      networking.firewall.allowedTCPPorts = [25565 25577];
     })
   ];
   universal.home_modules = [
