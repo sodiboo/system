@@ -10,6 +10,8 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    nix-monitored.url = "github:ners/nix-monitored";
+
     sops-nix.url = "github:Mic92/sops-nix";
 
     stylix.url = "github:danth/stylix";

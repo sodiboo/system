@@ -1,4 +1,4 @@
-let
+{nix-monitored, ...}: let
   caches = {
     # "https://niri.cachix.org" = "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964=";
   };
@@ -15,6 +15,7 @@ in {
       nix.extraOptions = ''
         !include ${config.sops.secrets.access-token-prelude.path}
       '';
+      nixpkgs.overlays = [nix-monitored.overlays.default];
       nixpkgs.config.allowUnfree = true;
       nixpkgs.config.permittedInsecurePackages = [
         "jitsi-meet-1.0.8043"
