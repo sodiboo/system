@@ -32,7 +32,7 @@ in {
     }:
       lib.mkIf (config.networking.hostName != "iridium") {
         nix.settings = {
-          substituters = ["http://${extras.wireguard-ips.iridium}:5020"];
+          substituters = ["https://cache.sodi.boo"];
           trusted-public-keys = ["sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw="];
         };
       })
