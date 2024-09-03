@@ -1,4 +1,4 @@
-{picocss, ...}: {
+{self, picocss, ...}: {
   oxygen.modules = [
     ({
       lib,
@@ -121,13 +121,13 @@
               forceSSL = true;
               enableACME = true;
             };
-          proxy' = port: {
-            proxyPass = "http://127.0.0.1:${toString port}";
+          proxy' = host: port: {
+            proxyPass = "http://${host}:${toString port}";
             proxyWebsockets = true;
           };
-          proxy = port:
+          proxy = host: port:
             base {
-              "/" = proxy' port;
+              "/" = proxy' host port;
             };
           personal-website = inactive: status: redirect: ''
             location = /blog {
@@ -163,10 +163,11 @@
             "sodi.gay" = base {
               extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
             };
+            "cache.sodi.boo" = proxy "iridium.wg" self.nixosConfigurations.iridium.config.services.nix-serve.port;
             "gaysex.cloud" =
               base {
-                "/" = proxy' config.services.sharkey.settings.port;
-                "/_matrix" = proxy' config.services.matrix-conduit.settings.global.port;
+                "/" = proxy' "localhost" config.services.sharkey.settings.port;
+                "/_matrix" = proxy' "localhost" config.services.matrix-conduit.settings.global.port;
               }
               // {
                 listen = let
@@ -178,8 +179,8 @@
                 in
                   p 80 false ++ p 443 true ++ p 8448 true;
               };
-            "infodumping.place" = proxy config.services.writefreely.settings.server.port;
-            "search.gaysex.cloud" = proxy config.services.searx.settings.server.port;
+            "infodumping.place" = proxy "localhost" config.services.writefreely.settings.server.port;
+            "search.gaysex.cloud" = proxy "localhost" config.services.searx.settings.server.port;
           };
       };
       security.acme = {
