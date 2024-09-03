@@ -1,4 +1,8 @@
-{self, picocss, ...}: {
+{
+  self,
+  picocss,
+  ...
+}: {
   oxygen.modules = [
     ({
       lib,
