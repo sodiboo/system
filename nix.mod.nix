@@ -29,6 +29,34 @@ in {
       config,
       lib,
       ...
+    }: {
+      programs.ssh.extraConfig = ''
+        ${builtins.concatStringsSep "" (lib.mapAttrsToList (name: n: ''
+            Host ${name}
+              HostName ${name}.wg
+              User remote-builder
+              IdentityFile ${config.sops.secrets.remote-build-ssh-id.path}
+          '')
+          elements)}
+      '';
+
+      users.users.remote-builder = {
+        isSystemUser = true;
+        group = "remote-builder";
+        description = "trusted remote builder user";
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwHeeSm7ten3Rxqj90xaBWgyRw1xYqBjKBj8nevFOD remote-builder"
+        ];
+      };
+
+      users.groups.remote-builder = {};
+
+      nix.settings.trusted-users = ["remote-builder"];
+    })
+    ({
+      config,
+      lib,
+      ...
     }:
       lib.mkIf (
         # Don't make iridium a substitute for itself. That would be silly.
