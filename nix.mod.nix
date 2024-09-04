@@ -27,6 +27,7 @@ in {
     })
     ({
       config,
+      pkgs,
       lib,
       ...
     }: {
@@ -47,6 +48,7 @@ in {
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwHeeSm7ten3Rxqj90xaBWgyRw1xYqBjKBj8nevFOD remote-builder"
         ];
+        shell = pkgs.runtimeShell;
       };
 
       users.groups.remote-builder = {};
