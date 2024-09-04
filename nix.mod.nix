@@ -1,6 +1,6 @@
 {
   nix-monitored,
-  extras,
+  elements,
   ...
 }: let
   caches = {
@@ -30,7 +30,10 @@ in {
       lib,
       ...
     }:
-      lib.mkIf (config.networking.hostName != "iridium") {
+      lib.mkIf (
+        # Don't make iridium a substitute for itself. That would be silly.
+        config.networking.hostName != "iridium"
+      ) {
         nix.settings = {
           substituters = ["https://cache.sodi.boo"];
           trusted-public-keys = ["sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw="];
@@ -40,6 +43,8 @@ in {
 
   iridium.modules = [
     ({config, ...}: {
+      # This is publicly served from https://cache.sodi.boo
+      # That's proxied through oxygen from nginx.
       services.nix-serve = {
         enable = true;
         port = 5020;
