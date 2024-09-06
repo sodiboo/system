@@ -1,14 +1,5 @@
 {
   personal.modules = [
-    {
-      nixpkgs.overlays = [
-        (final: prev: {
-          # You still have to override it in settings so ig this doesn't work?
-          # But at least it prevents the wrong glfw from being discovered in that case.
-          prismlauncher = prev.prismlauncher.override {glfw = final.glfw-wayland-minecraft;};
-        })
-      ];
-    }
     ({pkgs, ...}: {
       programs.steam = {
         enable = true;
