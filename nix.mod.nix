@@ -84,6 +84,20 @@ in {
     })
   ];
 
+  nitrogen.modules = [
+    ({config, ...}: {
+      nix.distributedBuilds = true;
+      nix.buildMachines = [
+        {
+          hostName = "iridium";
+          system = "x86_64-linux";
+
+          maxJobs = 4;
+        }
+      ];
+    })
+  ];
+
   universal.home_modules = [
     ({
       pkgs,
