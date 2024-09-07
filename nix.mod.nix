@@ -100,7 +100,7 @@ in {
         script = ''
           mkdir -p /tmp/auto-update-rebuild && cd /tmp/auto-update-rebuild
 
-          export PATH=${lib.makeBinPath [pkgs.nix pkgs.git]}
+          export PATH=${lib.makeBinPath (with pkgs; [nix git coreutils])}
 
           nix build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
         '';
