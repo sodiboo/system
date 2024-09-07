@@ -100,7 +100,9 @@ in {
         script = ''
           mkdir -p /tmp/auto-update-rebuild && cd /tmp/auto-update-rebuild
 
-          ${lib.getExe pkgs.nix} build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
+          export PATH=${lib.makeBinPath [pkgs.nix pkgs.git]}
+
+          nix build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
         '';
 
         serviceConfig = {
