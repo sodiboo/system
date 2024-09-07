@@ -11,28 +11,28 @@
       tomlFormat = pkgs.formats.toml {};
       configFile = tomlFormat.generate "spotifyd.conf" cfg.settings;
     in {
-      systemd.user.services.spotifyd = lib.mkForce {
-        Unit = {
-          Description = "spotify daemon";
-          Documentation = "https://github.com/Spotifyd/spotifyd";
-        };
+      # systemd.user.services.spotifyd = lib.mkForce {
+      #   Unit = {
+      #     Description = "spotify daemon";
+      #     Documentation = "https://github.com/Spotifyd/spotifyd";
+      #   };
 
-        Install.WantedBy = ["default.target"];
+      #   Install.WantedBy = ["default.target"];
 
-        Service = {
-          ExecStart = "${cfg.package}/bin/spotifyd ${lib.escapeShellArgs [
-            "--no-daemon"
-            "--username-cmd"
-            "cat ${nixosConfig.sops.secrets."spotify/username".path}"
-            "--password-cmd"
-            "cat ${nixosConfig.sops.secrets."spotify/password".path}"
-            "--config-path"
-            configFile
-          ]}";
-          Restart = "always";
-          RestartSec = 12;
-        };
-      };
+      #   Service = {
+      #     ExecStart = "${cfg.package}/bin/spotifyd ${lib.escapeShellArgs [
+      #       "--no-daemon"
+      #       "--username-cmd"
+      #       "cat ${nixosConfig.sops.secrets."spotify/username".path}"
+      #       "--password-cmd"
+      #       "cat ${nixosConfig.sops.secrets."spotify/password".path}"
+      #       "--config-path"
+      #       configFile
+      #     ]}";
+      #     Restart = "always";
+      #     RestartSec = 12;
+      #   };
+      # };
     })
     ({
       nixosConfig,
