@@ -81,6 +81,29 @@ in {
         openFirewall = true;
         secretKeyFile = config.sops.secrets.binary-cache-secret.path;
       };
+
+      systemd.timers."auto-update-rebuild" = {
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnBootSec = "5m";
+          OnUnitInactiveSec = "1h";
+          Unit = "auto-update-rebuild.service";
+        };
+      };
+
+      systemd.services."auto-update-rebuild" = {
+        script = ''
+          mkdir -p /tmp/auto-update-rebuild && cd /tmp/auto-update-rebuild
+
+          nix build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
+        '';
+
+        serviceConfig = {
+          Restart = "on-failure";
+          RestartSec = "15m";
+          Type = "oneshot";
+        };
+      };
     })
   ];
 
