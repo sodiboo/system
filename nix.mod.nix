@@ -72,7 +72,12 @@ in {
   ];
 
   iridium.modules = [
-    ({config, ...}: {
+    ({
+      config,
+      pkgs,
+      lib,
+      ...
+    }: {
       # This is publicly served from https://cache.sodi.boo
       # That's proxied through oxygen from nginx.
       services.nix-serve = {
@@ -95,7 +100,7 @@ in {
         script = ''
           mkdir -p /tmp/auto-update-rebuild && cd /tmp/auto-update-rebuild
 
-          nix build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
+          ${lib.getExe pkgs.nix} build github:sodiboo/system#all-systems --recreate-lock-file --no-write-lock-file
         '';
 
         serviceConfig = {
