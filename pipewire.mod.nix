@@ -60,4 +60,26 @@
       };
     }
   ];
+
+  nitrogen.modules = [
+    {
+      services.pipewire.wireplumber.extraConfig."99-rename" = {
+        "monitor.alsa.rules" = [
+          {
+            matches = [
+              {"node.name" = "alsa_output.pci-0000_00_1f.3.analog-stereo";}
+              {"node.name" = "alsa_input.pci-0000_00_1f.3.analog-stereo";}
+            ];
+
+            actions = {
+              update-props = {
+                "node.nick" = "Built-in Audio";
+                "node.description" = "Built-in Audio";
+              };
+            };
+          }
+        ];
+      };
+    }
+  ];
 }
