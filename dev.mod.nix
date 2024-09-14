@@ -56,7 +56,6 @@
   universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
-        rustup
         clang
         bun
       ];
