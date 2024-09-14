@@ -43,7 +43,7 @@ in {
       programs.waybar.settings.mainBar = {
         layer = "top";
         modules-left = ["wireplumber" "wireplumber#source" "idle_inhibitor"];
-        modules-center = ["clock#date" "clock"];
+        modules-center = ["clock#date" "clock#week" "clock"];
         modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery" "custom/swaync"];
 
         battery = {
@@ -62,6 +62,9 @@ in {
 
         "clock#date" = {
           format = "${icons.calendar} {:%Y-%m-%d}";
+        };
+        "clock#week" = {
+          format = "${icons.calendar} {:%W}";
         };
 
         network = {
