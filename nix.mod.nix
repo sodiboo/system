@@ -7,9 +7,13 @@
   };
 in {
   universal.modules = [
+    {
+      system.stateVersion = "23.11";
+      nixpkgs.config.allowUnfree = true;
+      nix.settings.experimental-features = ["nix-command" "flakes"];
+    }
     ({config, ...}: {
       nix.settings = {
-        experimental-features = ["nix-command" "flakes"];
         substituters = builtins.attrNames caches;
         trusted-public-keys = builtins.attrValues caches;
       };
@@ -18,9 +22,20 @@ in {
       nix.extraOptions = ''
         !include ${config.sops.secrets.access-token-prelude.path}
       '';
-      nixpkgs.overlays = [nix-monitored.overlays.default];
-      nixpkgs.config.allowUnfree = true;
-      system.stateVersion = "23.11";
+    })
+    ({pkgs, ...}: {
+      nixpkgs.overlays = [
+        nix-monitored.overlays.default
+        (final: prev: {
+          nixos-rebuild = prev.nixos-rebuild.override {
+            nix = prev.nix-monitored;
+          };
+          nix-direnv = prev.nix-direnv.override {
+            nix = prev.nix-monitored;
+          };
+        })
+      ];
+      nix.package = pkgs.nix-monitored;
     })
     ({
       config,
