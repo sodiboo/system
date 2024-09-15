@@ -20,9 +20,6 @@ in {
       '';
       nixpkgs.overlays = [nix-monitored.overlays.default];
       nixpkgs.config.allowUnfree = true;
-      nixpkgs.config.permittedInsecurePackages = [
-        "jitsi-meet-1.0.8043"
-      ];
       system.stateVersion = "23.11";
     })
     ({
