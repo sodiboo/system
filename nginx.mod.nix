@@ -183,6 +183,10 @@
                 in
                   p 80 false ++ p 443 true ++ p 8448 true;
               };
+            "vpn.sodi.boo" = base {
+              "/" = proxy' "localhost" config.services.headscale.port;
+              "/metrics".proxyPass = "http://${config.services.headscale.settings.metrics_listen_addr}/metrics";
+            };
             "infodumping.place" = proxy "localhost" config.services.writefreely.settings.server.port;
             "search.gaysex.cloud" = proxy "localhost" config.services.searx.settings.server.port;
           };
