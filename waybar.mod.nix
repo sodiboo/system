@@ -34,7 +34,6 @@ in {
       ...
     }: {
       systemd-fuckery.auto-restart = ["waybar"];
-      systemd-fuckery.start-with-niri = ["waybar"];
 
       programs.waybar = {
         enable = true;

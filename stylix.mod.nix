@@ -88,16 +88,14 @@ in {
       ...
     }: {
       systemd-fuckery.auto-restart = ["swaybg"];
-      systemd-fuckery.start-with-niri = ["swaybg"];
       systemd.user.services."swaybg" = {
         Unit = {
           Description = "wallpapers! brought to you by stylix! :3";
           PartOf = ["graphical-session.target"];
-          After = ["graphical-session.target"];
-          Requisite = ["graphical-session.target"];
         };
+        Install.WantedBy = ["graphical-session.target"];
         Service = {
-          ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${config.stylix.image}";
+          ExecStart = "${lib.getExe pkgs.swaybg} -i ${config.stylix.image}";
           Restart = "on-failure";
         };
       };

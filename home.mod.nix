@@ -32,23 +32,9 @@
           type = lib.types.listOf lib.types.str;
           default = [];
         };
-
-        start-with-niri = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = [];
-        };
       };
 
       config = {
-        systemd.user.services = builtins.listToAttrs (map (name: {
-            inherit name;
-            value = {
-              Unit.After = ["niri.service"];
-              Install.WantedBy = ["niri.service"];
-            };
-          })
-          config.systemd-fuckery.start-with-niri);
-
         home.activation.restartSystemdFuckery = let
           ensureRuntimeDir = "XDG_RUNTIME_DIR=\${XDG_RUNTIME_DIR:-/run/user/$(id -u)}";
 
