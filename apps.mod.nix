@@ -1,4 +1,8 @@
-{vscode-server, ...}: {
+{
+  vscode-server,
+  zen-browser,
+  ...
+}: {
   universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
@@ -37,6 +41,8 @@
           sodi-vscode-fhs = final.writeShellScriptBin "code-fhs" ''
             exec ${lib.getExe final.vscode-fhs} $@
           '';
+          zen-browser-specific = zen-browser.packages.x86_64-linux.specific;
+          zen-browser-generic = zen-browser.packages.x86_64-linux.generic;
         })
       ];
     })
@@ -47,6 +53,7 @@
         appimage-run
         dolphin
         firefox
+        zen-browser-specific
         thunderbird
         gnome.seahorse
         obs-studio

@@ -39,6 +39,9 @@
     picocss.flake = false;
 
     nixpkgs-with-meilisearch-at-1-8-3.url = "github:NixOS/nixpkgs/6edd5cc7bd8eb73d2e7c2f05b34c04a7a4d02de9";
+
+    zen-browser.url = "github:MarceColl/zen-browser-flake";
+    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
