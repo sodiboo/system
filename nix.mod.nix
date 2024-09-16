@@ -27,6 +27,12 @@ in {
       nixpkgs.overlays = [
         nix-monitored.overlays.default
         (final: prev: {
+          nix-monitored = prev.nix-monitored.override {
+            # I find the notifications annoying.
+            withNotify = false;
+          };
+        })
+        (final: prev: {
           nixos-rebuild = prev.nixos-rebuild.override {
             nix = prev.nix-monitored;
           };
