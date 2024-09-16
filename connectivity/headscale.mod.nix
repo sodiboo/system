@@ -27,4 +27,20 @@
       networking.firewall.allowedUDPPorts = [3478];
     }
   ];
+
+  universal.modules = [
+    {
+      services.tailscale = {
+        enable = true;
+        openFirewall = true;
+        useRoutingFeatures = "both";
+      };
+    }
+  ];
+
+  iridium.modules = [
+    {
+      services.tailscale.extraSetFlags = ["--advertise-exit-node"];
+    }
+  ];
 }
