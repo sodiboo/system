@@ -43,7 +43,7 @@ in {
         layer = "top";
         modules-left = ["wireplumber" "wireplumber#source" "idle_inhibitor"];
         modules-center = ["clock#date" "clock"];
-        modules-right = ["network" "custom/openvpn" "bluetooth" "bluetooth#battery" "battery" "custom/swaync"];
+        modules-right = ["network" "bluetooth" "bluetooth#battery" "battery" "custom/swaync"];
 
         battery = {
           interval = 5;
@@ -118,18 +118,6 @@ in {
             activated = icons.idle.on;
             deactivated = icons.idle.off;
           };
-        };
-
-        "custom/openvpn" = {
-          format = "{}";
-          exec = "${pkgs.writeScript "openvpn-status" ''
-            if ip addr show tun0; then
-              echo "${icons.vpn}"
-            else
-              echo
-            fi
-          ''}";
-          restart-interval = 5;
         };
 
         "custom/swaync" = {
