@@ -100,18 +100,16 @@
 
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";
-
-            screenshot-area-script = pkgs.writeShellScript "screenshot-area" ''
-              grim -o $(niri msg --json focused-output | jq -r .name) - | swayimg --config=info.mode=off --fullscreen - &
-              SWAYIMG=$!
-              niri msg action do-screen-transition -d 1200
-              sleep 1.2
-              grim -g "$(slurp)" - | wl-copy -t image/png
-              niri msg action do-screen-transition
-              kill $SWAYIMG
-            '';
-
-            screenshot-area = spawn "${screenshot-area-script}";
+            # screenshot-area-script = pkgs.writeShellScript "screenshot-area" ''
+            #   grim -o $(niri msg --json focused-output | jq -r .name) - | swayimg --config=info.mode=off --fullscreen - &
+            #   SWAYIMG=$!
+            #   niri msg action do-screen-transition -d 1200
+            #   sleep 1.2
+            #   grim -g "$(slurp)" - | wl-copy -t image/png
+            #   niri msg action do-screen-transition
+            #   kill $SWAYIMG
+            # '';
+            # screenshot-area = spawn "${screenshot-area-script}";
           in
             lib.attrsets.mergeAttrsList [
               {
