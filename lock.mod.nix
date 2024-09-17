@@ -75,42 +75,55 @@ in {
       pkgs,
       config,
       ...
-    }: let
-      scripts' = scripts {
-        inherit pkgs config;
-      };
-      niri = lib.getExe config.programs.niri.package;
-    in {
-      home.packages = [
-        scripts'.lock
-      ];
-      programs.swaylock.enable = true;
+    }: {
+      options.suspend-when-idle = lib.mkEnableOption "suspend when idle";
+      config = let
+        scripts' = scripts {
+          inherit pkgs config;
+        };
+        systemctl = config.systemd.user.systemctlPath;
+        pidof = lib.getExe' pkgs.procps "pidof";
+        niri = lib.getExe config.programs.niri.package;
 
-      services.swayidle.enable = true;
-      services.swayidle.timeouts = [
-        {
-          timeout = 30;
-          command = "pidof swaylock && systemctl suspend";
-        }
-        {
-          timeout = 300;
-          command = "pidof swaylock || ${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
-        }
-        {
-          timeout = 330;
-          command = "pidof swaylock && systemctl suspend";
-        }
-      ];
-      services.swayidle.events = [
-        {
-          event = "before-sleep";
-          command = "${niri} msg action power-off-monitors";
-        }
-      ];
-      systemd.user.services.swayidle.Unit = {
-        Wants = ["niri.service"];
-        After = "niri.service";
+        secondary =
+          if config.suspend-when-idle
+          then "${systemctl} suspend"
+          else "${niri} msg action power-off-monitors";
+      in {
+        home.packages = [
+          scripts'.lock
+        ];
+        programs.swaylock.enable = true;
+
+        services.swayidle.enable = true;
+        services.swayidle.timeouts = [
+          {
+            timeout = 30;
+            command = "${pidof} swaylock && ${secondary}";
+          }
+          {
+            timeout = 300;
+            command = "${pidof} swaylock || ${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
+          }
+          {
+            timeout = 330;
+            command = "${pidof} swaylock && ${secondary}";
+          }
+        ];
+        services.swayidle.events = [
+          {
+            event = "before-sleep";
+            command = "${niri} msg action power-off-monitors";
+          }
+        ];
+        systemd.user.services.swayidle.Unit = {
+          Wants = ["niri.service"];
+          After = "niri.service";
+        };
       };
     })
   ];
+
+  sodium.home_modules = [{suspend-when-idle = false;}];
+  nitrogen.home_modules = [{suspend-when-idle = true;}];
 }
