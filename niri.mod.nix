@@ -202,6 +202,20 @@
           #   {command = ["waybar"];}
           #   {command = ["swww" "start"];}
           # ];
+          spawn-at-startup = [
+            {
+              command = let
+                units = [
+                  "niri"
+                  "graphical-session.target"
+                  "xdg-desktop-portal"
+                  "xdg-desktop-portal-gnome"
+                  "waybar"
+                ];
+                commands = builtins.concatStringsSep ";" (map (unit: "systemctl --user status ${unit}") units);
+              in ["kitty" "--" "sh" "-c" "env SYSTEMD_COLORS=1 watch -n 1 -d --color '${commands}'"];
+            }
+          ];
 
           animations.shaders.window-resize = ''
             vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
