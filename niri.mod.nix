@@ -280,6 +280,10 @@
               opacity = 1.0;
             }
             {
+              matches = [{app-id = "^niri$";}];
+              opacity = 1.0;
+            }
+            {
               matches = [
                 {
                   app-id = "^kitty$";
