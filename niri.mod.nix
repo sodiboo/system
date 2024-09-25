@@ -76,6 +76,8 @@
           input.tablet.map-to-output = "eDP-1";
           input.touch.map-to-output = "eDP-1";
 
+          # input.warp-mouse-to-focus = true;
+
           prefer-no-csd = true;
 
           layout = {
@@ -84,6 +86,13 @@
             struts.right = 64;
             border.width = 4;
             always-center-single-column = true;
+
+            # fog of war
+            focus-ring = {
+              # enable = true;
+              width = 10000;
+              active.color = "#00000055";
+            };
             # border.active.gradient = {
             #   from = "red";
             #   to = "blue";
