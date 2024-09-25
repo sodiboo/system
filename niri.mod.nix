@@ -20,9 +20,6 @@
         gamescope
         xwayland-satellite-unstable
       ];
-      # qt.enable = true;
-      # qt.style = "adwaita-dark";
-      # qt.platformTheme = "gnome";
     })
   ];
 
