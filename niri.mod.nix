@@ -201,13 +201,6 @@
               }
             ];
 
-          # examples:
-
-          # spawn-at-startup = [
-          #   {command = ["alacritty"];}
-          #   {command = ["waybar"];}
-          #   {command = ["swww" "start"];}
-          # ];
           spawn-at-startup = [
             {
               command = [
