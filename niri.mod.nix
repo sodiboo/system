@@ -210,6 +210,13 @@
           # ];
           spawn-at-startup = [
             {
+              command = [
+                "${lib.getExe pkgs.gammastep}"
+                "-l"
+                "59:11" # lol, doxxed
+              ];
+            }
+            {
               command = let
                 units = [
                   "niri"
