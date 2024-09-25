@@ -213,6 +213,10 @@
 
             only-on-session = wrapper "only-on-session" "=";
             only-without-session = wrapper "only-without-session" "!=";
+
+            modulated-wallpaper = pkgs.runCommand "modulated-wallpaper.png" {} ''
+              ${lib.getExe pkgs.imagemagick} ${config.stylix.image} -modulate 100,100,14 $out
+            '';
           in [
             {
               command = [
@@ -233,7 +237,7 @@
                 "${only-without-session}"
                 "${lib.getExe pkgs.swaybg}"
                 "-i"
-                "${config.stylix.image}"
+                "${modulated-wallpaper}"
               ];
             }
             {
