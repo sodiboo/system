@@ -18,7 +18,7 @@
         libsecret
         cage
         gamescope
-        xwayland-satellite
+        xwayland-satellite-unstable
       ];
       # qt.enable = true;
       # qt.style = "adwaita-dark";
