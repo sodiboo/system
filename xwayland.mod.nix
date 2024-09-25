@@ -4,8 +4,8 @@
       nixpkgs.overlays = [
         (final: prev: {
           sodi-x-run-env = let
-            wl-copy = "${final.wl-clipboard}/bin/wl-copy";
-            wl-paste = "${final.wl-clipboard}/bin/wl-paste";
+            wl-copy = lib.getExe' final.wl-clipboard "wl-copy";
+            wl-paste = lib.getExe' final.wl-clipboard "wl-paste";
             xclip = lib.getExe final.xclip;
             clipnotify = lib.getExe final.clipnotify;
             metacity = lib.getExe final.gnome.metacity;
