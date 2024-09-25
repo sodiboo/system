@@ -8,7 +8,7 @@
             wl-paste = lib.getExe' final.wl-clipboard "wl-paste";
             xclip = lib.getExe final.xclip;
             clipnotify = lib.getExe final.clipnotify;
-            metacity = lib.getExe final.gnome.metacity;
+            metacity = lib.getExe final.metacity;
           in
             # Here, we use xclip over xsel because it supports binary data.
             # Additionally, we sha256sum that binary data so no shell fuckery happens to null bytes.
@@ -75,7 +75,7 @@
         xwayland-run
         xsel
         xclip
-        gnome.metacity
+        metacity
         sodi-x-run
       ];
     })
