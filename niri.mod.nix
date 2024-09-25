@@ -19,6 +19,7 @@
         cage
         gamescope
         xwayland-satellite-unstable
+        swaybg
       ];
     })
   ];
