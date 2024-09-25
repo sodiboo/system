@@ -55,7 +55,7 @@
         firefox
         zen-browser-specific
         thunderbird
-        gnome.seahorse
+        seahorse
         obs-studio
         vlc
         mpv

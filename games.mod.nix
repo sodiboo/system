@@ -28,7 +28,7 @@
         simutrans
         prismlauncher
         lutris
-        gnome.adwaita-icon-theme
+        adwaita-icon-theme
         itch
       ];
     })
