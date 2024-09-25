@@ -1711,11 +1711,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1727267039,
-        "narHash": "sha256-g2LPGK4sffqS6RKckcCiJt39Xe9p1BBvMSiEN341uNk=",
+        "lastModified": 1727287465,
+        "narHash": "sha256-XQAf5M593WmxgaXagtkci/H9DA3jSVx1TJk6F3X5VQo=",
         "owner": "MarceColl",
         "repo": "zen-browser-flake",
-        "rev": "8e2d1297cfd47b36826c24626da66604a4f4e98f",
+        "rev": "96f1b5d80bf7360cb77c9b521f388324f18383a0",
         "type": "github"
       },
       "original": {

@@ -201,12 +201,38 @@
               }
             ];
 
-          spawn-at-startup = [
+          spawn-at-startup = let
+            get-wayland-display = "systemctl--user show-environment | awk -F 'WAYLAND_DISPLAY=' '{print $2}' | awk NF";
+            wrapper = name: op:
+              pkgs.writeScript "${name}" ''
+                if [ "$(${get-wayland-display})" ${op} "$WAYLAND_DISPLAY" ]; then
+                  exec "$@"
+                fi
+              '';
+
+            only-on-session = wrapper "only-on-session" "=";
+            only-without-session = wrapper "only-without-session" "!=";
+          in [
             {
               command = [
+                "${only-on-session}"
                 "${lib.getExe pkgs.gammastep}"
                 "-l"
                 "59:11" # lol, doxxed
+              ];
+            }
+            {
+              command = [
+                "${only-without-session}"
+                "${lib.getExe pkgs.waybar}"
+              ];
+            }
+            {
+              command = [
+                "${only-without-session}"
+                "${lib.getExe pkgs.swaybg}"
+                "-i"
+                "${config.stylix.image}"
               ];
             }
             {
