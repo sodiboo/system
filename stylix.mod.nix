@@ -92,6 +92,7 @@ in {
         Unit = {
           Description = "wallpapers! brought to you by stylix! :3";
           PartOf = ["graphical-session.target"];
+          After = ["graphical-session.target"];
         };
         Install.WantedBy = ["graphical-session.target"];
         Service = {
