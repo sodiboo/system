@@ -96,7 +96,7 @@ in {
         };
         Install.WantedBy = ["graphical-session.target"];
         Service = {
-          ExecStart = "${lib.getExe pkgs.swaybg} -i ${config.stylix.image}";
+          ExecStart = "${lib.getExe pkgs.swaybg} -m fill -i ${config.stylix.image}";
           Restart = "on-failure";
         };
       };

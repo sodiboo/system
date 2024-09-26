@@ -236,6 +236,8 @@
               command = [
                 "${only-without-session}"
                 "${lib.getExe pkgs.swaybg}"
+                "-m"
+                "fill"
                 "-i"
                 "${modulated-wallpaper}"
               ];
