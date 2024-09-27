@@ -203,7 +203,7 @@
             ];
 
           spawn-at-startup = let
-            get-wayland-display = "systemctl--user show-environment | awk -F 'WAYLAND_DISPLAY=' '{print $2}' | awk NF";
+            get-wayland-display = "systemctl --user show-environment | awk -F 'WAYLAND_DISPLAY=' '{print $2}' | awk NF";
             wrapper = name: op:
               pkgs.writeScript "${name}" ''
                 if [ "$(${get-wayland-display})" ${op} "$WAYLAND_DISPLAY" ]; then
