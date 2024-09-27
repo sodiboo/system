@@ -24,7 +24,7 @@
     nari.url = "github:sodiboo/nixos-razer-nari";
 
     niri.url = "github:sodiboo/niri-flake";
-    niri-working-tree.url = "github:sodiboo/niri/support-lan-mouse";
+    niri-working-tree.url = "github:sodiboo/niri/position-hint";
     niri-working-tree.flake = false;
 
     lan-mouse.url = "github:feschber/lan-mouse";

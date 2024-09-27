@@ -812,16 +812,16 @@
     "niri-working-tree": {
       "flake": false,
       "locked": {
-        "lastModified": 1725738809,
-        "narHash": "sha256-b4oPeXjQ86tZwlivph13/0O5CqBCeTJTo8WCX0QGRcM=",
+        "lastModified": 1727448199,
+        "narHash": "sha256-JzELLckrlBRFSkX3PhAZ4JGIawk6+qNpG97iMx2MUc8=",
         "owner": "sodiboo",
         "repo": "niri",
-        "rev": "62982c44ea84dd21374fe45f940e6cb14cc5cc9b",
+        "rev": "6debbb14ac45e1f92a8fc2ce5a2049b75a221b00",
         "type": "github"
       },
       "original": {
         "owner": "sodiboo",
-        "ref": "support-lan-mouse",
+        "ref": "position-hint",
         "repo": "niri",
         "type": "github"
       }
