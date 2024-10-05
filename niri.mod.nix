@@ -252,7 +252,7 @@
                   "waybar"
                 ];
                 commands = builtins.concatStringsSep ";" (map (unit: "systemctl --user status ${unit}") units);
-              in ["kitty" "--" "sh" "-c" "env SYSTEMD_COLORS=1 watch -n 1 -d --color '${commands}'"];
+              in ["${only-on-session}" "kitty" "--" "sh" "-c" "env SYSTEMD_COLORS=1 watch -n 1 -d --color '${commands}'"];
             }
           ];
 
