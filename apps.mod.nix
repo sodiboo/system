@@ -1,6 +1,7 @@
 {
   vscode-server,
   zen-browser,
+  nixpkgs-wayland,
   ...
 }: {
   universal.home_modules = [
@@ -41,6 +42,7 @@
           sodi-vscode-fhs = final.writeShellScriptBin "code-fhs" ''
             exec ${lib.getExe final.vscode-fhs} $@
           '';
+          wayvnc = nixpkgs-wayland.packages.x86_64-linux.wayvnc;
           zen-browser-specific = zen-browser.packages.x86_64-linux.specific;
           zen-browser-generic = zen-browser.packages.x86_64-linux.generic;
         })
@@ -74,6 +76,7 @@
         swayimg
         stackblur-go
         subversion
+        wayvnc
         wlvncc
         sodi-vscode-fhs
         krita

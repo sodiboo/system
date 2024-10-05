@@ -4,6 +4,7 @@
   ...
 }: let
   caches = {
+    # "https://nixpkgs-wayland.cachix.org" = "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA=";
   };
 in {
   universal.modules = [

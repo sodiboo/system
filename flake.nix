@@ -28,6 +28,8 @@
     niri-working-tree.url = "github:sodiboo/niri/image-copy-capture-and-friends";
     niri-working-tree.flake = false;
 
+    nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
+
     lan-mouse.url = "github:feschber/lan-mouse";
 
     conduwuit.url = "github:girlbossceo/conduwuit";
