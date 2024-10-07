@@ -25,7 +25,7 @@
 
     niri.url = "github:sodiboo/niri-flake";
 
-    niri-working-tree.url = "github:sodiboo/niri/image-copy-capture-and-friends";
+    niri-working-tree.url = "github:sodiboo/niri/sodi-bonus-features";
     niri-working-tree.flake = false;
 
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
