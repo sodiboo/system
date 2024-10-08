@@ -97,7 +97,7 @@
                 # absolutely disgusting nested script hack
                 (pkgs.writeScript "greet-cmd" ''
                   # note: this part runs as greeter
-                  ${tuigreet} ${
+                  ${tuigreet} --issue ${
                     if config.is-virtual-machine
                     # show user menu (because this is a fresh VM without the ability to remember)
                     # password is disabled in this case

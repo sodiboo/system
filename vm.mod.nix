@@ -1,7 +1,11 @@
 {
   # Intentionally not in `universal` because you should not be running my servers as a VM. They rely on physical properties.
   personal.modules = [
-    ({lib, ...}: {
+    ({
+      lib,
+      config,
+      ...
+    }: {
       options = {
         is-virtual-machine = lib.mkOption {
           type = lib.types.bool;
@@ -23,6 +27,36 @@
           "-display sdl,gl=on"
           "-device virtio-vga-gl"
         ];
+
+        environment.etc.issue.text = ''
+          Welcome to ${config.networking.hostName}! You're in a virtual machine.
+
+          ---
+
+          Compositor binds are based on Alt, because
+          i expect your host OS to be using Super.
+
+          Also, surprise! You're using a Nordic layout.
+          I don't know a good way to change that for you.
+
+          ---
+
+          The compositor may also fail to launch;
+          this is somewhat inconsistent.
+
+          Try `ssh`ing in and checking
+          `systemctl --user status niri`
+          if that happens.
+
+          The most common fix is to just reboot the VM.
+          Press F12 to do that.
+
+          ---
+
+          The user is `sodiboo` and there is no password.
+
+          ---
+        '';
 
         virtualisation.memorySize = 4096;
         virtualisation.cores = 4;
