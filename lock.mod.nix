@@ -74,6 +74,7 @@ in {
       lib,
       pkgs,
       config,
+      nixosConfig,
       ...
     }: {
       options.suspend-when-idle = lib.mkEnableOption "suspend when idle";
@@ -89,38 +90,41 @@ in {
           if config.suspend-when-idle
           then "${systemctl} suspend"
           else "${niri} msg action power-off-monitors";
-      in {
-        home.packages = [
-          scripts'.lock
-        ];
-        programs.swaylock.enable = true;
+      in
+        # swaylock doesn't work with empty passwords
+        # but the VM has an empty password
+        lib.mkIf (!nixosConfig.is-virtual-machine) {
+          home.packages = [
+            scripts'.lock
+          ];
+          programs.swaylock.enable = true;
 
-        services.swayidle.enable = true;
-        services.swayidle.timeouts = [
-          {
-            timeout = 30;
-            command = "${pidof} swaylock && ${secondary}";
-          }
-          {
-            timeout = 300;
-            command = "${pidof} swaylock || ${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
-          }
-          {
-            timeout = 330;
-            command = "${pidof} swaylock && ${secondary}";
-          }
-        ];
-        services.swayidle.events = [
-          {
-            event = "before-sleep";
-            command = "${niri} msg action power-off-monitors";
-          }
-        ];
-        systemd.user.services.swayidle.Unit = {
-          Wants = ["niri.service"];
-          After = "niri.service";
+          services.swayidle.enable = true;
+          services.swayidle.timeouts = [
+            {
+              timeout = 30;
+              command = "${pidof} swaylock && ${secondary}";
+            }
+            {
+              timeout = 300;
+              command = "${pidof} swaylock || ${niri} msg action spawn -- ${lib.getExe scripts'.lock}";
+            }
+            {
+              timeout = 330;
+              command = "${pidof} swaylock && ${secondary}";
+            }
+          ];
+          services.swayidle.events = [
+            {
+              event = "before-sleep";
+              command = "${niri} msg action power-off-monitors";
+            }
+          ];
+          systemd.user.services.swayidle.Unit = {
+            Wants = ["niri.service"];
+            After = "niri.service";
+          };
         };
-      };
     })
   ];
 
