@@ -27,6 +27,7 @@
   personal.home_modules = [
     ({
       lib,
+      nixosConfig,
       config,
       pkgs,
       ...
@@ -117,21 +118,31 @@
             #   kill $SWAYIMG
             # '';
             # screenshot-area = spawn "${screenshot-area-script}";
+
+            # a VM is semantically a nested session; so use the Alt key.
+            # but on a physical machine, use Mod which is Super unless nested.
+            Mod =
+              # NOTE: Are you here just to reference my niri config?
+              # This isn't a standard option, see `./vm.mod.nix` for the definition.
+              # If you want to just copy my binds, you likely want "Mod" instead of "${Mod}"
+              if nixosConfig.is-virtual-machine
+              then "Alt"
+              else "Mod";
           in
             lib.attrsets.mergeAttrsList [
               {
-                "Mod+T".action = spawn "kitty";
-                "Mod+D".action = spawn "fuzzel";
-                "Mod+W".action = sh (builtins.concatStringsSep "; " [
+                "${Mod}+T".action = spawn "kitty";
+                "${Mod}+D".action = spawn "fuzzel";
+                "${Mod}+W".action = sh (builtins.concatStringsSep "; " [
                   "systemctl --user restart waybar.service"
                   "systemctl --user restart swaybg.service"
                 ]);
 
-                "Mod+L".action = spawn "blurred-locker";
+                "${Mod}+L".action = spawn "blurred-locker";
 
-                "Mod+Shift+S".action = screenshot;
+                "${Mod}+Shift+S".action = screenshot;
                 "Print".action = screenshot-screen;
-                "Mod+Print".action = screenshot-window;
+                "${Mod}+Print".action = screenshot-window;
 
                 "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
                 "XF86AudioLowerVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
@@ -140,65 +151,65 @@
                 "XF86MonBrightnessUp".action = sh "brightnessctl set 10%+";
                 "XF86MonBrightnessDown".action = sh "brightnessctl set 10%-";
 
-                "Mod+Q".action = close-window;
+                "${Mod}+Q".action = close-window;
 
                 "XF86AudioNext".action = focus-column-right;
                 "XF86AudioPrev".action = focus-column-left;
 
-                "Mod+Tab".action = focus-window-down-or-column-right;
-                "Mod+Shift+Tab".action = focus-window-up-or-column-left;
+                "${Mod}+Tab".action = focus-window-down-or-column-right;
+                "${Mod}+Shift+Tab".action = focus-window-up-or-column-left;
               }
               (binds {
                 suffixes."Left" = "column-left";
                 suffixes."Down" = "window-down";
                 suffixes."Up" = "window-up";
                 suffixes."Right" = "column-right";
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move";
-                prefixes."Mod+Shift" = "focus-monitor";
-                prefixes."Mod+Shift+Ctrl" = "move-window-to-monitor";
+                prefixes."${Mod}" = "focus";
+                prefixes."${Mod}+Ctrl" = "move";
+                prefixes."${Mod}+Shift" = "focus-monitor";
+                prefixes."${Mod}+Shift+Ctrl" = "move-window-to-monitor";
                 substitutions."monitor-column" = "monitor";
                 substitutions."monitor-window" = "monitor";
               })
               (binds {
                 suffixes."Home" = "first";
                 suffixes."End" = "last";
-                prefixes."Mod" = "focus-column";
-                prefixes."Mod+Ctrl" = "move-column-to";
+                prefixes."${Mod}" = "focus-column";
+                prefixes."${Mod}+Ctrl" = "move-column-to";
               })
               (binds {
                 suffixes."U" = "workspace-down";
                 suffixes."I" = "workspace-up";
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move-window-to";
-                prefixes."Mod+Shift" = "move";
+                prefixes."${Mod}" = "focus";
+                prefixes."${Mod}+Ctrl" = "move-window-to";
+                prefixes."${Mod}+Shift" = "move";
               })
               (binds {
                 suffixes = builtins.listToAttrs (map (n: {
                   name = toString n;
                   value = ["workspace" n];
                 }) (range 1 9));
-                prefixes."Mod" = "focus";
-                prefixes."Mod+Ctrl" = "move-window-to";
+                prefixes."${Mod}" = "focus";
+                prefixes."${Mod}+Ctrl" = "move-window-to";
               })
               {
-                "Mod+Comma".action = consume-window-into-column;
-                "Mod+Period".action = expel-window-from-column;
+                "${Mod}+Comma".action = consume-window-into-column;
+                "${Mod}+Period".action = expel-window-from-column;
 
-                "Mod+R".action = switch-preset-column-width;
-                "Mod+F".action = maximize-column;
-                "Mod+Shift+F".action = fullscreen-window;
-                "Mod+C".action = center-column;
+                "${Mod}+R".action = switch-preset-column-width;
+                "${Mod}+F".action = maximize-column;
+                "${Mod}+Shift+F".action = fullscreen-window;
+                "${Mod}+C".action = center-column;
 
-                "Mod+Minus".action = set-column-width "-10%";
-                "Mod+Plus".action = set-column-width "+10%";
-                "Mod+Shift+Minus".action = set-window-height "-10%";
-                "Mod+Shift+Plus".action = set-window-height "+10%";
+                "${Mod}+Minus".action = set-column-width "-10%";
+                "${Mod}+Plus".action = set-column-width "+10%";
+                "${Mod}+Shift+Minus".action = set-window-height "-10%";
+                "${Mod}+Shift+Plus".action = set-window-height "+10%";
 
-                "Mod+Shift+E".action = quit;
-                "Mod+Shift+P".action = power-off-monitors;
+                "${Mod}+Shift+E".action = quit;
+                "${Mod}+Shift+P".action = power-off-monitors;
 
-                "Mod+Shift+Ctrl+T".action = toggle-debug-tint;
+                "${Mod}+Shift+Ctrl+T".action = toggle-debug-tint;
               }
             ];
 
