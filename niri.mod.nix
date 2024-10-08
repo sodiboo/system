@@ -102,7 +102,7 @@
             # };
           };
 
-          hotkey-overlay.skip-at-startup = true;
+          hotkey-overlay.skip-at-startup = !nixosConfig.is-virtual-machine;
 
           screenshot-path = "~/Pictures/Screenshots/%Y-%m-%dT%H:%M:%S.png";
 
