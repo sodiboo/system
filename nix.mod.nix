@@ -40,9 +40,13 @@ in {
           nix-direnv = prev.nix-direnv.override {
             nix = prev.nix-monitored;
           };
+          nixmon = prev.runCommand "nixmon" {} ''
+            mkdir -p $out/bin
+            ln -s ${prev.nix-monitored}/bin/nix $out/bin/nixmon
+          '';
         })
       ];
-      nix.package = pkgs.nix-monitored;
+      environment.systemPackages = [pkgs.nixmon];
     })
     ({
       config,

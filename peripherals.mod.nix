@@ -11,18 +11,24 @@
   ];
   sodium.modules = [
     nari.nixosModules.default
-    ({pkgs, ...}: {
-      hardware.wooting.enable = true;
-      users.users.sodiboo.extraGroups = ["input"];
+    ({
+      pkgs,
+      lib,
+      config,
+      ...
+    }:
+      lib.mkIf (!config.is-virtual-machine) {
+        hardware.wooting.enable = true;
+        users.users.sodiboo.extraGroups = ["input"];
 
-      environment.systemPackages = with pkgs; [
-        openrgb-with-all-plugins
-        openrazer-daemon
-        polychromatic
-      ];
+        environment.systemPackages = with pkgs; [
+          openrgb-with-all-plugins
+          openrazer-daemon
+          polychromatic
+        ];
 
-      programs.droidcam.enable = true;
-    })
+        programs.droidcam.enable = true;
+      })
   ];
 
   nitrogen.modules = [

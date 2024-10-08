@@ -122,12 +122,85 @@
             ];
         }))
       raw_configs;
+
+      vms =
+        builtins.mapAttrs (hostname: {
+          config,
+          pkgs,
+          ...
+        }: (
+          let
+            ssh = pkgs.writeScript "vm-ssh" ''
+              # do not verify the host key, do not store the host key, do not show a warning about the host key
+              ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
+                  -o User=sodiboo localhost -p $SSH_VM_PORT "$@"
+            '';
+
+            exit = pkgs.writeScript "vm-exit" ''
+              ${ssh} /run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl poweroff
+            '';
+          in
+            pkgs.writeScript "${hostname}-vm" ''
+              export SSH_VM_PORT=''${SSH_VM_PORT:-60022}
+
+              THIS_PID=$$
+
+              VM_TEMP_DIR=$(mktemp -d /tmp/${hostname}-XXXXXX)
+              cd $VM_TEMP_DIR
+
+              echo
+              echo
+              echo 'Starting VM...'
+              echo
+
+              QEMU_NET_OPTS="hostfwd=tcp::$SSH_VM_PORT-:22" ${config.virtualisation.vmVariant.system.build.vm}/bin/run-${hostname}-vm &
+              QEMU_PID=$!
+
+              monitor() {
+                tail --pid=$QEMU_PID -f /dev/null
+                kill $THIS_PID
+              }
+              cleanup() {
+                echo
+                echo
+                echo "The VM has exited. You can now have your normal shell back."
+                echo
+                rm -rf $VM_TEMP_DIR
+                exit
+              }
+              trap cleanup EXIT
+
+              monitor &
+              MONITOR_PID=$!
+
+              export ssh="${ssh}"
+              export exit="${exit}"
+
+              sleep 1
+
+              while kill -0 $MONITOR_PID 2>/dev/null; do
+                echo "Use $(tput setaf 2)\$ssh$(tput sgr0) to execute commands in the VM"
+                echo "Use $(tput setaf 1)\$exit$(tput sgr0) to power off the VM"
+                echo "Press $(tput setaf 4)Ctrl+D$(tput sgr0) to see this message again"
+                $SHELL
+              done
+            ''
+        )) {
+          inherit (configs) sodium nitrogen;
+        };
     in {
       # for use in nix repl
       p = s: builtins.trace "\n\n${s}\n" "---";
 
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
       nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
+
+      apps.x86_64-linux =
+        builtins.mapAttrs (name: script: {
+          type = "app";
+          program = "${script}";
+        })
+        vms;
 
       # This is useful to rebuild all systems at once, for substitution
       all-systems = nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" {} (''
