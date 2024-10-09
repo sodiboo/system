@@ -11,7 +11,7 @@
     oxygen = "O+/FwR66shEquZ19mghgyjyUKJ3uTWSLqeFkGuAALmA=";
   };
   endpoints = {
-    oxygen = "vps.sodi.boo";
+    oxygen = "vps.sodi.boo:27462";
   };
 
   ip = i: "10.8.0.${toString i}";
