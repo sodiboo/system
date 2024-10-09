@@ -11,7 +11,7 @@
     oxygen = "/C3FBaSjRXh2ln9sbTJETb3Dj5masxOAzi3xawdcSiA=";
   };
 
-  ip = i: "10.74.62.${toString i}";
+  ip = i: "10.8.0.${toString i}";
   subnet = "${ip 0}/24";
 
   ips = builtins.mapAttrs (nixpkgs.lib.const ip) elements;
