@@ -10,6 +10,9 @@
     nitrogen = "N+/sIpsJatALo42N1tcU0O/Ps3CMzU6zuN+A7tGMWzo=";
     oxygen = "O+/FwR66shEquZ19mghgyjyUKJ3uTWSLqeFkGuAALmA=";
   };
+  endpoints = {
+    oxygen = "vps.sodi.boo";
+  };
 
   ip = i: "10.8.0.${toString i}";
   subnet = "${ip 0}/24";
@@ -45,6 +48,7 @@ in {
     ({
       config,
       pkgs,
+      lib,
       ...
     }: {
       environment.systemPackages = with pkgs; [
@@ -66,90 +70,105 @@ in {
           privateKeyFile = config.sops.secrets.wireguard-private-key.path;
         };
       };
-    })
-  ];
 
-  iridium.modules = [
-    ({pkgs, ...}: {
-      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
-      networking.wireguard.interfaces.wg0 = {
-        postSetup = ''
-          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
-        '';
-        postShutdown = ''
-          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
-        '';
-
-        peers = [
-          {
-            publicKey = public-keys.sodium;
-            allowedIPs = [ips'.sodium];
-          }
-          {
-            publicKey = public-keys.oxygen;
-            allowedIPs = [subnet];
-            endpoint = "vps.sodi.boo:${port-for.oxygen}";
-            persistentKeepalive = 25;
-          }
-        ];
+      services.wgautomesh = {
+        enable = config.networking.wireguard.enable; # disable when wireguard is disabled (e.g. in a VM)
+        gossipSecretFile = config.sops.secrets.wgautomesh-gossip-secret.path;
+        settings = {
+          interface = "wg0";
+          peers =
+            lib.mapAttrsToList (name: z: {
+              pubkey = public-keys.${name};
+              endpoint = endpoints.${name} or null;
+              address = ip z;
+            })
+            elements;
+        };
       };
     })
   ];
 
-  oxygen.modules = [
-    ({pkgs, ...}: {
-      boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
-      networking.wireguard.interfaces.wg0 = {
-        postSetup = ''
-          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
-        '';
-        postShutdown = ''
-          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
-        '';
+  # iridium.modules = [
+  #   ({pkgs, ...}: {
+  #     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+  #     networking.wireguard.interfaces.wg0 = {
+  #       postSetup = ''
+  #         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+  #       '';
+  #       postShutdown = ''
+  #         ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+  #       '';
 
-        peers = [
-          {
-            publicKey = public-keys.iridium;
-            allowedIPs = [subnet];
-          }
-          {
-            publicKey = public-keys.nitrogen;
-            allowedIPs = [ips'.nitrogen];
-          }
-        ];
-      };
-    })
-  ];
+  #       peers = [
+  #         {
+  #           publicKey = public-keys.sodium;
+  #           allowedIPs = [ips'.sodium];
+  #         }
+  #         {
+  #           publicKey = public-keys.oxygen;
+  #           allowedIPs = [subnet];
+  #           endpoint = "vps.sodi.boo:${port-for.oxygen}";
+  #           persistentKeepalive = 25;
+  #         }
+  #       ];
+  #     };
+  #   })
+  # ];
 
-  sodium.modules = [
-    {
-      networking.wireguard.interfaces.wg0.peers = [
-        {
-          publicKey = public-keys.iridium;
-          allowedIPs = [subnet];
-          endpoint = "iridium.lan:${port-for.iridium}";
-          persistentKeepalive = 25;
-        }
-      ];
-    }
-  ];
+  # oxygen.modules = [
+  #   ({pkgs, ...}: {
+  #     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
+  #     networking.wireguard.interfaces.wg0 = {
+  #       postSetup = ''
+  #         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+  #       '';
+  #       postShutdown = ''
+  #         ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s ${subnet} -o eth0 -j MASQUERADE
+  #       '';
 
-  nitrogen.modules = [
-    {
-      networking.wireguard.interfaces.wg0.peers = [
-        # {
-        #   publicKey = public-keys.iridium;
-        #   allowedIPs = [subnet];
-        #   endpoint = "iridium.lan:${port-for.iridium}";
-        #   persistentKeepalive = 25;
-        # }
-        {
-          publicKey = public-keys.oxygen;
-          allowedIPs = [subnet];
-          endpoint = "vps.sodi.boo:${port-for.oxygen}";
-          persistentKeepalive = 25;
-        }
-      ];
-    }
-  ];
+  #       peers = [
+  #         {
+  #           publicKey = public-keys.iridium;
+  #           allowedIPs = [subnet];
+  #         }
+  #         {
+  #           publicKey = public-keys.nitrogen;
+  #           allowedIPs = [ips'.nitrogen];
+  #         }
+  #       ];
+  #     };
+  #   })
+  # ];
+
+  # sodium.modules = [
+  #   {
+  #     networking.wireguard.interfaces.wg0.peers = [
+  #       {
+  #         publicKey = public-keys.iridium;
+  #         allowedIPs = [subnet];
+  #         endpoint = "iridium.lan:${port-for.iridium}";
+  #         persistentKeepalive = 25;
+  #       }
+  #     ];
+  #   }
+  # ];
+
+  # nitrogen.modules = [
+  #   {
+  #     networking.wireguard.interfaces.wg0.peers = [
+  #       # {
+  #       #   publicKey = public-keys.iridium;
+  #       #   allowedIPs = [subnet];
+  #       #   endpoint = "iridium.lan:${port-for.iridium}";
+  #       #   persistentKeepalive = 25;
+  #       # }
+  #       {
+  #         publicKey = public-keys.oxygen;
+  #         allowedIPs = [subnet];
+  #         endpoint = "vps.sodi.boo:${port-for.oxygen}";
+  #         persistentKeepalive = 25;
+  #       }
+  #     ];
+  #   }
+  # ];
 }

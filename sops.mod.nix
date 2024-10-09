@@ -15,6 +15,7 @@
       sops.secrets.wireguard-private-key = {
         key = "wireguard-private-keys/${config.networking.hostName}";
       };
+      sops.secrets.wgautomesh-gossip-secret = {};
       sops.secrets.remote-build-ssh-id = {};
     })
   ];
