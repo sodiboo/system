@@ -5,10 +5,10 @@
   ...
 }: let
   public-keys = {
-    iridium = "MKPEkYG4Kk26pLP4RwBE9LZKbPlwEzw3gqkbE+NRVwg=";
-    sodium = "bEhUkNvrV2lvMKz1QaS8xpipgRq0gaASMH6maKe6vwA=";
-    nitrogen = "jCaI67FtevJIFOCiSoe40LSORMhmQ5b14h/DG/8THms=";
-    oxygen = "/C3FBaSjRXh2ln9sbTJETb3Dj5masxOAzi3xawdcSiA=";
+    iridium = "Ir+/fE0wl3Jf6w0QDVEsNFd0r+HCODKHTLb4FjV7GSg=";
+    sodium = "Na+/Y9EMTF7+XNmRb5tGDB+uky44WQ/tAoDtkAgM7nc=";
+    nitrogen = "N+/sIpsJatALo42N1tcU0O/Ps3CMzU6zuN+A7tGMWzo=";
+    oxygen = "O+/FwR66shEquZ19mghgyjyUKJ3uTWSLqeFkGuAALmA=";
   };
 
   ip = i: "10.8.0.${toString i}";
@@ -42,7 +42,15 @@ in {
   extras = {wireguard-ips = ips;};
 
   universal.modules = [
-    ({config, ...}: {
+    ({
+      config,
+      pkgs,
+      ...
+    }: {
+      environment.systemPackages = with pkgs; [
+        # This is how i generated the keys with elemental prefixes! :3
+        wireguard-vanity-keygen
+      ];
       networking = {
         nat = {
           enable = true;
