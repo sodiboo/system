@@ -1,9 +1,9 @@
 {
-  self,
   nixpkgs,
   elements,
   ...
 }: let
+  ip = i: "10.8.0.${toString i}";
   public-keys = {
     iridium = "Ir+/fE0wl3Jf6w0QDVEsNFd0r+HCODKHTLb4FjV7GSg=";
     sodium = "Na+/Y9EMTF7+XNmRb5tGDB+uky44WQ/tAoDtkAgM7nc=";
@@ -13,14 +13,6 @@
   endpoints = {
     oxygen = "vps.sodi.boo:27462";
   };
-
-  ip = i: "10.8.0.${toString i}";
-  subnet = "${ip 0}/24";
-
-  ips = builtins.mapAttrs (nixpkgs.lib.const ip) elements;
-  ips' = builtins.mapAttrs (name: ip: "${ip}/32") ips;
-
-  port-for = builtins.mapAttrs (machine: {config, ...}: toString config.networking.wireguard.interfaces.wg0.listenPort) self.nixosConfigurations;
   # Some network topology here:
   # - My home network has a subnet of 192.168.86.0/24
   # - My private wireguard network has a subnet of 10.8.0.0/24
@@ -42,8 +34,6 @@
   # - oxygen needs a weird reverse proxy thing to connect to iridium (really, iridium needs to connect to oxygen, but oxygen acts like the client)
   # - nitrogen wants to connect to iridium, but can't always. so it connects to oxygen when iridium is unavailable, taking a performance hit
 in {
-  extras = {wireguard-ips = ips;};
-
   universal.modules = [
     ({
       config,
@@ -62,9 +52,9 @@ in {
           internalInterfaces = ["wg0"];
         };
         firewall.allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
-        extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: ip: "${ip} ${name}.wg") ips);
+        extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: z: "${ip z} ${name}.wg") elements);
         wireguard.interfaces.wg0 = {
-          ips = ["${ips.${config.networking.hostName}}/24"];
+          ips = ["${ip (builtins.getAttr config.system.name elements)}/24"];
           # School network seems to block UDP ports above 28000?
           listenPort = 27462;
           privateKeyFile = config.sops.secrets.wireguard-private-key.path;
