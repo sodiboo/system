@@ -80,6 +80,8 @@ in {
       # stylix.targets.gtk.enable = false;
       # stylix.targets.firefox.enable = false;
       stylix.targets.vscode.enable = false;
+      # this is broken for now?
+      stylix.targets.kitty.enable = false;
     }
     ({
       lib,
