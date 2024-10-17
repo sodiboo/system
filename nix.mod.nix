@@ -7,6 +7,37 @@
   caches = {
     # "https://nixpkgs-wayland.cachix.org" = "nixpkgs-wayland.cachix.org-1:3lwxaILxMRkVhehr5StQprHdEo4IrE8sRho9R9HOLYA=";
   };
+
+  garbage-collection-module = {lib, ...}: {
+    programs.nh.enable = true;
+    programs.nh.clean = {
+      enable = true;
+      extraArgs = "--keep 3 --keep-since 7d";
+      # this is somewhere in the middle of my commute to school.
+      # and if i'm not at school, i'm likely asleep.
+      dates = "Mon..Fri *-*-* 07:00:00";
+    };
+
+    nix.optimise = {
+      automatic = true;
+      # why is that a list?
+      dates = ["Mon..Fri *-*-* 07:30:00"];
+    };
+
+    # I don't want these to be persistent or have any delay.
+    # They don't need to run daily; if they miss a day, it's fine.
+    # And i don't want them to ever delay until e.g. i'm at school
+    # because that will impact my workflow if i want to remote in.
+    systemd.timers = let
+      fuck-off.timerConfig = {
+        Persistent = false;
+        RandomizedDelaySec = 0;
+      };
+    in {
+      nh-clean = lib.mkForce fuck-off;
+      nix-optimise = lib.mkForce fuck-off;
+    };
+  };
 in {
   universal.modules = [
     {
@@ -137,6 +168,7 @@ in {
         };
       };
     })
+    garbage-collection-module
   ];
 
   nitrogen.modules = [
@@ -153,38 +185,7 @@ in {
     })
   ];
 
-  sodium.modules = [
-    ({lib, ...}: {
-      programs.nh.enable = true;
-      programs.nh.clean = {
-        enable = true;
-        extraArgs = "--keep 3 --keep-since 7d";
-        # this is somewhere in the middle of my commute to school.
-        # and if i'm not at school, i'm likely asleep.
-        dates = "Mon..Fri *-*-* 07:00:00";
-      };
-
-      nix.optimise = {
-        automatic = true;
-        # why is that a list?
-        dates = ["Mon..Fri *-*-* 07:30:00"];
-      };
-
-      # I don't want these to be persistent or have any delay.
-      # They don't need to run daily; if they miss a day, it's fine.
-      # And i don't want them to ever delay until e.g. i'm at school
-      # because that will impact my workflow if i want to remote in.
-      systemd.timers = let
-        fuck-off.timerConfig = {
-          Persistent = false;
-          RandomizedDelaySec = 0;
-        };
-      in {
-        nh-clean = lib.mkForce fuck-off;
-        nix-optimise = lib.mkForce fuck-off;
-      };
-    })
-  ];
+  sodium.modules = [garbage-collection-module];
 
   universal.home_modules = [
     ({
