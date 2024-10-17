@@ -354,6 +354,14 @@
               ];
               border.active.color = colors.base0E;
             }
+            {
+              matches = [
+                {
+                  app-id = "^signal$";
+                }
+              ];
+              block-out-from = "screencast";
+            }
           ];
         };
       })
