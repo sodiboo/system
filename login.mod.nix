@@ -97,13 +97,15 @@
                 # absolutely disgusting nested script hack
                 (pkgs.writeScript "greet-cmd" ''
                   # note: this part runs as greeter
-                  ${tuigreet} --issue ${
+                  ${tuigreet} ${
                     if config.is-virtual-machine
                     # show user menu (because this is a fresh VM without the ability to remember)
                     # password is disabled in this case
-                    then "--user-menu"
+                    # and also show the issue which has vm welcome info
+                    then "--user-menu --issue"
                     # remember the user and focus the password right away
                     # because only one user exists, and i want to type only my password
+                    # but no issue, because it is unnecessary and ugly
                     else "--remember"
                   } --cmd ${pkgs.writeScript "init-session" ''
                     # but this part is run as logged in user
