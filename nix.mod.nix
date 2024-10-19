@@ -9,7 +9,6 @@
   };
 
   garbage-collection-module = {lib, ...}: {
-    programs.nh.enable = true;
     programs.nh.clean = {
       enable = true;
       extraArgs = "--keep 3 --keep-since 7d";
@@ -80,6 +79,7 @@ in {
         })
       ];
       environment.systemPackages = [pkgs.nixmon];
+      programs.nh.enable = true;
     })
     ({
       config,
