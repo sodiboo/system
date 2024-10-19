@@ -180,11 +180,11 @@
         "rocksdb": "rocksdb"
       },
       "locked": {
-        "lastModified": 1728182038,
-        "narHash": "sha256-H6QiZWG95OgV+/T4hIguk7QtS5REVHtdNPObQL5R6bM=",
+        "lastModified": 1729355720,
+        "narHash": "sha256-WRUhmmQznBwm2pcD5uHgmwcExLX04zY5kf3cPL8VWA8=",
         "owner": "girlbossceo",
         "repo": "conduwuit",
-        "rev": "e589464954ff88bf817b8bdff4c803cc3bf18a28",
+        "rev": "8428e7cdf739fc1ce2dd34b96b6ff95b22d0d4b7",
         "type": "github"
       },
       "original": {
@@ -590,6 +590,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flashrom-meson": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1709234749,
+        "narHash": "sha256-VG85bfJkS5sJW8pbX1MqdixkJIhp7oHhkKjSl9JQkNs=",
+        "owner": "roger",
+        "repo": "flashrom-meson-nix",
+        "rev": "77936c8cf6ea97ae39c9dcc6ef3a02232143195c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "roger",
+        "repo": "flashrom-meson-nix",
         "type": "github"
       }
     },
@@ -1524,6 +1540,7 @@
     "root": {
       "inputs": {
         "conduwuit": "conduwuit",
+        "flashrom-meson": "flashrom-meson",
         "home-manager": "home-manager",
         "lan-mouse": "lan-mouse",
         "nari": "nari",

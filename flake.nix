@@ -10,6 +10,9 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    flashrom-meson.url = "github:roger/flashrom-meson-nix";
+    flashrom-meson.flake = false;
+
     nix-monitored.url = "github:ners/nix-monitored";
 
     sops-nix.url = "github:Mic92/sops-nix";

@@ -1,4 +1,8 @@
-{nixos-hardware, ...}: let
+{
+  nixos-hardware,
+  flashrom-meson,
+  ...
+}: let
   config = name: system: additional: {
     inherit name;
     value = {
@@ -51,9 +55,17 @@ in
     ];
 
     personal.modules = [
-      {
+      ({pkgs, ...}: {
+        nixpkgs.overlays = [
+          (final: prev: {
+            flashrom = final.callPackage flashrom-meson {};
+          })
+        ];
         services.fwupd.enable = true;
-      }
+        services.fwupd.package = pkgs.fwupd.override {
+          enableFlashrom = true;
+        };
+      })
     ];
   }
   // builtins.listToAttrs [
