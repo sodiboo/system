@@ -1,5 +1,4 @@
 {
-  self,
   nix-monitored,
   elements,
   ...
@@ -41,7 +40,6 @@ in {
   universal.modules = [
     {
       system.stateVersion = "23.11";
-      system.configurationRevision = self.rev or null;
       nixpkgs.config.allowUnfree = true;
       nix.settings.experimental-features = ["nix-command" "flakes"];
     }
