@@ -119,6 +119,10 @@ in {
               event = "before-sleep";
               command = "${niri} msg action power-off-monitors";
             }
+            {
+              event = "after-resume";
+              command = "${niri} msg action power-on-monitors";
+            }
           ];
           systemd.user.services.swayidle.Unit = {
             Wants = ["niri.service"];
