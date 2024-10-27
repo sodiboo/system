@@ -28,12 +28,12 @@
     # because that will impact my workflow if i want to remote in.
     systemd.timers = let
       fuck-off.timerConfig = {
-        Persistent = false;
-        RandomizedDelaySec = 0;
+        Persistent = lib.mkForce false;
+        RandomizedDelaySec = lib.mkForce 0;
       };
     in {
-      nh-clean = lib.mkForce fuck-off;
-      nix-optimise = lib.mkForce fuck-off;
+      nh-clean = fuck-off;
+      nix-optimise = fuck-off;
     };
   };
 in {
