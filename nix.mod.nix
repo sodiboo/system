@@ -125,6 +125,13 @@ in {
       })
   ];
 
+  personal.modules = [
+    {
+      # AMD gpu, basically. used for e.g. resource monitoring with btop
+      nixpkgs.config.rocmSupport = true;
+    }
+  ];
+
   iridium.modules = [
     ({
       config,
