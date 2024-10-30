@@ -143,7 +143,7 @@
               ${ssh} /run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl poweroff
             '';
           in
-            pkgs.writeScript "${hostname}-vm" ''
+            pkgs.writeShellScript "${hostname}-vm" ''
               export SSH_VM_PORT=''${SSH_VM_PORT:-60022}
 
               THIS_PID=$$
