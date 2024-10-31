@@ -38,11 +38,11 @@
             <p>
                 hey! sorry about the lack of syntax highlighting! i don't have a fancy blog engine, and this page is hand-written html. i don't wanna highlight it by hand.
             </p>
-    
+
             <p>
                 i originally wrote about this in <a href="https://github.com/sodiboo/nix-config/commit/353d3513f25a16c1eca8cddf2cfbe0a7d3d81154">my nix config</a>. i'm intentionally trying to present it differently here, but i'm not sure if it's better. you can read that for some of my initial thoughts on the matter
             </p>
-            
+
             <p>
                 that being said, let's talk about nix formatting.
             </p>
@@ -57,7 +57,7 @@
             <h1>nix formatting is a fucking joke.</h1>
             <h6>because the only correct parser is in the nix package manager</h6>
         </hgroup>
-        
+
         <p>
             the snippet in question is the following:
         </p>
@@ -96,14 +96,14 @@ Failed! 1 error found at:
         </p>
 
         <p>
-            today is 2024-05-14. it has been 655 days since the issue was fixed and 549 days since <code>v0.11.0</code> was published. 
+            today is 2024-05-14. it has been 655 days since the issue was fixed and 549 days since <code>v0.11.0</code> was published.
         </p>
 
         <p>
             and our dear friend <code>alejandra</code> is still using <code>v0.10.2</code>:
         </p>
 
-        
+
 <a href="https://github.com/kamadorueda/alejandra/blob/bb688cc2c22e43b3cd710eadc0340399c2de3151/src/alejandra/Cargo.toml#L2"><code>alejandra/Cargo.toml</code></a>
 <pre><code>[dependencies]
 <mark>rnix = "0.10.2"</mark>
@@ -149,7 +149,7 @@ error: error node at 5..7
         <p>
             so what's going on here? how can <code>nixpkgs-fmt</code> format this file just fine, without knowing how to parse it?
         </p>
-        
+
         <p>
             it's because of a cool property of <code>rnix</code> mentioned in their README:
         </p>
@@ -195,7 +195,7 @@ error: error node at 5..7
         <p>
             that's an awful way to format it, if you ask me. but the point is it does <em>something</em>, so it "understands" the input.
         </p>
-        
+
         <p>
             if we try to format <code>floats.in</code>, we get the following:
         </p>
@@ -317,7 +317,7 @@ error: error node at 5..7
         <p>
             it's... beautiful? what the hell. how are you doing this, my friend?
         </p>
-        
+
         <p>
             what's that, you're written in Haskell? ...and you maintain your own parser?
         </p>
@@ -338,7 +338,7 @@ expecting digit, end of input, or operator
         <p>
             but no. our prophet dies as quickly as it was born. <code>nixfmt</code>, too, cannot parse this expression.
         </p>
-        
+
         <p>
             it gets 2 bonus points for having a much nicer error message.
             <br />
@@ -442,7 +442,7 @@ Verbatim fallback nodes: fromList [Node {startByte = 0, endByte = 7, startRow = 
             but when not even the official nix formatter can parse nix correctly - the one that is maintained by the same organization as the real nix parser - what hope does anyone else have?
         </p>
     </main>
-    
+
     <hr />
 
     <footer>
