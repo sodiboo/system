@@ -1808,7 +1808,6 @@
         "nixpkgs-wayland": "nixpkgs-wayland",
         "nixpkgs-with-meilisearch-at-1-8-3": "nixpkgs-with-meilisearch-at-1-8-3",
         "picocss": "picocss",
-        "sodipkgs-itch": "sodipkgs-itch",
         "sodipkgs-simutrans": "sodipkgs-simutrans",
         "sodipkgs-stackblur-go": "sodipkgs-stackblur-go",
         "sops-nix": "sops-nix",
@@ -1852,22 +1851,6 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "sodipkgs-itch": {
-      "locked": {
-        "lastModified": 1721767172,
-        "narHash": "sha256-W1P24iAp2YfcPdtQcj1hYvLpoqCWIxrjE4N8vbibej0=",
-        "owner": "sodiboo",
-        "repo": "nixpkgs",
-        "rev": "0d557cc212e1dca9c0a64a409088d7f8a563e255",
-        "type": "github"
-      },
-      "original": {
-        "owner": "sodiboo",
-        "ref": "itch",
-        "repo": "nixpkgs",
         "type": "github"
       }
     },

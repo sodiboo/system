@@ -39,7 +39,6 @@
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
     sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
-    sodipkgs-itch.url = "github:sodiboo/nixpkgs/itch";
 
     picocss.url = "github:picocss/pico";
     picocss.flake = false;

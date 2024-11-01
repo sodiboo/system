@@ -13,7 +13,6 @@ in
               ) {
                 simutrans = "/games/simutrans";
                 stackblur-go = by-name "stackblur-go";
-                itch = by-name "itch";
               }
           )
         ];
