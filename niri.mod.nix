@@ -106,6 +106,15 @@
 
           screenshot-path = "~/Pictures/Screenshots/%Y-%m-%dT%H:%M:%S.png";
 
+          switch-events = with config.lib.niri.actions; let
+            sh = spawn "sh" "-c";
+          in {
+            tablet-mode-on.action = sh "notify-send tablet-mode-on";
+            tablet-mode-off.action = sh "notify-send tablet-mode-off";
+            lid-open.action = sh "notify-send lid-open";
+            lid-close.action = sh "notify-send lid-close";
+          };
+
           binds = with config.lib.niri.actions; let
             sh = spawn "sh" "-c";
             # screenshot-area-script = pkgs.writeShellScript "screenshot-area" ''
