@@ -81,6 +81,7 @@
         sodi-vscode-fhs
         krita
         rnote
+        stremio
       ];
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
