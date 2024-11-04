@@ -30,7 +30,8 @@
                 hotkey-overlay.skip-at-startup = true;
 
                 input = cfg.input;
-                cursor = cfg.cursor;
+                # causes a deprecation warning otherwise
+                cursor = builtins.removeAttrs cfg.cursor ["hide-on-key-press"];
                 outputs = cfg.outputs;
 
                 layout =
