@@ -383,6 +383,13 @@
         settings.csd.preferred = "none";
       };
 
+      programs.alacritty = {
+        enable = true;
+        settings = {
+          window.decorations = "None";
+        };
+      };
+
       programs.kitty = {
         enable = true;
         settings = {
@@ -391,6 +398,7 @@
           tab_bar_margin_width = "0.0";
           tab_bar_style = "fade";
           placement_strategy = "top-left";
+          hide_window_decorations = true;
         };
       };
 

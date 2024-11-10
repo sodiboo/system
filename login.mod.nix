@@ -67,6 +67,8 @@
         niri-config = niri.lib.internal.validated-config-for pkgs config.programs.niri.package niri-cfg-modules.config.programs.niri.finalConfig;
 
         foot-config = toString home-config.xdg.configFile."foot/foot.ini".source;
+        alacritty-config = toString home-config.xdg.configFile."alacritty/alacritty.toml".source;
+        kitty-config = toString home-config.xdg.configFile."kitty/kitty.conf".source;
         waybar-config = toString home-config.xdg.configFile."waybar/config".source;
         waybar-style = toString home-config.xdg.configFile."waybar/style.css".source;
       in {
@@ -84,6 +86,8 @@
               niri = "/run/current-system/sw/bin/niri";
               niri-session = "/run/current-system/sw/bin/niri-session";
               foot = lib.getExe pkgs.foot;
+              alacritty = lib.getExe pkgs.alacritty;
+              kitty = lib.getExe pkgs.kitty;
               tuigreet = lib.getExe pkgs.greetd.tuigreet;
               systemctl = home-config.systemd.user.systemctlPath;
             in {
@@ -92,10 +96,15 @@
                 "-c"
                 niri-config
                 "--"
-                foot
-                "-c"
-                foot-config
-                # absolutely disgusting nested script hack
+                "/usr/bin/env"
+                # shader cache for the Blazingly Fast Terminal Emulators
+                "XDG_CACHE_HOME=/tmp/greeter-cache"
+                kitty
+                "--config"
+                kitty-config
+                "--override"
+                "window.dynamic_padding=true"
+                # disgusting nested script hack
                 (pkgs.writeScript "greet-cmd" ''
                   # note: this part runs as greeter
                   ${tuigreet} ${
