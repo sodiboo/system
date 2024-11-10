@@ -32,7 +32,11 @@
                 input = cfg.input;
                 # causes a deprecation warning otherwise
                 cursor = builtins.removeAttrs cfg.cursor ["hide-on-key-press"];
-                outputs = cfg.outputs;
+                outputs =
+                  cfg.outputs
+                  // {
+                    "HDMI-A-1".enable = false;
+                  };
 
                 layout =
                   cfg.layout
