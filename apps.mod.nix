@@ -10,10 +10,6 @@
         fastfetch
         fm-go
         python311
-        ffmpeg_6-full
-        pandoc
-        p7zip
-        ripgrep-all
         dig
         whois
         libqalculate
@@ -58,10 +54,6 @@
         zen-browser-specific
         thunderbird
         seahorse
-        obs-studio
-        vlc
-        mpv
-        audacity
         caligula
         vesktop
         element-desktop
@@ -79,9 +71,7 @@
         wayvnc
         wlvncc
         sodi-vscode-fhs
-        krita
         rnote
-        stremio
       ];
       xdg.mimeApps.enable = true;
       xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
