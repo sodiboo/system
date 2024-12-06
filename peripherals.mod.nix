@@ -2,6 +2,7 @@
   personal.modules = [
     {
       programs.adb.enable = true;
+      programs.droidcam.enable = true;
       users.users.sodiboo.extraGroups = ["adbusers"];
 
       services.udisks2.enable = true;
@@ -26,8 +27,6 @@
           openrazer-daemon
           polychromatic
         ];
-
-        programs.droidcam.enable = true;
       })
   ];
 
