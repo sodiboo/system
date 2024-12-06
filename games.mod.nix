@@ -48,7 +48,7 @@
   personal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
-        simutrans
+        # simutrans # borked
         prismlauncher
         lutris
         adwaita-icon-theme
