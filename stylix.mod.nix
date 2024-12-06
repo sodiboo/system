@@ -47,11 +47,13 @@ in {
       stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/atelier-dune.yaml";
       stylix.polarity = "dark";
 
-      stylix.fonts.monospace.package = pkgs.nerdfonts;
+      stylix.fonts.monospace.package = pkgs.nerd-fonts.fira-code;
       stylix.fonts.monospace.name = "FiraCode Nerd Font";
 
-      stylix.fonts.sansSerif.package = pkgs.nerdfonts;
+      stylix.fonts.sansSerif.package = pkgs.nerd-fonts.ubuntu;
       stylix.fonts.sansSerif.name = "Ubuntu Nerd Font";
+
+      # serifs are yucky
       stylix.fonts.serif = config.stylix.fonts.sansSerif;
 
       stylix.fonts.sizes.applications = 10;
