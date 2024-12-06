@@ -34,6 +34,7 @@ in {
       ...
     }: {
       systemd-fuckery.auto-restart = ["waybar"];
+      systemd.user.services.waybar.Unit.After = ["graphical-session.target"];
 
       programs.waybar = {
         enable = true;
