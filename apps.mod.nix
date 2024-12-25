@@ -1,9 +1,4 @@
-{
-  vscode-server,
-  zen-browser,
-  nixpkgs-wayland,
-  ...
-}: {
+inputs: {
   universal.home_modules = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
@@ -22,7 +17,7 @@
         btop.settings.theme_background = false;
       };
     })
-    vscode-server.homeModules.default
+    inputs.vscode-server.homeModules.default
     {
       services.vscode-server.enable = true;
     }
@@ -38,9 +33,8 @@
           sodi-vscode-fhs = final.writeShellScriptBin "code-fhs" ''
             exec ${lib.getExe final.vscode-fhs} $@
           '';
-          wayvnc = nixpkgs-wayland.packages.x86_64-linux.wayvnc;
-          zen-browser-specific = zen-browser.packages.x86_64-linux.specific;
-          zen-browser-generic = zen-browser.packages.x86_64-linux.generic;
+          wayvnc = inputs.nixpkgs-wayland.packages.x86_64-linux.wayvnc;
+          zen-browser = inputs.zen-browser.packages.x86_64-linux.default;
         })
       ];
     })
@@ -51,7 +45,7 @@
         appimage-run
         dolphin
         firefox
-        zen-browser-specific
+        zen-browser
         thunderbird
         seahorse
         caligula
