@@ -21,6 +21,10 @@
         swappy
 
         obs-studio
+        libsForQt5.kdenlive
+        shotcut
+        flowblade
+        avidemux
 
         vlc
         mpv
