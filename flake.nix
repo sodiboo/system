@@ -31,6 +31,9 @@
     niri-working-tree.url = "github:sodiboo/niri/sodi-bonus-features";
     niri-working-tree.flake = false;
 
+    niri-floating.url = "github:YaLTeR/niri/floating";
+    niri-floating.flake = false;
+
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
 
     lan-mouse.url = "github:feschber/lan-mouse";

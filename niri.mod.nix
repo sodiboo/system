@@ -1,6 +1,7 @@
 {
   niri,
   niri-working-tree,
+  niri-floating,
   ...
 }: {
   # enable the binary cache on all systems; useful for remote build
@@ -10,7 +11,29 @@
       programs.niri.enable = true;
       nixpkgs.overlays = [niri.overlays.niri];
       # programs.niri.package = pkgs.niri-unstable;
-      programs.niri.package = pkgs.niri-unstable.override {src = niri-working-tree;};
+      programs.niri.package = let
+        niri-sodi = pkgs.niri-unstable.override {src = niri-working-tree;};
+        niri-float = pkgs.niri-unstable.override {src = niri-floating;};
+      in
+        # my niri amalgam package mess.
+        # i have a branch with some additions that i use.
+        # but i also wanna use the floating branch.
+        # but i don't have time to merge them.
+        # so, i'm installing both.
+        # `niri-floating` binary will be the floating branch; and it will be the default session.
+        # but the `niri` binary will be my branch.
+        pkgs.runCommand "niri-amalgam" {
+          passthru = {
+            inherit (niri-sodi) src cargoBuildNoDefaultFeatures cargoBuildFeatures providedSessions;
+          };
+        } ''
+          cp -R ${niri-sodi} $out
+          chmod -R +w $out
+
+          ln -s ${niri-float}/bin/niri $out/bin/niri-floating
+
+          substituteInPlace $out/lib/systemd/user/niri.service --replace-fail ${niri-sodi}/bin/niri $out/bin/niri-floating
+        '';
       environment.variables.NIXOS_OZONE_WL = "1";
       environment.systemPackages = with pkgs; [
         wl-clipboard
