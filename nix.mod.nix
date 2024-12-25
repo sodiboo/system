@@ -1,4 +1,5 @@
 {
+  self,
   nix-monitored,
   elements,
   ...
@@ -125,16 +126,32 @@ in {
       config,
       lib,
       ...
-    }:
-      lib.mkIf (
-        # Don't make iridium a substitute for itself. That would be silly.
-        config.networking.hostName != "iridium"
-      ) {
-        nix.settings = {
-          substituters = ["https://cache.sodi.boo"];
-          trusted-public-keys = ["sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw="];
+    }: {
+      options.personal-binary-cache-url = lib.mkOption {
+        type = lib.types.str;
+        default = "https://cache.sodi.boo";
+      };
+      config =
+        lib.mkIf (
+          # Don't make iridium a substitute for itself. That would be silly.
+          config.networking.hostName != "iridium"
+        ) {
+          nix.settings = {
+            substituters = [config.personal-binary-cache-url];
+            trusted-public-keys = ["sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw="];
+          };
         };
-      })
+    })
+  ];
+
+  sodium.modules = [
+    garbage-collection-module
+    {
+      personal-binary-cache-url = let
+        port = toString self.nixosConfigurations.iridium.config.services.nix-serve.port;
+        # sodium and iridium are on the same network, so let's not go through a hop to germany.
+      in "http://iridium.lan:${port}";
+    }
   ];
 
   personal.modules = [
@@ -201,8 +218,6 @@ in {
       ];
     })
   ];
-
-  sodium.modules = [garbage-collection-module];
 
   universal.home_modules = [
     ({
