@@ -467,6 +467,7 @@
           cfg = config.programs.niri.settings.outputs;
         in {
           "HDMI-A-1" = {
+            enable = false;
             mode.width = 3840;
             mode.height = 2160;
             mode.refresh = 60.0;
