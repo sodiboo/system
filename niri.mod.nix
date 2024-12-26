@@ -26,6 +26,7 @@
           passthru = {
             inherit (niri-sodi) src cargoBuildNoDefaultFeatures cargoBuildFeatures providedSessions;
           };
+          inherit (niri-sodi) meta; # important or `lib.getExe` breaks lol
         } ''
           cp -R ${niri-sodi} $out
           chmod -R +w $out
