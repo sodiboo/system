@@ -151,7 +151,7 @@
           unknown."= /".extraConfig = ''
             rewrite . /.nginx/raw-ip.html last;
           '';
-          unused-domains = ["catboy.rocks" "mrrp.ing" "enby.lol" "enby.live" "sodi.lol" "girlcock.party"];
+          unused-domains = ["catboy.rocks" "mrrp.ing" "enby.lol" "enby.live" "sodi.lol" "girlcock.party" "yester.gay"];
         in
           builtins.listToAttrs (map (name: {
               inherit name;
