@@ -1,6 +1,10 @@
 {conduwuit, ...}: {
   oxygen.modules = [
-    ({config, ...}: {
+    ({
+      lib,
+      config,
+      ...
+    }: {
       networking.firewall.allowedTCPPorts = [8448];
       services.matrix-conduit = {
         enable = true;
@@ -12,6 +16,8 @@
           address = "127.0.0.1";
         };
       };
+
+      systemd.services.conduit.serviceConfig.ExecStart = lib.mkForce (lib.getExe config.services.matrix-conduit.package); # wrong in nixpkgs lol
     })
   ];
 }
