@@ -10,6 +10,9 @@
         jack.enable = true;
         #media-session.enable = true;
       };
+      # this is the loopback device created in ALSA.
+      # it's just annoying, and i can create loopbacks on demand with `pw-loopback`.
+      boot.blacklistedKernelModules = ["snd_aloop"];
     }
     {
       # Bluetooth audio devices come with multiple profiles:
