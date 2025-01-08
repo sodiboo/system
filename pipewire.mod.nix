@@ -29,6 +29,15 @@
     }
   ];
 
+  personal.home_modules = [
+    ({pkgs, ...}: {
+      home.packages = with pkgs; [
+        qpwgraph
+        helvum
+      ];
+    })
+  ];
+
   sodium.modules = [
     {
       services.pipewire.wireplumber.extraConfig."99-rename" = {
