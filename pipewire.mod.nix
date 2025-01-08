@@ -56,6 +56,20 @@
               };
             };
           }
+          {
+            matches = [
+              # not sure what this is.
+              {"node.name" = "alsa_output.pci-0000_6b_00.6.iec958-stereo";}
+              {"node.name" = "alsa_input.pci-0000_6b_00.6.analog-stereo";}
+              {"device.name" = "alsa_card.pci-0000_6b_00.6";}
+            ];
+
+            actions = {
+              update-props = {
+                "node.disabled" = true;
+              };
+            };
+          }
         ];
       };
     }
