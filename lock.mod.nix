@@ -124,10 +124,10 @@ in {
               command = "${niri} msg action power-on-monitors";
             }
           ];
-          systemd.user.services.swayidle.Unit = {
-            Wants = ["niri.service"];
-            After = "niri.service";
-          };
+          # systemd.user.services.swayidle.Unit = {
+          #   Wants = ["niri.service"];
+          #   After = "niri.service";
+          # };
         };
     })
   ];
