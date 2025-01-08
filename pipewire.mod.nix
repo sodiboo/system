@@ -1,4 +1,20 @@
 {
+  personal.modules = [
+    {
+      # Bluetooth audio devices come with multiple profiles:
+      # One important profile is the "headset" profile, which has a microphone (as opposed to headphones with no mic)
+      # and the other is the Advanced Audio Distribution Profile (A2DP), which is used for high quality audio.
+      # The headset profile has absolutely terrible audio quality, and i never want to use it.
+      # And, my computer has a separate microphone anyway, so i don't need the headset profile's microphone.
+      # Let's just never switch to the headset profile.
+      services.pipewire.wireplumber.extraConfig."51-mitigate-annoying-profile-switch" = {
+        "wireplumber.settings" = {
+          "bluetooth.autoswitch-to-headset-profile" = false;
+        };
+      };
+    }
+  ];
+
   sodium.modules = [
     {
       services.pipewire.wireplumber.extraConfig."99-rename" = {
