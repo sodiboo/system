@@ -1,6 +1,17 @@
 {
   personal.modules = [
     {
+      security.rtkit.enable = true;
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        jack.enable = true;
+        #media-session.enable = true;
+      };
+    }
+    {
       # Bluetooth audio devices come with multiple profiles:
       # One important profile is the "headset" profile, which has a microphone (as opposed to headphones with no mic)
       # and the other is the Advanced Audio Distribution Profile (A2DP), which is used for high quality audio.
