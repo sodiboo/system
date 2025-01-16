@@ -14,8 +14,8 @@
         p7zip
 
         # audacity
-        tenacity # yeah i know it's a fork of audacity. i like both
-        sonic-visualiser
+        tenacity
+        # sonic-visualiser
 
         krita
         swappy
