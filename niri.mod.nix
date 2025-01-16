@@ -112,6 +112,8 @@
             border.width = 4;
             always-center-single-column = true;
 
+            empty-workspace-above-first = true;
+
             # fog of war
             focus-ring = {
               # enable = true;
@@ -203,6 +205,10 @@
                 substitutions."monitor-column" = "monitor";
                 substitutions."monitor-window" = "monitor";
               })
+              {
+                "${Mod}+V".action = switch-focus-between-floating-and-tiling;
+                "${Mod}+Shift+V".action = toggle-window-floating;
+              }
               (binds {
                 suffixes."Home" = "first";
                 suffixes."End" = "last";
@@ -219,7 +225,7 @@
               (binds {
                 suffixes = builtins.listToAttrs (map (n: {
                   name = toString n;
-                  value = ["workspace" n];
+                  value = ["workspace" (n + 1)]; # workspace 1 is empty; workspace 2 is the logical first.
                 }) (range 1 9));
                 prefixes."${Mod}" = "focus";
                 prefixes."${Mod}+Ctrl" = "move-window-to";
@@ -395,6 +401,14 @@
               block-out-from = "screencast";
             }
           ];
+
+          # layer-rules = [
+          #   {
+          #     matches = [{namespace = "waybar";}];
+
+          #     opacity = 0.5;
+          #   }
+          # ];
         };
       })
     ({pkgs, ...}: {
