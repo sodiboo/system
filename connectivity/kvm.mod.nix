@@ -1,23 +1,16 @@
 {
   lan-mouse,
-  # extras,
+  elements,
   ...
 }: let
-  # inherit (extras) wireguard-ips;
+  ip = i: "10.8.0.${toString i}";
+
   with-port = port: hosts: {
-    modules = [
-      {
-        networking.firewall.interfaces.wg0 = {
-          allowedUDPPorts = [port];
-          allowedTCPPorts = [port];
-        };
-      }
-    ];
     home_modules = [
       lan-mouse.homeManagerModules.default
       {
         programs.lan-mouse = {
-          # enable = true;
+          enable = true;
           settings = {inherit port;} // hosts;
         };
       }
@@ -26,11 +19,11 @@
 in {
   sodium = with-port 4242 {
     bottom.hostname = "nitrogen";
-    # bottom.ips = [wireguard-ips.nitrogen];
+    bottom.ips = [(ip elements.nitrogen)];
   };
 
   nitrogen = with-port 4242 {
     top.hostname = "sodium";
-    # top.ips = [wireguard-ips.sodium];
+    top.ips = [(ip elements.sodium)];
   };
 }
