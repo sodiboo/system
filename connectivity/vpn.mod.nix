@@ -51,7 +51,13 @@ in {
           externalInterface = "eth0";
           internalInterfaces = ["wg0"];
         };
-        firewall.allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
+        firewall = {
+          # always listen on the wireguard port on the external interfaces
+          allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
+
+          # allow all traffic on the wireguard interface, no matter the port
+          trustedInterfaces = ["wg0"];
+        };
         extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: z: "${ip z} ${name}.wg") elements);
         wireguard.interfaces.wg0 = {
           ips = ["${ip (builtins.getAttr config.system.name elements)}/24"];
