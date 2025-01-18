@@ -14,7 +14,8 @@
   vips,
   moreutils,
   cacert,
-  nodePackages,
+  pnpm_9,
+  nodejs,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
@@ -29,9 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
     fetchSubmodules = true;
   };
 
-  # NOTE: This requires pnpm 8.10.0 or newer
-  # https://github.com/pnpm/pnpm/pull/7214
-  pnpmDeps = assert lib.versionAtLeast nodePackages.pnpm.version "8.10.0";
+  pnpmDeps =
     stdenv.mkDerivation {
       pname = "${finalAttrs.pname}-pnpm-deps";
       inherit (finalAttrs) src version;
@@ -39,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
       nativeBuildInputs = [
         jq
         moreutils
-        nodePackages.pnpm
+        pnpm_9
         cacert
       ];
 
@@ -67,8 +66,8 @@ stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = [
     copyDesktopItems
-    nodePackages.pnpm
-    nodePackages.nodejs
+    pnpm_9
+    nodejs
     makeWrapper
     python3
     pkg-config
@@ -85,7 +84,7 @@ stdenv.mkDerivation (finalAttrs: {
     export HOME=$(mktemp -d)
     export STORE_PATH=$(mktemp -d)
 
-    export npm_config_nodedir=${nodePackages.nodejs}
+    export npm_config_nodedir=${nodejs}
 
     cp -Tr "$pnpmDeps" "$STORE_PATH"
     chmod -R +w "$STORE_PATH"
@@ -126,8 +125,8 @@ stdenv.mkDerivation (finalAttrs: {
 
     binPath = lib.makeBinPath [
       bash
-      nodePackages.pnpm
-      nodePackages.nodejs
+      pnpm_9
+      nodejs
     ];
   in ''
     runHook preInstall
@@ -140,7 +139,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     # https://gist.github.com/MikaelFangel/2c36f7fd07ca50fac5a3255fa1992d1a
 
-    makeWrapper ${nodePackages.pnpm}/bin/pnpm $out/bin/sharkey \
+    makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
       --chdir $out/Sharkey \
       --prefix PATH : ${binPath} \
       --prefix LD_LIBRARY_PATH : ${libPath}
