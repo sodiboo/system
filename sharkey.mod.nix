@@ -31,7 +31,7 @@
       # this is postgres tuned according to https://pgtune.leopard.in.ua
       # (probably don't just copy this, but use the tool yourself)
       services.postgresql.settings = {
-        max_connections = "20";
+        max_connections = "100";
         shared_buffers = "6GB";
         effective_cache_size = "18GB";
         maintenance_work_mem = "1536MB";
@@ -40,7 +40,7 @@
         default_statistics_target = "100";
         random_page_cost = "1.1";
         effective_io_concurrency = "200";
-        work_mem = "78643kB";
+        work_mem = "15728kB";
         huge_pages = "off";
         min_wal_size = "1GB";
         max_wal_size = "4GB";
