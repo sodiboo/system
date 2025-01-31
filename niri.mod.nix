@@ -244,6 +244,7 @@
                 "${Mod}+Shift+Minus".action = set-window-height "-10%";
                 "${Mod}+Shift+Plus".action = set-window-height "+10%";
 
+                "${Mod}+Shift+Escape".action = toggle-keyboard-shortcuts-inhibit;
                 "${Mod}+Shift+E".action = quit;
                 "${Mod}+Shift+P".action = power-off-monitors;
 
