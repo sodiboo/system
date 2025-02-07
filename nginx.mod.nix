@@ -170,8 +170,8 @@
             "cache.sodi.boo" = proxy "iridium.wg" self.nixosConfigurations.iridium.config.services.nix-serve.port;
             "gaysex.cloud" =
               base {
-                "/" = proxy' "localhost" config.services.sharkey.settings.port;
-                "/_matrix" = proxy' "localhost" config.services.matrix-conduit.settings.global.port;
+                "/" = proxy' "127.0.0.1" config.services.sharkey.settings.port;
+                "/_matrix" = proxy' "127.0.0.1" config.services.matrix-conduit.settings.global.port;
               }
               // {
                 listen = let
@@ -184,11 +184,11 @@
                   p 80 false ++ p 443 true ++ p 8448 true;
               };
             "vpn.sodi.boo" = base {
-              "/" = proxy' "localhost" config.services.headscale.port;
+              "/" = proxy' "127.0.0.1" config.services.headscale.port;
               "/metrics".proxyPass = "http://${config.services.headscale.settings.metrics_listen_addr}/metrics";
             };
-            "infodumping.place" = proxy "localhost" config.services.writefreely.settings.server.port;
-            "search.gaysex.cloud" = proxy "localhost" config.services.searx.settings.server.port;
+            "infodumping.place" = proxy "127.0.0.1" config.services.writefreely.settings.server.port;
+            "search.gaysex.cloud" = proxy "127.0.0.1" config.services.searx.settings.server.port;
           };
       };
       security.acme = {
