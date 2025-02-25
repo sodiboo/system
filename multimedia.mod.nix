@@ -22,9 +22,9 @@
 
         obs-studio
         libsForQt5.kdenlive
-        shotcut
-        flowblade
-        avidemux
+        # shotcut
+        # flowblade
+        # avidemux
 
         vlc
         mpv
