@@ -125,9 +125,28 @@
             #   to = "blue";
             #   in' = "oklch shorter hue";
             # };
+
+            shadow = {
+              enable = true;
+
+              color = "black";
+            };
+
+            # default-column-display = "tabbed";
+
+            tab-indicator = {
+              position = "top";
+              gaps-between-tabs = 10;
+
+              # hide-when-single-tab = true;
+              # place-within-column = true;
+
+              # active.color = "red";
+            };
           };
 
           hotkey-overlay.skip-at-startup = !nixosConfig.is-virtual-machine;
+          clipboard.disable-primary = true;
 
           screenshot-path = "~/Pictures/Screenshots/%Y-%m-%dT%H:%M:%S.png";
 
@@ -166,6 +185,7 @@
             lib.attrsets.mergeAttrsList [
               {
                 "${Mod}+T".action = spawn "kitty";
+                "${Mod}+O".action = show-hotkey-overlay;
                 "${Mod}+D".action = spawn "fuzzel";
                 "${Mod}+W".action = sh (builtins.concatStringsSep "; " [
                   "systemctl --user restart waybar.service"
@@ -186,6 +206,8 @@
                 "XF86MonBrightnessDown".action = sh "brightnessctl set 10%-";
 
                 "${Mod}+Q".action = close-window;
+
+                "${Mod}+Space".action = toggle-column-tabbed-display;
 
                 "XF86AudioNext".action = focus-column-right;
                 "XF86AudioPrev".action = focus-column-left;
@@ -366,6 +388,12 @@
               block-out-from = "screencast";
             }
           ];
+
+          gestures.dnd-edge-view-scroll = {
+            trigger-width = 64;
+            delay-ms = 250;
+            max-speed = 12000;
+          };
 
           # layer-rules = [
           #   {
