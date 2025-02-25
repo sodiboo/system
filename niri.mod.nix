@@ -126,11 +126,7 @@
             #   in' = "oklch shorter hue";
             # };
 
-            shadow = {
-              enable = true;
-
-              color = "black";
-            };
+            shadow.enable = true;
 
             # default-column-display = "tabbed";
 
