@@ -43,7 +43,7 @@ inputs: {
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         appimage-run
-        dolphin
+        kdePackages.dolphin
         firefox
         zen-browser
         thunderbird

@@ -21,7 +21,7 @@
         swappy
 
         obs-studio
-        libsForQt5.kdenlive
+        kdePackages.kdenlive
         # shotcut
         # flowblade
         # avidemux
