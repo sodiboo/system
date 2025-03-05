@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conway's Game of Life</title>
+</head>
+
+<body>
+    <h1>Conway's Game of Life</h1>
+    <span class="timer"></span>
+    <div class="game-container">
+        <noscript>
+            You need JavaScript.
+        </noscript>
+        <script>
+            console.log(window.location.hash);
+            window.addEventListener("hashchange", () => {
+                window.location.reload();
+            });
+            const [NUM_COLS, NUM_ROWS] = window.location.hash === "" ? [15, 15] : (() => {
+                const match = window.location.hash.match(/^#(?<width>\d+)x(?<height>\d+)$/);
+                if (match == null) {
+                    const url = new URL(window.location);
+                    console.log(url);
+                    url.hash = "";
+                    window.location.replace(url);
+                } else {
+                    const width = +match.groups.width;
+                    const height = +match.groups.height;
+                    return [width, height];
+                }
+            })();
+            for (let row = 0; row < NUM_ROWS; row++) {
+                for (let col = 0; col < NUM_COLS; col++) {
+                    document.write(`<input type="checkbox" id="cell_${row}_${col}" />`);
+                    document.write(`<label for="cell_${row}_${col}"><span/></label>`);
+                }
+                document.write('<br>');
+            }
+
+            document.querySelectorAll("input[type='checkbox']").forEach((checkbox, index) => {
+                checkbox.checked = false;
+            });
+        </script>
+    </div>
+    <script>
+
+        const cells = new Array(NUM_ROWS).fill(0).flatMap((_, row) => new Array(NUM_COLS).fill(0).map((_, col) => {
+            const cell = document.querySelector(`#cell_${row}_${col}`);
+            const neighbors = [
+                document.querySelector(`#cell_${row - 1}_${col - 1}`),
+                document.querySelector(`#cell_${row - 1}_${col}`),
+                document.querySelector(`#cell_${row - 1}_${col + 1}`),
+                document.querySelector(`#cell_${row}_${col - 1}`),
+                document.querySelector(`#cell_${row}_${col + 1}`),
+                document.querySelector(`#cell_${row + 1}_${col - 1}`),
+                document.querySelector(`#cell_${row + 1}_${col}`),
+                document.querySelector(`#cell_${row + 1}_${col + 1}`),
+            ].filter(x => x !== null);
+            return {
+                get alive() {
+                    return cell.checked
+                },
+
+                set alive(value) {
+                    cell.checked = value;
+                },
+
+                get liveNeighbors() {
+                    return neighbors.filter(x => x.checked).length;
+                },
+
+                shouldLive: false,
+            }
+        }));
+
+        const tick = () => {
+            for (const cell of cells) {
+                if (cell.alive) {
+                    cell.shouldLive = cell.liveNeighbors === 2 || cell.liveNeighbors === 3;
+                } else {
+                    cell.shouldLive = cell.liveNeighbors === 3;
+                }
+            }
+
+            for (const cell of cells) {
+                cell.alive = cell.shouldLive;
+            }
+        };
+    </script>
+
+    <script>
+        const TICK_RATE = 2000;
+        document.querySelector(":root").style.setProperty("--tick-rate", `${TICK_RATE}ms`);
+
+        let tickInterval = setInterval(tick, TICK_RATE);
+
+        document.querySelector(".game-container").addEventListener("mouseover", () => {
+            clearInterval(tickInterval);
+        })
+
+        document.querySelector(".game-container").addEventListener("mouseout", () => {
+            tickInterval = setInterval(tick, TICK_RATE)
+        })
+
+    </script>
+
+    <style>
+        :root {
+            --purple: rgb(123, 31, 162);
+            --violet: rgb(103, 58, 183);
+            --pink: rgb(244, 143, 177);
+        }
+
+        * {
+            box-sizing: border-box;
+            text-wrap: nowrap;
+        }
+
+        @property --rotate {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            background: #212121;
+            color: #fff;
+            font: 24px/1.4 sans-serif;
+        }
+
+
+        .game-container {
+            line-height: 0;
+            background: #191c29;
+            position: relative;
+            border-radius: 6px;
+            padding: 15px;
+            color: rgb(88 199 250 / 0%);
+        }
+
+        /* haha border */
+        .game-container::before {
+            content: "";
+            --offset: .5rem;
+            width: calc(100% + 2*var(--offset));
+            height: calc(100% + 2*var(--offset));
+            border-radius: 8px;
+            position: absolute;
+            z-index: -1;
+            top: calc(-1 * var(--offset));
+            left: calc(-1 * var(--offset));
+
+            /* brand consistency: these are "magic" colors on my personal website */
+            background-image: linear-gradient(45deg, var(--purple), var(--violet), var(--pink));
+
+            transition: all 300ms;
+        }
+
+        .game-container:hover::before {
+            animation: none;
+            opacity: .3;
+            filter: blur(20px);
+            --offset: 1rem;
+        }
+
+        h1 {
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        .timer {
+            display: inline-block;
+
+            width: 2em;
+            aspect-ratio: 1;
+            margin-top: .5rem;
+            margin-bottom: 2rem;
+            padding: 0;
+
+
+            --progress: var(--pink);
+            --rest: transparent;
+            background-image: conic-gradient(var(--progress) var(--rotate), var(--rest) var(--rotate));
+            border-radius: 50%;
+            animation: spin var(--tick-rate) linear infinite;
+
+            transition: all 500ms;
+        }
+
+        .timer:has(+.game-container:hover),
+        .timer:not(:has(+.game-container>input:checked)) {
+            animation: none;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes spin {
+            0% {
+                --rotate: 0deg;
+            }
+
+            100% {
+                --rotate: 360deg;
+            }
+        }
+
+
+        input[type='checkbox'] {
+            display: none;
+        }
+
+        input[type='checkbox']+label {
+            display: inline-block;
+            cursor: pointer;
+            padding: 0;
+            margin: 2px;
+            transition: all 250ms cubic-bezier(.4, .0, .23, 1);
+        }
+
+        input[type='checkbox']+label>span {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            transition: all 750ms cubic-bezier(.4, .0, .23, 1);
+
+            clip-path: circle(0%);
+            background: #FFEB3B;
+        }
+
+        input[type='checkbox']+label:hover,
+        input[type='checkbox']:focus+label {
+            background-color: color-mix(in srgb, white 10%, transparent 90%);
+        }
+
+        input[type='checkbox']:checked+label>span {
+            clip-path: circle(100%);
+            border-radius: .25em;
+
+        }
+
+        input[type='checkbox']:checked+label:hover>span {
+            opacity: 0.8;
+        }
+
+        .game-container:hover>label>span {
+            transition: all 250ms cubic-bezier(.4, .0, .23, 1);
+        }
+
+
+        .game-container:hover>label {
+            margin: 5px;
+            border: 1px solid #9E9E9E;
+        }
+
+        .game-container:hover>:checked+label {
+            border-color: transparent;
+        }
+    </style>
+
+</body>
+
+</html>
