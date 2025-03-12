@@ -16,17 +16,20 @@
   cacert,
   pnpm_9,
   nodejs,
+  pixman,
+  pango,
+  cairo,
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
-  version = "2024.9.3";
+  version = "2025.2.2";
 
   src = fetchFromGitLab {
     owner = "TransFem-org";
     repo = "Sharkey";
     domain = "activitypub.software";
     rev = finalAttrs.version;
-    hash = "sha256-K1Q/sEjLEimfTwpmtGoNmlDs5dTPwHuHLBC+I9g7RrA=";
+    hash = "sha256-KVr4KLtJ22LEk94GuxeTk8/GcFs7oU/gkoVTvrgbYBg=";
     fetchSubmodules = true;
   };
 
@@ -60,7 +63,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     dontBuild = true;
     outputHashMode = "recursive";
-    outputHash = "sha256-PpXmNBO4pWj8AG0we4DpPhzfx/18rwDZHi86+esFghM=";
+    outputHash = "sha256-XWcDchvrYSJr0s/DMb8FIEK7MdE6aC2bAbrW88Ig4ug=";
   };
 
   nativeBuildInputs = [
@@ -75,6 +78,10 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = [
     glib
     vips
+
+    pixman
+    pango
+    cairo
   ];
 
   configurePhase = ''
@@ -101,6 +108,10 @@ stdenv.mkDerivation (finalAttrs: {
     )
     (
       cd node_modules/.pnpm/node_modules/sharp
+      pnpm run install
+    )
+    (
+      cd node_modules/.pnpm/node_modules/canvas
       pnpm run install
     )
 
