@@ -49,6 +49,8 @@
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     nil.url = "github:oxalica/nil";
+
+    firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
   };
 
   outputs = {
