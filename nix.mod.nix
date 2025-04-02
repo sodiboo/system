@@ -2,6 +2,7 @@
   self,
   nix-monitored,
   elements,
+  nil,
   ...
 }: let
   caches = {
@@ -227,7 +228,7 @@ in {
     }: {
       home.packages = with pkgs; [
         cachix
-        nil
+        nil.packages.x86_64-linux.nil
         nurl
         nix-diff
         nix-output-monitor
