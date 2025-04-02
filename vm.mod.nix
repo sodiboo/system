@@ -53,6 +53,10 @@
 
           ---
 
+          Press Ctrl+Alt+G to release the keyboard from the VM.
+
+          ---
+
           The user is `sodiboo` and there is no password.
 
           ---
