@@ -50,6 +50,7 @@
       home.packages = with pkgs; [
         # simutrans # borked
         prismlauncher
+        ringracers
         lutris
         adwaita-icon-theme
         itch
