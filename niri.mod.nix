@@ -194,6 +194,10 @@
                 "Print".action.screenshot-screen = [];
                 "${Mod}+Print".action = screenshot-window;
 
+                "${Mod}+Insert".action = set-dynamic-cast-window;
+                "${Mod}+Shift+Insert".action = set-dynamic-cast-monitor;
+                "${Mod}+Delete".action = clear-dynamic-cast-target;
+
                 "XF86AudioRaiseVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+";
                 "XF86AudioLowerVolume".action = sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-";
                 "XF86AudioMute".action = sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
@@ -449,7 +453,13 @@
   # because alejandra no likey.
   # https://sodi.boo/blog/nix-formatting
   sodium.home_modules = [
-    ({config, ...}: {
+    ({
+      nixosConfig,
+      config,
+      pkgs,
+      lib,
+      ...
+    }: {
       programs.niri.settings = {
         # On sodium, right super says "menu" and is between right alt and fn
         input.keyboard.xkb.options = "compose:rwin";
@@ -465,6 +475,20 @@
           ];
           default-column-width = {proportion = 1.0 / 3.0;};
         };
+
+        binds = with config.lib.niri.actions;
+          lib.optionalAttrs (!nixosConfig.is-virtual-machine)
+          {
+            "Mod+Pause".action = spawn "${pkgs.writeShellScript "toggle-hdmi-output" ''
+              if [ "$(niri msg --json outputs | jq '."HDMI-A-1".logical == null')" = "true" ]; then
+                niri msg output HDMI-A-1 on
+              else
+                niri msg output HDMI-A-1 off
+              fi
+            ''}";
+            "Mod+Prior".action = set-dynamic-cast-monitor "HDMI-A-1"; # page up; monitor is "up"
+            "Mod+Next".action = set-dynamic-cast-monitor "DP-1"; # page down; monitor is "down"
+          };
 
         outputs = let
           cfg = config.programs.niri.settings.outputs;
