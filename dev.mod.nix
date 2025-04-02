@@ -54,6 +54,9 @@
   ];
 
   universal.home_modules = [
+    ({lib, ...}: {
+      nixpkgs.overlays = lib.mkForce null;
+    })
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         clang
