@@ -109,6 +109,21 @@
               };
             };
           }
+          {
+            matches = [
+              # My RØDE microphone has an analog output.
+              # When headphones are plugged in, it will composite mic feedback into the output.
+              # That's actually pretty cool, but i don't use it, and *this output appears when nothing is plugged in*.
+              # So, remove it. It's annoying when it accidentally gets selected.
+              {"node.description" = "RØDE XCM-50 Analog Stereo";}
+            ];
+
+            actions = {
+              update-props = {
+                "node.disabled" = true;
+              };
+            };
+          }
         ];
       };
     }
