@@ -44,42 +44,6 @@
         "monitor.alsa.rules" = [
           {
             matches = [
-              {"node.name" = "alsa_output.usb-Razer_Razer_Nari-00.analog-game";}
-            ];
-
-            actions = {
-              update-props = {
-                # This will be my default output device usually.
-                # I want waybar to show this as "Razer Nari"
-                "node.nick" = "Razer Nari";
-                # By the default, these names are shown side by side in wpctl status.
-                # So i don't want to have one look different from the other.
-                "node.description" = "Razer Nari (Game)";
-              };
-            };
-          }
-          {
-            matches = [
-              {"node.name" = "alsa_output.usb-Razer_Razer_Nari-00.analog-chat";}
-              # It just so happens that i want the microphone to have the same props as output.
-              # The rest of comments are about the output.
-              {"node.name" = "alsa_input.usb-Razer_Razer_Nari-00.analog-chat";}
-            ];
-
-            actions = {
-              update-props = {
-                # I want the chat output to be distinguished in waybar though.
-                # It is not the default, so it gets the qualified name.
-                # This is the default set by my nari module, but i'm specifying it here to express my intent.
-                "node.nick" = "Razer Nari (Chat)";
-                # The default descriptions are fine: "Nari (Wireless) Game" / "Nari (Wireless) Chat"
-                # But i prefer this format. It also matches better with the node.nick i've set.
-                "node.description" = "Razer Nari (Chat)";
-              };
-            };
-          }
-          {
-            matches = [
               # Matching the model number of the monitor instead of the node name.
               # This is done to ensure that it is based on the monitor and not the port.
               {"node.nick" = "LC49G95T";}

@@ -1,4 +1,4 @@
-{nari, ...}: {
+{
   personal.modules = [
     {
       programs.adb.enable = true;
@@ -11,7 +11,6 @@
     }
   ];
   sodium.modules = [
-    nari.nixosModules.default
     ({
       pkgs,
       lib,
