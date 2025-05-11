@@ -19,7 +19,8 @@
         tenacity
         # sonic-visualiser
 
-        krita
+        # krita # <-- SHE DOES NOT SUPPORT WAYLAND
+        gimp3 # <-- yay! wayland! :3
         swappy
 
         obs-studio
