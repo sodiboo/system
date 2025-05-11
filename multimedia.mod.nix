@@ -7,6 +7,8 @@
         imagemagick
         pandoc
 
+        yt-dlp
+
         ripgrep-all # grep through pandocable files
 
         exiftool
