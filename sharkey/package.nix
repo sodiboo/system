@@ -105,16 +105,20 @@ stdenv.mkDerivation (finalAttrs: {
 
     makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
       --chdir $out/Sharkey \
-      --prefix PATH : ${lib.makeBinPath [
-      bash
-      pnpm_9
-      nodejs
-    ]} \
-      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
-      jemalloc
-      ffmpeg-headless
-      stdenv.cc.cc.lib
-    ]}
+      --prefix PATH : ${
+        lib.makeBinPath [
+          bash
+          pnpm_9
+          nodejs
+        ]
+      } \
+      --prefix LD_LIBRARY_PATH : ${
+        lib.makeLibraryPath [
+          jemalloc
+          ffmpeg-headless
+          stdenv.cc.cc.lib
+        ]
+      }
 
     runHook postInstall
   '';
@@ -127,8 +131,11 @@ stdenv.mkDerivation (finalAttrs: {
     description = "🌎 A Sharkish microblogging platform 🚀";
     homepage = "https://joinsharkey.org";
     license = licenses.gpl3Only;
-    maintainers = with maintainers; [sodiboo];
-    platforms = ["x86_64-linux" "aarch64-linux"];
+    maintainers = with maintainers; [ sodiboo ];
+    platforms = [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
     mainProgram = "sharkey";
   };
 })

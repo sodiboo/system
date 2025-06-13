@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.services.sharkey;
 
   createDB = cfg.database.host == "127.0.0.1" && cfg.database.createLocally;
@@ -12,9 +13,10 @@
 
   createMeiliKey = cfg.meilisearch.key == lib.fakeSha256;
 
-  settingsFormat = pkgs.formats.yaml {};
+  settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
-in {
+in
+{
   options = {
     services.sharkey = with lib; {
       enable = mkEnableOption "sharkey";
@@ -110,7 +112,7 @@ in {
 
         index = mkOption {
           type = lib.types.str;
-          default = replaceStrings ["."] ["_"] cfg.domain;
+          default = replaceStrings [ "." ] [ "_" ] cfg.domain;
         };
 
         key = mkOption {
@@ -121,7 +123,7 @@ in {
 
       settings = mkOption {
         type = settingsFormat.type;
-        default = {};
+        default = { };
         description = ''
           Configuration for Sharkey, see
           <link xlink:href="https://activitypub.software/TransFem-org/Sharkey/-/blob/develop/.config/example.yml"/>
@@ -163,11 +165,11 @@ in {
 
     systemd.services.sharkey = {
       after =
-        ["network-online.target"]
-        ++ lib.optionals createDB ["postgresql.service"]
-        ++ lib.optionals createRedis ["redis-sharkey.service"]
-        ++ lib.optionals createMeili ["meilisearch.service"];
-      wantedBy = ["multi-user.target"];
+        [ "network-online.target" ]
+        ++ lib.optionals createDB [ "postgresql.service" ]
+        ++ lib.optionals createRedis [ "redis-sharkey.service" ]
+        ++ lib.optionals createMeili [ "meilisearch.service" ];
+      wantedBy = [ "multi-user.target" ];
 
       preStart = ''
         SHARKEY_DB_PASSWORD="$(cat ${lib.escapeShellArg cfg.database.passwordFile})" \
@@ -179,7 +181,9 @@ in {
       environment.NODE_ENV = "production";
 
       serviceConfig = {
-        EnvironmentFile = lib.mkIf (config.services.meilisearch.masterKeyEnvironmentFile != null) config.services.meilisearch.masterKeyEnvironmentFile;
+        EnvironmentFile = lib.mkIf (
+          config.services.meilisearch.masterKeyEnvironmentFile != null
+        ) config.services.meilisearch.masterKeyEnvironmentFile;
         Type = "simple";
         User = "sharkey";
 
@@ -206,7 +210,7 @@ in {
           ensureDBOwnership = true;
         }
       ];
-      ensureDatabases = [cfg.database.name];
+      ensureDatabases = [ cfg.database.name ];
     };
 
     services.redis = lib.mkIf createRedis {
@@ -234,10 +238,10 @@ in {
       group = "sharkey";
       isSystemUser = true;
       home = cfg.package;
-      packages = [cfg.package];
+      packages = [ cfg.package ];
     };
 
-    users.groups.sharkey = {};
+    users.groups.sharkey = { };
   };
-  meta.maintainers = with lib.maintainers; [sodiboo];
+  meta.maintainers = with lib.maintainers; [ sodiboo ];
 }
