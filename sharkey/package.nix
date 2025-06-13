@@ -51,6 +51,20 @@ stdenv.mkDerivation (finalAttrs: {
     cairo
   ];
 
+  # Sharkey depends on some packages with native code that needs to be built.
+  # These aren't built by default, so we need to run their build scripts manually.
+  #
+  # The tricky thing is that not all of them required for Sharkey to "successfully" build.
+  # They will trick you, make you think that Sharkey works, and successfully run your databse migrations.
+  # And then, when your instance tries to run, it will crash with an error like:
+  #
+  #     Error [ERR_INTERNAL_ASSERTION]: This is caused by either a bug in Node.js or incorrect usage of Node.js internals.
+  #     Please open an issue with this stack trace at https://github.com/nodejs/node/issues
+  #
+  # If you see that error, IT IS LYING TO YOU. It means Sharkey added a new dependency that required native code to be built.
+  # Figure out what is the new dependency. You can ask in their discord, and they'll probably tell you.
+  # And then, build it in the `buildPhase` below.
+
   buildPhase = ''
     runHook preBuild
 
