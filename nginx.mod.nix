@@ -151,7 +151,7 @@
           unknown."= /".extraConfig = ''
             rewrite . /.nginx/raw-ip.html last;
           '';
-          unused-domains = ["catboy.rocks" "mrrp.ing" "enby.lol" "enby.live" "sodi.lol" "girlcock.party" "yester.gay"];
+          unused-domains = ["catboy.rocks" "mrrp.ing" "enby.lol" "enby.live" "sodi.lol" "girlcock.party" "yester.gay" "infodumping.place"];
         in
           builtins.listToAttrs (map (name: {
               inherit name;
@@ -187,8 +187,6 @@
               "/" = proxy' "127.0.0.1" config.services.headscale.port;
               "/metrics".proxyPass = "http://${config.services.headscale.settings.metrics_listen_addr}/metrics";
             };
-            "infodumping.place" = proxy "127.0.0.1" config.services.writefreely.settings.server.port;
-            "search.gaysex.cloud" = proxy "127.0.0.1" config.services.searx.settings.server.port;
           };
       };
       security.acme = {
