@@ -99,8 +99,6 @@ stdenv.mkDerivation (finalAttrs: {
     ln -s /run/sharkey $out/Sharkey/.config
     cp -r * $out/Sharkey
 
-    # https://gist.github.com/MikaelFangel/2c36f7fd07ca50fac5a3255fa1992d1a
-
     makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
       --chdir $out/Sharkey \
       --prefix PATH : ${binPath} \
