@@ -51,6 +51,10 @@ stdenv.mkDerivation (finalAttrs: {
     cairo
   ];
 
+  # This environment variable is required for `node-gyp`, which is used by some native dependencies we build below.
+  # Without it, `node-gyp` won't know where the source code for node.js is, and will fail to download it instead.
+  npm_config_nodedir = nodejs;
+
   # Sharkey depends on some packages with native code that needs to be built.
   # These aren't built by default, so we need to run their build scripts manually.
   #
@@ -67,8 +71,6 @@ stdenv.mkDerivation (finalAttrs: {
 
   buildPhase = ''
     runHook preBuild
-
-    export npm_config_nodedir=${nodejs}
 
     (
       cd node_modules/.pnpm/node_modules/v-code-diff
