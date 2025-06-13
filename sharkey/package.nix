@@ -129,7 +129,7 @@ stdenv.mkDerivation (finalAttrs: {
     description = "🌎 A Sharkish microblogging platform 🚀";
     homepage = "https://joinsharkey.org";
     license = licenses.gpl3Only;
-    maintainers = with maintainers; [aprl sodiboo];
+    maintainers = with maintainers; [sodiboo];
     platforms = ["x86_64-linux" "aarch64-linux"];
     mainProgram = "sharkey";
   };

@@ -239,5 +239,5 @@ in {
 
     users.groups.sharkey = {};
   };
-  meta.maintainers = with lib.maintainers; [aprl sodiboo];
+  meta.maintainers = with lib.maintainers; [sodiboo];
 }
