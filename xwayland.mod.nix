@@ -61,8 +61,26 @@
 
               "$@"
             '';
+
           sodi-x-run = final.writeShellScriptBin "x-run" ''
             ${lib.getExe final.xwayland-run} -- ${lib.getExe final.sodi-x-run-env} "$@"
+          '';
+
+          xwlsat-run = final.writeShellScriptBin "xwlsat-run" ''
+            n=0
+            while [ -e "/tmp/.X11-unix/X$n" ]; do
+              n=$((n + 1))
+            done
+
+            xwayland-satellite :$n &
+
+            xwlsat_pid=$!
+
+            export DISPLAY=:$n
+
+            DISPLAY=:$n "$@"
+
+            kill $xwlsat_pid
           '';
         })
       ];
@@ -77,6 +95,7 @@
         xclip
         metacity
         sodi-x-run
+        xwlsat-run
       ];
     })
   ];
