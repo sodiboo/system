@@ -94,19 +94,7 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postBuild
   '';
 
-  installPhase = let
-    libPath = lib.makeLibraryPath [
-      jemalloc
-      ffmpeg-headless
-      stdenv.cc.cc.lib
-    ];
-
-    binPath = lib.makeBinPath [
-      bash
-      pnpm_9
-      nodejs
-    ];
-  in ''
+  installPhase = ''
     runHook preInstall
 
     mkdir -p $out/Sharkey
@@ -117,8 +105,16 @@ stdenv.mkDerivation (finalAttrs: {
 
     makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
       --chdir $out/Sharkey \
-      --prefix PATH : ${binPath} \
-      --prefix LD_LIBRARY_PATH : ${libPath}
+      --prefix PATH : ${lib.makeBinPath [
+      bash
+      pnpm_9
+      nodejs
+    ]} \
+      --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [
+      jemalloc
+      ffmpeg-headless
+      stdenv.cc.cc.lib
+    ]}
 
     runHook postInstall
   '';
