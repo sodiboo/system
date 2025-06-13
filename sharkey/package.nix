@@ -7,13 +7,10 @@
   copyDesktopItems,
   jemalloc,
   ffmpeg-headless,
-  jq,
   python3,
   pkg-config,
   glib,
   vips,
-  moreutils,
-  cacert,
   pnpm_9,
   nodejs,
   pixman,
@@ -33,37 +30,9 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-VBfkJuoQzQ93sUmJNnr1JUjA2GQNgOIuX+j8nAz3bb4=";
   };
 
-  pnpmDeps = stdenv.mkDerivation {
-    pname = "${finalAttrs.pname}-pnpm-deps";
-    inherit (finalAttrs) src version;
-
-    nativeBuildInputs = [
-      jq
-      moreutils
-      pnpm_9
-      cacert
-    ];
-
-    # https://github.com/NixOS/nixpkgs/blob/763e59ffedb5c25774387bf99bc725df5df82d10/pkgs/applications/misc/pot/default.nix#L56
-    installPhase = ''
-      export HOME=$(mktemp -d)
-
-      pnpm config set store-dir $out
-      pnpm config set side-effects-cache false
-      pnpm install --force --frozen-lockfile --ignore-scripts
-    '';
-
-    fixupPhase = ''
-      rm -rf $out/v3/tmp
-      for f in $(find $out -name "*.json"); do
-        sed -i -E -e 's/"checkedAt":[0-9]+,//g' $f
-        jq --sort-keys . $f | sponge $f
-      done
-    '';
-
-    dontBuild = true;
-    outputHashMode = "recursive";
-    outputHash = "sha256-ALstAaN8dr5qSnc/ly0hv+oaeKrYFQ3GhObYXOv4E6I=";
+  pnpmDeps = pnpm_9.fetchDeps {
+    inherit (finalAttrs) src pname;
+    hash = "sha256-ALstAaN8dr5qSnc/ly0hv+oaeKrYFQ3GhObYXOv4E6I=";
   };
 
   nativeBuildInputs = [
