@@ -39,7 +39,49 @@
   ];
 
   sodium.modules = [
-    {
+    ({pkgs, ...}: {
+      services.pipewire.extraConfig.pipewire."99-filter" = {
+        "context.modules" = [
+          {
+            name = "libpipewire-module-filter-chain";
+            args = {
+              "node.description" = "RØDE XCM-50 (rnnoise)";
+              "media.name" = "RØDE XCM-50 (rnnoise)";
+              "filter.graph" = {
+                nodes = [
+                  {
+                    type = "ladspa";
+                    name = "rnnoise";
+                    plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                    label = "noise_suppressor_mono";
+                    control = {
+                      "VAD Threshold (%)" = 50.0;
+                      "VAD Grace Period (ms)" = 200;
+                      "Retroactive VAD Grace (ms)" = 0;
+                    };
+                  }
+                ];
+              };
+
+              "capture.props" = {
+                "node.name" = "capture.rnnoise_source";
+                "node.passive" = true;
+                "audio.rate" = 48000;
+
+                "target.node" = "alsa_input.usb-R__DE_R__DE_XCM-50_F5CD4617-00.mono-fallback";
+                #                                ^^    ^^
+                # hahaha what the hell are these underscores
+              };
+              "playback.props" = {
+                "node.name" = "rnnoise_source";
+                "media.class" = "Audio/Source";
+                "audio.rate" = 48000;
+              };
+            };
+          }
+        ];
+      };
+
       services.pipewire.wireplumber.extraConfig."99-rename" = {
         "monitor.alsa.rules" = [
           {
@@ -88,9 +130,21 @@
               };
             };
           }
+          {
+            matches = [
+              {"node.name" = "alsa_input.usb-R__DE_R__DE_XCM-50_F5CD4617-00.mono-fallback";}
+            ];
+
+            actions = {
+              update-props = {
+                "node.nick" = "RØDE XCM-50 (raw)";
+                "node.description" = "RØDE XCM-50 (raw)";
+              };
+            };
+          }
         ];
       };
-    }
+    })
   ];
 
   nitrogen.modules = [
