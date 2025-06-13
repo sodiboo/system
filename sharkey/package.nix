@@ -35,7 +35,7 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    pnpm_9
+    pnpm_9.configHook
     nodejs
     makeWrapper
     python3
@@ -51,19 +51,10 @@ stdenv.mkDerivation (finalAttrs: {
     cairo
   ];
 
-  configurePhase = ''
-    runHook preConfigure
-
-    export HOME=$(mktemp -d)
-    export STORE_PATH=$(mktemp -d)
+  buildPhase = ''
+    runHook preBuild
 
     export npm_config_nodedir=${nodejs}
-
-    cp -Tr "$pnpmDeps" "$STORE_PATH"
-    chmod -R +w "$STORE_PATH"
-
-    pnpm config set store-dir "$STORE_PATH"
-    pnpm install --offline --frozen-lockfile --ignore-scripts
 
     (
       cd node_modules/.pnpm/node_modules/v-code-diff
@@ -81,12 +72,6 @@ stdenv.mkDerivation (finalAttrs: {
       cd node_modules/.pnpm/node_modules/canvas
       pnpm run install
     )
-
-    runHook postConfigure
-  '';
-
-  buildPhase = ''
-    runHook preBuild
 
     pnpm build
 
