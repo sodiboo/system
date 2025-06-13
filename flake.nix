@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
+    # nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -35,7 +35,6 @@
     conduwuit.url = "github:girlbossceo/conduwuit";
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
-    sodipkgs-stackblur-go.url = "github:sodiboo/nixpkgs/stackblur";
 
     picocss.url = "github:picocss/pico";
     picocss.flake = false;

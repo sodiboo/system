@@ -11,8 +11,8 @@ in
                 name: path:
                   prev.callPackage "${inputs."sodipkgs-${name}"}/pkgs/${path}" {}
               ) {
-                simutrans = "/games/simutrans";
-                stackblur-go = by-name "stackblur-go";
+                simutrans = by-name "simutrans";
+                # stackblur-go = by-name "stackblur-go";
               }
           )
         ];
