@@ -23,7 +23,6 @@
         gimp3 # <-- yay! wayland! :3
         swappy
 
-        obs-studio
         kdePackages.kdenlive
         # shotcut
         # flowblade
@@ -34,5 +33,12 @@
         stremio
       ];
     })
+  ];
+
+  personal.modules = [
+    {
+      programs.obs-studio.enable = true;
+      programs.obs-studio.enableVirtualCamera = true;
+    }
   ];
 }
