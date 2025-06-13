@@ -69,7 +69,7 @@ in {
           nixos-rebuild = prev.nixos-rebuild.override {
             nix = prev.nix-monitored;
           };
-          nix-direnv = pkgs.runCommand "nix-direnv-monitored" {} ''
+          nix-direnv = final.runCommand "nix-direnv-monitored" {} ''
             cp -R ${prev.nix-direnv.override {
               # Okay, so what's happening here is that `nix-direnv` doesn't just use `nix` from PATH.
               # However, it also doesn't use `nix` from nix store. It uses both.
@@ -84,7 +84,8 @@ in {
               "sed -i 's/command -v nix/false/' $out/share/nix-direnv/direnvrc"
             }
           '';
-          nixmon = prev.runCommand "nixmon" {} ''
+
+          nixmon = final.runCommand "nixmon" {} ''
             mkdir -p $out/bin
             ln -s ${prev.nix-monitored}/bin/nix $out/bin/nixmon
           '';
