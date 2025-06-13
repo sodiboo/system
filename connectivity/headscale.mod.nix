@@ -7,6 +7,7 @@
         settings = {
           server_url = "https://vpn.sodi.boo";
           dns.base_domain = "tail";
+          dns.override_local_dns = false;
 
           log.level = "warn";
           logtail.enabled = false;
