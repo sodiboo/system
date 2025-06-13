@@ -4,7 +4,6 @@
   fetchFromGitLab,
   bash,
   makeWrapper,
-  copyDesktopItems,
   jemalloc,
   ffmpeg-headless,
   python3,
@@ -36,7 +35,6 @@ stdenv.mkDerivation (finalAttrs: {
   };
 
   nativeBuildInputs = [
-    copyDesktopItems
     pnpm_9
     nodejs
     makeWrapper
