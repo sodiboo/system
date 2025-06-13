@@ -25,12 +25,12 @@ stdenv.mkDerivation (finalAttrs: {
   version = "2025.2.3";
 
   src = fetchFromGitLab {
+    domain = "activitypub.software";
     owner = "TransFem-org";
     repo = "Sharkey";
-    domain = "activitypub.software";
     rev = finalAttrs.version;
-    hash = "sha256-VBfkJuoQzQ93sUmJNnr1JUjA2GQNgOIuX+j8nAz3bb4=";
     fetchSubmodules = true;
+    hash = "sha256-VBfkJuoQzQ93sUmJNnr1JUjA2GQNgOIuX+j8nAz3bb4=";
   };
 
   pnpmDeps = stdenv.mkDerivation {
