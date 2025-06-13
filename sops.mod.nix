@@ -1,7 +1,7 @@
 {sops-nix, ...}: {
   universal.modules = [
     sops-nix.nixosModules.sops
-    {
+    ({config, ...}: {
       sops.defaultSopsFile = ./secrets.yaml;
       sops.defaultSopsFormat = "yaml";
 
@@ -9,8 +9,16 @@
       # ssh-to-age -private-key -i ~/.ssh/sops > ~/.config/sops/age/keys.txt
       sops.age.keyFile = "/home/sodiboo/.config/sops/age/keys.txt";
 
-      sops.secrets.access-token-prelude.mode = "0444";
-    }
+      sops.secrets.github-access-token = {};
+
+      sops.templates.access-token-prelude = {
+        content = ''
+          access-tokens = github.com=${config.sops.placeholder.github-access-token}
+        '';
+
+        mode = "0444";
+      };
+    })
     ({config, ...}: {
       sops.secrets.wireguard-private-key = {
         key = "wireguard-private-keys/${config.networking.hostName}";
@@ -38,7 +46,11 @@
 
         sops.secrets.sharkey-redis-password.owner = config.users.users.sharkey.name;
 
-        sops.secrets.meili-master-key-env = {};
+        sops.secrets.meili-master-key = {};
+
+        sops.templates.meili-master-key-env.content = ''
+          MEILI_MASTER_KEY=${config.sops.placeholder.meili-master-key}
+        '';
       })
     ({
       lib,

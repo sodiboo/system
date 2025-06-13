@@ -50,10 +50,8 @@ in {
         substituters = builtins.attrNames caches;
         trusted-public-keys = builtins.attrValues caches;
       };
-      # access-token-prelude contains:
-      # access-token = github.com=$SECRET
       nix.extraOptions = ''
-        !include ${config.sops.secrets.access-token-prelude.path}
+        !include ${config.sops.templates.access-token-prelude.path}
       '';
     })
     ({pkgs, ...}: {
