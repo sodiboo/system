@@ -244,6 +244,7 @@ in {
         rebuild = verb: dry: "fish -c '${builtins.concatStringsSep " && " [
           "cd /etc/nixos"
           "${conf} nix fmt -- --quiet *"
+          "${conf} ${lib.getExe pkgs.nixfmt-rfc-style} sharkey/{package,module}.nix"
           "${conf} nix flake update"
           "git add ."
           (
