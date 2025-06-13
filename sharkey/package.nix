@@ -127,11 +127,11 @@ stdenv.mkDerivation (finalAttrs: {
     inherit (finalAttrs) pnpmDeps;
   };
 
-  meta = with lib; {
+  meta = {
     description = "🌎 A Sharkish microblogging platform 🚀";
     homepage = "https://joinsharkey.org";
-    license = licenses.gpl3Only;
-    maintainers = with maintainers; [ sodiboo ];
+    license = lib.licenses.gpl3Only;
+    maintainers = with lib.maintainers; [ sodiboo ];
     platforms = [
       "x86_64-linux"
       "aarch64-linux"
