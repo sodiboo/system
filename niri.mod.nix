@@ -367,13 +367,13 @@
             max-speed = 12000;
           };
 
-          # layer-rules = [
-          #   {
-          #     matches = [{namespace = "waybar";}];
+          layer-rules = [
+            {
+              matches = [{namespace = "swaync-notification-window";}];
 
-          #     opacity = 0.5;
-          #   }
-          # ];
+              block-out-from = "screencast";
+            }
+          ];
         };
       })
     ({pkgs, ...}: {
