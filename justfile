@@ -27,6 +27,7 @@ build hostname=`hostname`:
   nom build .#nixosConfigurations.{{hostname}}.config.system.build.toplevel
 
 fmt:
+    [ ! -L result ] || rm result
     nix fmt -- --quiet **.nix
 prep: fmt
     nix flake update
