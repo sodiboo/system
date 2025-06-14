@@ -67,6 +67,9 @@ in {
         };
       };
 
+      sops.secrets.wireguard-private-key.key = "wireguard-private-keys/${config.networking.hostName}";
+      sops.secrets.wgautomesh-gossip-secret = {};
+
       services.wgautomesh = {
         enable = config.networking.wireguard.enable; # disable when wireguard is disabled (e.g. in a VM)
         gossipSecretFile = config.sops.secrets.wgautomesh-gossip-secret.path;

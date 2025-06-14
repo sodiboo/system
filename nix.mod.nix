@@ -53,6 +53,16 @@ in {
       nix.extraOptions = ''
         !include ${config.sops.templates.access-token-prelude.path}
       '';
+
+      sops.secrets.github-access-token = {};
+
+      sops.templates.access-token-prelude = {
+        content = ''
+          access-tokens = github.com=${config.sops.placeholder.github-access-token}
+        '';
+
+        mode = "0444"; # <-- file must be accessible (r) to all users, because only the build daemon runs as root and not nix evaluator itself.
+      };
     })
     ({pkgs, ...}: {
       nixpkgs.overlays = [
@@ -98,6 +108,8 @@ in {
       lib,
       ...
     }: {
+      sops.secrets.remote-build-ssh-id = {};
+
       programs.ssh.extraConfig = ''
         ${builtins.concatStringsSep "" (lib.mapAttrsToList (name: n: ''
             Host ${name}
@@ -178,6 +190,8 @@ in {
         openFirewall = true;
         secretKeyFile = config.sops.secrets.binary-cache-secret.path;
       };
+
+      sops.secrets.binary-cache-secret = {};
 
       systemd.timers."auto-update-rebuild" = {
         wantedBy = ["timers.target"];

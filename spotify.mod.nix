@@ -4,6 +4,9 @@
       # mDNS
       networking.firewall.allowedUDPPorts = [5353];
       networking.firewall.allowedTCPPorts = [config.home-manager.users.sodiboo.services.spotifyd.settings.global.zeroconf_port];
+
+      # sops.secrets."spotify/username".owner = config.users.users.sodiboo.name;
+      # sops.secrets."spotify/password".owner = config.users.users.sodiboo.name;
     })
   ];
   personal.home_modules = [
