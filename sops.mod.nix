@@ -52,14 +52,6 @@
           MEILI_MASTER_KEY=${config.sops.placeholder.meili-master-key}
         '';
       })
-    ({
-      lib,
-      config,
-      ...
-    }:
-      lib.mkIf config.services.writefreely.enable {
-        sops.secrets.writefreely-db-password.owner = config.users.users.writefreely.name;
-      })
   ];
 
   iridium.modules = [
