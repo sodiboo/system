@@ -27,6 +27,10 @@
           polychromatic
         ];
       })
+
+    {
+      hardware.i2c.enable = true;
+    }
   ];
 
   nitrogen.modules = [
