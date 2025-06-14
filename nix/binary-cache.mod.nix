@@ -1,5 +1,25 @@
 { systems, ... }:
 {
+  universal =
+    {
+      config,
+      lib,
+      ...
+    }:
+    {
+      options.personal-binary-cache-url = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = "https://cache.sodi.boo";
+      };
+
+      config = lib.mkIf (config.personal-binary-cache-url != null) {
+        nix.settings = {
+          substituters = [ config.personal-binary-cache-url ];
+          trusted-public-keys = [ "sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw=" ];
+        };
+      };
+    };
+
   iridium =
     {
       config,
@@ -8,6 +28,8 @@
       ...
     }:
     {
+      sops.secrets.binary-cache-secret = { };
+
       # This is publicly served from https://cache.sodi.boo
       # That's proxied through oxygen from nginx.
       services.nix-serve = {
@@ -16,8 +38,6 @@
         openFirewall = true;
         secretKeyFile = config.sops.secrets.binary-cache-secret.path;
       };
-
-      sops.secrets.binary-cache-secret = { };
 
       systemd.timers."auto-update-rebuild" = {
         wantedBy = [ "timers.target" ];
@@ -52,31 +72,9 @@
           Type = "oneshot";
         };
       };
-    };
 
-  universal =
-    {
-      config,
-      lib,
-      ...
-    }:
-    {
-      options.personal-binary-cache-url = lib.mkOption {
-        type = lib.types.str;
-        default = "https://cache.sodi.boo";
-      };
-      config =
-        lib.mkIf
-          (
-            # Don't make iridium a substitute for itself. That would be silly.
-            config.networking.hostName != "iridium"
-          )
-          {
-            nix.settings = {
-              substituters = [ config.personal-binary-cache-url ];
-              trusted-public-keys = [ "sodiboo/system:N1cJgHSRSRKvlItFJDjXQBCgAhRo7hvTNw8TqyrhCUw=" ];
-            };
-          };
+      # Don't use iridium as a substitute for itself. That would be silly.
+      personal-binary-cache-url = null;
     };
 
   # sodium and iridium are on the same network, so let's not go through a hop to germany.
