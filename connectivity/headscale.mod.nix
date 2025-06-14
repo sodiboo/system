@@ -23,7 +23,7 @@
       };
     };
 
-    networking.firewall.allowedUDPPorts = [3478];
+    networking.firewall.allowedUDPPorts = [ 3478 ];
   };
 
   universal = {
@@ -35,6 +35,6 @@
   };
 
   iridium = {
-    services.tailscale.extraSetFlags = ["--advertise-exit-node"];
+    services.tailscale.extraSetFlags = [ "--advertise-exit-node" ];
   };
 }

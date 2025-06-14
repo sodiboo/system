@@ -1,38 +1,40 @@
 {
   personal = {
-    home-shortcut = {pkgs, ...}: {
-      home.packages = with pkgs; [
-        # the gods of multimedia
-        ffmpeg-full
-        imagemagick
-        pandoc
+    home-shortcut =
+      { pkgs, ... }:
+      {
+        home.packages = with pkgs; [
+          # the gods of multimedia
+          ffmpeg-full
+          imagemagick
+          pandoc
 
-        yt-dlp
+          yt-dlp
 
-        ripgrep-all # grep through pandocable files
+          ripgrep-all # grep through pandocable files
 
-        exiftool
-        binwalk
-        p7zip
+          exiftool
+          binwalk
+          p7zip
 
-        # audacity
-        tenacity
-        # sonic-visualiser
+          # audacity
+          tenacity
+          # sonic-visualiser
 
-        # krita # <-- SHE DOES NOT SUPPORT WAYLAND
-        gimp3 # <-- yay! wayland! :3
-        swappy
+          # krita # <-- SHE DOES NOT SUPPORT WAYLAND
+          gimp3 # <-- yay! wayland! :3
+          swappy
 
-        kdePackages.kdenlive
-        # shotcut
-        # flowblade
-        # avidemux
+          kdePackages.kdenlive
+          # shotcut
+          # flowblade
+          # avidemux
 
-        vlc
-        mpv
-        stremio
-      ];
-    };
+          vlc
+          mpv
+          stremio
+        ];
+      };
 
     programs.obs-studio.enable = true;
     programs.obs-studio.enableVirtualCamera = true;

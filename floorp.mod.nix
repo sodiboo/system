@@ -1,4 +1,5 @@
-{firefox-addons, ...}: {
+{ firefox-addons, ... }:
+{
   personal.home-shortcut = {
     programs.floorp = {
       enable = true;
@@ -38,6 +39,6 @@
       };
     };
 
-    stylix.targets.floorp.profileNames = ["sodiboo"];
+    stylix.targets.floorp.profileNames = [ "sodiboo" ];
   };
 }

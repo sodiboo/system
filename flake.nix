@@ -50,27 +50,46 @@
     firefox-addons.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    ...
-  } @ inputs: let
-    inherit (nixpkgs.lib) flip pipe getAttr concatMapAttrs mapAttrs' nameValuePair filterAttrs const hasSuffix mapAttrs toFunction toList mapAttrsToList;
+  outputs =
+    {
+      self,
+      nixpkgs,
+      ...
+    }@inputs:
+    let
+      inherit (nixpkgs.lib)
+        flip
+        pipe
+        getAttr
+        concatMapAttrs
+        mapAttrs'
+        nameValuePair
+        filterAttrs
+        const
+        hasSuffix
+        mapAttrs
+        toFunction
+        toList
+        mapAttrsToList
+        ;
 
-    match = flip getAttr;
-    read_dir_recursively = dir:
-      concatMapAttrs (this:
-        match {
-          directory = mapAttrs' (subpath: nameValuePair "${this}/${subpath}") (read_dir_recursively "${dir}/${this}");
-          regular = {
-            ${this} = "${dir}/${this}";
-          };
-          symlink = {};
-        }) (builtins.readDir dir);
+      match = flip getAttr;
+      read_dir_recursively =
+        dir:
+        concatMapAttrs (
+          this:
+          match {
+            directory = mapAttrs' (subpath: nameValuePair "${this}/${subpath}") (
+              read_dir_recursively "${dir}/${this}"
+            );
+            regular = {
+              ${this} = "${dir}/${this}";
+            };
+            symlink = { };
+          }
+        ) (builtins.readDir dir);
 
-    params =
-      inputs
-      // {
+      params = inputs // {
         systems = configs;
         elements = {
           nitrogen = 7;
@@ -80,138 +99,139 @@
         };
       };
 
-    # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
-    # If you don't, the file will not be included in the flake, and the modules defined within will not be loaded.
+      # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
+      # If you don't, the file will not be included in the flake, and the modules defined within will not be loaded.
 
-    read_all_modules = flip pipe [
-      read_dir_recursively
-      (filterAttrs (flip (const (hasSuffix ".mod.nix"))))
-      (mapAttrs (const import))
-      (mapAttrs (const (flip toFunction params)))
-    ];
+      read_all_modules = flip pipe [
+        read_dir_recursively
+        (filterAttrs (flip (const (hasSuffix ".mod.nix"))))
+        (mapAttrs (const import))
+        (mapAttrs (const (flip toFunction params)))
+      ];
 
-    merge = prev: this: prev ++ toList this;
+      merge = prev: this: prev ++ toList this;
 
-    all_modules =
-      mapAttrsToList (
+      all_modules = mapAttrsToList (
         path:
-          mapAttrs (profile: module: {
+        mapAttrs (
+          profile: module: {
             _file = "${path}#${profile}";
-            imports = [module];
-          })
-      ) (
-        read_all_modules "${self}"
-      );
+            imports = [ module ];
+          }
+        )
+      ) (read_all_modules "${self}");
 
-    raw_module_lists =
-      builtins.zipAttrsWith (const (builtins.foldl' merge []))
-      all_modules;
+      raw_module_lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all_modules;
 
-    configs =
-      builtins.mapAttrs (const (
+      configs = builtins.mapAttrs (const (
         modules:
-          nixpkgs.lib.nixosSystem {
-            inherit modules;
-          }
-          // {
-            inherit modules; # expose this next to e.g. `config`, `option`, etc.
-          }
-      ))
-      raw_module_lists;
+        nixpkgs.lib.nixosSystem {
+          inherit modules;
+        }
+        // {
+          inherit modules; # expose this next to e.g. `config`, `option`, etc.
+        }
+      )) raw_module_lists;
 
-    vms =
-      builtins.mapAttrs (hostname: {
-        config,
-        pkgs,
-        ...
-      }: (
-        let
-          ssh = pkgs.writeScript "vm-ssh" ''
-            # do not verify the host key, do not store the host key, do not show a warning about the host key
-            ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
-                -o User=sodiboo localhost -p $SSH_VM_PORT "$@"
-          '';
+      vms =
+        builtins.mapAttrs
+          (
+            hostname:
+            {
+              config,
+              pkgs,
+              ...
+            }:
+            (
+              let
+                ssh = pkgs.writeScript "vm-ssh" ''
+                  # do not verify the host key, do not store the host key, do not show a warning about the host key
+                  ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR \
+                      -o User=sodiboo localhost -p $SSH_VM_PORT "$@"
+                '';
 
-          exit = pkgs.writeScript "vm-exit" ''
-            ${ssh} /run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl poweroff
-          '';
-        in
-          pkgs.writeShellScript "${hostname}-vm" ''
-            export SSH_VM_PORT=''${SSH_VM_PORT:-60022}
+                exit = pkgs.writeScript "vm-exit" ''
+                  ${ssh} /run/wrappers/bin/sudo /run/current-system/sw/bin/systemctl poweroff
+                '';
+              in
+              pkgs.writeShellScript "${hostname}-vm" ''
+                export SSH_VM_PORT=''${SSH_VM_PORT:-60022}
 
-            THIS_PID=$$
+                THIS_PID=$$
 
-            VM_TEMP_DIR=$(mktemp -d /tmp/${hostname}-XXXXXX)
-            cd $VM_TEMP_DIR
+                VM_TEMP_DIR=$(mktemp -d /tmp/${hostname}-XXXXXX)
+                cd $VM_TEMP_DIR
 
-            echo
-            echo
-            echo 'Starting VM...'
-            echo
+                echo
+                echo
+                echo 'Starting VM...'
+                echo
 
-            QEMU_NET_OPTS="hostfwd=tcp::$SSH_VM_PORT-:22" ${config.virtualisation.vmVariant.system.build.vm}/bin/run-${hostname}-vm &
-            QEMU_PID=$!
+                QEMU_NET_OPTS="hostfwd=tcp::$SSH_VM_PORT-:22" ${config.virtualisation.vmVariant.system.build.vm}/bin/run-${hostname}-vm &
+                QEMU_PID=$!
 
-            monitor() {
-              tail --pid=$QEMU_PID -f /dev/null
-              kill $THIS_PID
-            }
-            cleanup() {
-              echo
-              echo
-              echo "The VM has exited. You can now have your normal shell back."
-              echo
-              rm -rf $VM_TEMP_DIR
-              exit
-            }
-            trap cleanup EXIT
+                monitor() {
+                  tail --pid=$QEMU_PID -f /dev/null
+                  kill $THIS_PID
+                }
+                cleanup() {
+                  echo
+                  echo
+                  echo "The VM has exited. You can now have your normal shell back."
+                  echo
+                  rm -rf $VM_TEMP_DIR
+                  exit
+                }
+                trap cleanup EXIT
 
-            monitor &
-            MONITOR_PID=$!
+                monitor &
+                MONITOR_PID=$!
 
-            export ssh="${ssh}"
-            export exit="${exit}"
+                export ssh="${ssh}"
+                export exit="${exit}"
 
-            sleep 1
+                sleep 1
 
-            while kill -0 $MONITOR_PID 2>/dev/null; do
-              echo "Use $(tput setaf 2)\$ssh$(tput sgr0) to execute commands in the VM"
-              echo "Use $(tput setaf 1)\$exit$(tput sgr0) to power off the VM"
-              echo "Press $(tput setaf 4)Ctrl+D$(tput sgr0) to see this message again"
-              $SHELL
-            done
-          ''
-      )) {
-        inherit (configs) sodium nitrogen;
-      };
-  in {
-    # for use in nix repl
-    p = s: builtins.trace "\n\n${s}\n" "---";
+                while kill -0 $MONITOR_PID 2>/dev/null; do
+                  echo "Use $(tput setaf 2)\$ssh$(tput sgr0) to execute commands in the VM"
+                  echo "Use $(tput setaf 1)\$exit$(tput sgr0) to power off the VM"
+                  echo "Press $(tput setaf 4)Ctrl+D$(tput sgr0) to see this message again"
+                  $SHELL
+                done
+              ''
+            )
+          )
+          {
+            inherit (configs) sodium nitrogen;
+          };
+    in
+    {
+      # for use in nix repl
+      p = s: builtins.trace "\n\n${s}\n" "---";
 
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
-    nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
+      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
+      nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
 
-    # This is NOT intended for primary consumption.
-    # It's just a shorthand so i can more easily access it when testing.
-    # If you want to consume my Sharkey package, directly import `./sharkey/{package,module}.nix`.
-    packages.x86_64-linux.sharkey = self.nixosConfigurations.oxygen.pkgs.sharkey;
+      # This is NOT intended for primary consumption.
+      # It's just a shorthand so i can more easily access it when testing.
+      # If you want to consume my Sharkey package, directly import `./sharkey/{package,module}.nix`.
+      packages.x86_64-linux.sharkey = self.nixosConfigurations.oxygen.pkgs.sharkey;
 
-    apps.x86_64-linux =
-      builtins.mapAttrs (name: script: {
+      apps.x86_64-linux = builtins.mapAttrs (name: script: {
         type = "app";
         program = "${script}";
-      })
-      vms;
+      }) vms;
 
-    # This is useful to rebuild all systems at once, for substitution
-    all-systems = nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" {} (''
-        mkdir $out
-      ''
-      + (builtins.concatStringsSep "\n" (mapAttrsToList (
-          name: config: ''
+      # This is useful to rebuild all systems at once, for substitution
+      all-systems = nixpkgs.legacyPackages.x86_64-linux.runCommand "all-systems" { } (
+        ''
+          mkdir $out
+        ''
+        + (builtins.concatStringsSep "\n" (
+          mapAttrsToList (name: config: ''
             ln -s ${config.config.system.build.toplevel} $out/${name}
-          ''
-        )
-        self.nixosConfigurations)));
-  };
+          '') self.nixosConfigurations
+        ))
+      );
+    };
 }

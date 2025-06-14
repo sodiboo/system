@@ -11,24 +11,26 @@
   personal.home-shortcut = {
     programs.ssh = {
       enable = true;
-      matchBlocks = let
-        to = hostname: {
-          inherit hostname;
-          user = "sodiboo";
-          identityFile = "~/.ssh/id_ed25519";
+      matchBlocks =
+        let
+          to = hostname: {
+            inherit hostname;
+            user = "sodiboo";
+            identityFile = "~/.ssh/id_ed25519";
+          };
+        in
+        {
+          iridium = to "iridium.wg";
+          sodium = to "sodium.wg";
+          nitrogen = to "nitrogen.wg";
+          oxygen = to "oxygen.wg";
+          # These are backup hosts for when wireguard fails.
+          # Generally, i'll be connecting to SSH via wireguard.
+          "+iridium" = to "iridium.lan";
+          "+sodium" = to "sodium.lan";
+          "+nitrogen" = to "nitrogen.lan";
+          "+oxygen" = to "vps.sodi.boo";
         };
-      in {
-        iridium = to "iridium.wg";
-        sodium = to "sodium.wg";
-        nitrogen = to "nitrogen.wg";
-        oxygen = to "oxygen.wg";
-        # These are backup hosts for when wireguard fails.
-        # Generally, i'll be connecting to SSH via wireguard.
-        "+iridium" = to "iridium.lan";
-        "+sodium" = to "sodium.lan";
-        "+nitrogen" = to "nitrogen.lan";
-        "+oxygen" = to "vps.sodi.boo";
-      };
     };
   };
 }
