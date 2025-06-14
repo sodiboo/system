@@ -92,12 +92,6 @@
       params = inputs // {
         profiles = raw-configs;
         systems = builtins.mapAttrs (const (system: system.config)) configs;
-        elements = {
-          nitrogen = 7;
-          oxygen = 8;
-          sodium = 11;
-          iridium = 77;
-        };
       };
 
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
@@ -112,15 +106,34 @@
 
       merge = prev: this: prev ++ toList this;
 
-      all-modules = mapAttrsToList (
-        path:
-        mapAttrs (
-          profile: module: {
-            _file = "${path}#${profile}";
-            imports = [ module ];
+      all-modules =
+        mapAttrsToList (
+          path:
+          mapAttrs (
+            profile: module: {
+              _file = "${path}#${profile}";
+              imports = [ module ];
+            }
+          )
+        ) (read-all-modules "${self}")
+
+        ++ [
+          {
+            universal.options.id = nixpkgs.lib.mkOption {
+              type = nixpkgs.lib.types.int;
+            };
           }
-        )
-      ) (read-all-modules "${self}");
+          elements
+        ];
+
+      elements = {
+        # used as an identifier for ip addresses, etc.
+        # and this set defines what systems are exported
+        nitrogen.id = 7;
+        oxygen.id = 8;
+        sodium.id = 11;
+        iridium.id = 77;
+      };
 
       raw-module-lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all-modules;
 
@@ -134,7 +147,7 @@
         }
       )) raw-module-lists;
 
-      configs = builtins.mapAttrs (name: const raw-configs.${name}) params.elements;
+      configs = filterAttrs (name: config: elements ? ${name}) raw-configs;
 
       vms =
         builtins.mapAttrs

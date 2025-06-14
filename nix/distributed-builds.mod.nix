@@ -1,4 +1,4 @@
-{ elements, ... }:
+{ systems, ... }:
 {
 
   universal =
@@ -13,12 +13,12 @@
 
       programs.ssh.extraConfig = ''
         ${builtins.concatStringsSep "" (
-          lib.mapAttrsToList (name: n: ''
+          lib.mapAttrsToList (name: system: ''
             Host ${name}
-              HostName ${name}.wg
+              HostName ${system.vpn.hostname}
               User remote-builder
               IdentityFile ${config.sops.secrets.remote-build-ssh-id.path}
-          '') elements
+          '') systems
         )}
       '';
 

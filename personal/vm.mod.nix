@@ -14,6 +14,7 @@
           description = "Whether the system is a virtual machine. Used to decide certain network and peripheral settings.";
         };
       };
+
       config.virtualisation.vmVariant = {
         is-virtual-machine = true;
 
@@ -66,7 +67,7 @@
         virtualisation.memorySize = 4096;
         virtualisation.cores = 4;
 
-        networking.wireguard.enable = lib.mkForce false;
+        vpn.enable = lib.mkForce false;
         services.tailscale.enable = lib.mkForce false;
       };
     };
