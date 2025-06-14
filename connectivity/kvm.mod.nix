@@ -6,15 +6,15 @@
   ip = i: "10.8.0.${toString i}";
 
   with-port = port: hosts: {
-    home_modules = [
-      lan-mouse.homeManagerModules.default
-      {
+    home-shortcut = {
+      imports = [lan-mouse.homeManagerModules.default];
+      config = {
         programs.lan-mouse = {
           enable = true;
           settings = {inherit port;} // hosts;
         };
-      }
-    ];
+      };
+    };
   };
 in {
   sodium = with-port 4242 {

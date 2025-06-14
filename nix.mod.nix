@@ -39,7 +39,7 @@
     };
   };
 in {
-  universal.modules = [
+  universal.imports = [
     {
       system.stateVersion = "23.11";
       nixpkgs.config.allowUnfree = true;
@@ -151,7 +151,7 @@ in {
     })
   ];
 
-  sodium.modules = [
+  sodium.imports = [
     garbage-collection-module
     {
       personal-binary-cache-url = let
@@ -161,14 +161,12 @@ in {
     }
   ];
 
-  personal.modules = [
-    {
-      # AMD gpu, basically. used for e.g. resource monitoring with btop
-      nixpkgs.config.rocmSupport = true;
-    }
-  ];
+  personal = {
+    # AMD gpu, basically. used for e.g. resource monitoring with btop
+    nixpkgs.config.rocmSupport = true;
+  };
 
-  iridium.modules = [
+  iridium.imports = [
     {
       users.users.remote-builder.openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIwHeeSm7ten3Rxqj90xaBWgyRw1xYqBjKBj8nevFOD remote-builder"
@@ -221,58 +219,54 @@ in {
     garbage-collection-module
   ];
 
-  nitrogen.modules = [
-    ({config, ...}: {
-      nix.distributedBuilds = true;
-      nix.buildMachines = [
-        {
-          hostName = "iridium";
-          system = "x86_64-linux";
+  nitrogen = {config, ...}: {
+    nix.distributedBuilds = true;
+    nix.buildMachines = [
+      {
+        hostName = "iridium";
+        system = "x86_64-linux";
 
-          maxJobs = 4;
-        }
-      ];
-    })
-  ];
+        maxJobs = 4;
+      }
+    ];
+  };
 
-  universal.home_modules = [
-    ({
-      pkgs,
-      lib,
-      ...
-    }: {
-      home.packages = with pkgs; [
-        cachix
-        nil.packages.x86_64-linux.nil
-        nurl
-        nix-diff
-        nix-output-monitor
-        nvd
-        # nix-init
-      ];
+  universal.home-shortcut = {
+    pkgs,
+    lib,
+    ...
+  }: {
+    home.packages = with pkgs; [
+      cachix
+      nil.packages.x86_64-linux.nil
+      nurl
+      nix-diff
+      nix-output-monitor
+      nvd
+      # nix-init
+    ];
 
-      programs.fish.shellAliases = let
-        conf = ''env NIX_CONFIG="warn-dirty = false"'';
-        rebuild = verb: dry: "fish -c '${builtins.concatStringsSep " && " [
-          "cd /etc/nixos"
-          "${conf} nix fmt -- --quiet *"
-          "${conf} ${lib.getExe pkgs.nixfmt-rfc-style} sharkey/{package,module}.nix"
-          "${conf} nix flake update"
-          "git add ."
-          (
-            if dry
-            then "${conf} nh os ${verb} --dry ."
-            else "${conf} nh os ${verb} ."
-          )
-        ]}'";
-      in
-        lib.mergeAttrsList (map (verb: {
-          "nix.${verb}" = rebuild verb false;
-          "nix+${verb}" = rebuild verb true;
-        }) ["switch" "boot" "test"])
-        // {
-          nix-shell = "nix-shell --run fish";
-        };
-    })
-  ];
+    programs.fish.shellAliases = let
+      conf = ''env NIX_CONFIG="warn-dirty = false"'';
+      rebuild = verb: dry: "fish -c '${builtins.concatStringsSep " && " [
+        "cd /etc/nixos"
+        "${conf} nix fmt -- --quiet *"
+        "${conf} ${lib.getExe pkgs.nixfmt-rfc-style} sharkey/{package,module}.nix"
+        "${conf} nix flake update"
+        "git add ."
+        (
+          if dry
+          then "${conf} nh os ${verb} --dry ."
+          else "${conf} nh os ${verb} ."
+        )
+      ]}'";
+    in
+      lib.mergeAttrsList (map (verb: {
+        "nix.${verb}" = rebuild verb false;
+        "nix+${verb}" = rebuild verb true;
+      }) ["switch" "boot" "test"])
+      // {
+        nix-shell = "nix-shell --run fish";
+      };
+  };
 }

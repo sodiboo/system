@@ -1,5 +1,5 @@
 {niri, ...}: {
-  personal.modules = [
+  personal.imports = [
     {
       boot.loader.systemd-boot = {
         enable = true;
@@ -142,15 +142,7 @@
     })
   ];
 
-  sodium.modules = [
-    {
-      login.tuigreet-width.proportion = 0.5;
-    }
-  ];
+  sodium.login.tuigreet-width.proportion = 0.5;
 
-  nitrogen.modules = [
-    {
-      login.tuigreet-width.proportion = 1.0;
-    }
-  ];
+  nitrogen.login.tuigreet-width.proportion = 1.0;
 }

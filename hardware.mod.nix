@@ -6,8 +6,7 @@
   config = name: system: additional: {
     inherit name;
     value = {
-      inherit system;
-      modules =
+      imports =
         [
           {
             networking.hostName = name;
@@ -42,32 +41,28 @@
   };
 in
   {
-    universal.modules = [
-      ({
-        pkgs,
-        lib,
-        ...
-      }: {
-        environment.systemPackages = with pkgs; [mergerfs];
-        hardware.enableRedistributableFirmware = true;
-        networking.useDHCP = lib.mkDefault true;
-      })
-    ];
+    universal = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      environment.systemPackages = with pkgs; [mergerfs];
+      hardware.enableRedistributableFirmware = true;
+      networking.useDHCP = lib.mkDefault true;
+    };
 
-    personal.modules = [
-      ({pkgs, ...}: {
-        nixpkgs.overlays = [
-          (final: prev: {
-            flashrom = final.callPackage flashrom-meson {};
-          })
-        ];
-        services.fwupd.enable = true;
-        services.fwupd.package = pkgs.fwupd.override {
-          enableFlashrom = true;
-        };
-        programs.flashrom.enable = true;
-      })
-    ];
+    personal = {pkgs, ...}: {
+      nixpkgs.overlays = [
+        (final: prev: {
+          flashrom = final.callPackage flashrom-meson {};
+        })
+      ];
+      services.fwupd.enable = true;
+      services.fwupd.package = pkgs.fwupd.override {
+        enableFlashrom = true;
+      };
+      programs.flashrom.enable = true;
+    };
   }
   // builtins.listToAttrs [
     (config "sodium" "x86_64-linux" [

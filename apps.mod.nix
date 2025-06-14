@@ -1,5 +1,5 @@
 inputs: {
-  universal.home_modules = [
+  universal.home-shortcut.imports = [
     ({pkgs, ...}: {
       home.packages = with pkgs; [
         fastfetch
@@ -23,7 +23,7 @@ inputs: {
     }
   ];
 
-  personal.modules = [
+  personal.imports = [
     {
       users.users.sodiboo.extraGroups = ["video"];
     }
@@ -39,7 +39,7 @@ inputs: {
       ];
     })
   ];
-  personal.home_modules = [
+  personal.home-shortcut.imports = [
     ({
       pkgs,
       nixosConfig,

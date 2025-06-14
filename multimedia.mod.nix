@@ -1,6 +1,6 @@
 {
-  personal.home_modules = [
-    ({pkgs, ...}: {
+  personal = {
+    home-shortcut = {pkgs, ...}: {
       home.packages = with pkgs; [
         # the gods of multimedia
         ffmpeg-full
@@ -32,13 +32,9 @@
         mpv
         stremio
       ];
-    })
-  ];
+    };
 
-  personal.modules = [
-    {
-      programs.obs-studio.enable = true;
-      programs.obs-studio.enableVirtualCamera = true;
-    }
-  ];
+    programs.obs-studio.enable = true;
+    programs.obs-studio.enableVirtualCamera = true;
+  };
 }

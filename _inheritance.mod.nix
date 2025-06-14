@@ -1,10 +1,7 @@
-{
-  merge,
-  configs,
-  ...
-}: {
-  oxygen = configs.universal;
-  sodium = merge configs.universal configs.personal;
-  nitrogen = merge configs.universal configs.personal;
-  iridium = configs.universal;
+{systems, ...}: {
+  oxygen.imports = systems.universal.modules;
+  iridium.imports = systems.universal.modules;
+
+  sodium.imports = systems.universal.modules ++ systems.personal.modules;
+  nitrogen.imports = systems.universal.modules ++ systems.personal.modules;
 }

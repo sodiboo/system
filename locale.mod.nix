@@ -5,24 +5,24 @@ let
     language = "en_US.UTF-8";
     formats = "C.UTF-8";
   };
-
-  module = {lib, ...}:
-    with lib; {
-      options.locale =
-        mapAttrs (
-          const (value:
-            mkOption {
-              type = types.str;
-              readOnly = true;
-              default = value;
-            })
-        )
-        settings;
-    };
 in {
-  universal.modules = [
-    module
-    ({config, ...}: {
+  universal = {
+    config,
+    lib,
+    ...
+  }: {
+    options.locale =
+      lib.mapAttrs (
+        lib.const (value:
+          lib.mkOption {
+            type = lib.types.str;
+            readOnly = true;
+            default = value;
+          })
+      )
+      settings;
+
+    config = {
       time.timeZone = config.locale.timezone;
       console.keyMap = config.locale.keyboard_layout;
 
@@ -40,8 +40,6 @@ in {
       };
 
       environment.variables."XKB_DEFAULT_LAYOUT" = config.locale.keyboard_layout;
-    })
-  ];
-
-  universal.home_modules = [module];
+    };
+  };
 }

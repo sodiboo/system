@@ -1,16 +1,14 @@
 {
-  personal.modules = [
-    {
-      programs.adb.enable = true;
-      programs.droidcam.enable = true;
-      users.users.sodiboo.extraGroups = ["adbusers"];
+  personal = {
+    programs.adb.enable = true;
+    programs.droidcam.enable = true;
+    users.users.sodiboo.extraGroups = ["adbusers"];
 
-      services.udisks2.enable = true;
-      services.gvfs.enable = true;
-      services.devmon.enable = true;
-    }
-  ];
-  sodium.modules = [
+    services.udisks2.enable = true;
+    services.gvfs.enable = true;
+    services.devmon.enable = true;
+  };
+  sodium.imports = [
     ({
       pkgs,
       lib,
@@ -33,9 +31,7 @@
     }
   ];
 
-  nitrogen.modules = [
-    {
-      services.upower.enable = true;
-    }
-  ];
+  nitrogen = {
+    services.upower.enable = true;
+  };
 }

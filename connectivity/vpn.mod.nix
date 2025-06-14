@@ -34,58 +34,56 @@
   # - oxygen needs a weird reverse proxy thing to connect to iridium (really, iridium needs to connect to oxygen, but oxygen acts like the client)
   # - nitrogen wants to connect to iridium, but can't always. so it connects to oxygen when iridium is unavailable, taking a performance hit
 in {
-  universal.modules = [
-    ({
-      config,
-      pkgs,
-      lib,
-      ...
-    }: {
-      environment.systemPackages = with pkgs; [
-        # This is how i generated the keys with elemental prefixes! :3
-        wireguard-vanity-keygen
-      ];
-      networking = {
-        nat = {
-          enable = true;
-          externalInterface = "eth0";
-          internalInterfaces = ["wg0"];
-        };
-        firewall = {
-          # always listen on the wireguard port on the external interfaces
-          allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
-
-          # allow all traffic on the wireguard interface, no matter the port
-          trustedInterfaces = ["wg0"];
-        };
-        extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: z: "${ip z} ${name}.wg") elements);
-        wireguard.interfaces.wg0 = {
-          ips = ["${ip (builtins.getAttr config.system.name elements)}/24"];
-          # School network seems to block UDP ports above 28000?
-          listenPort = 27462;
-          privateKeyFile = config.sops.secrets.wireguard-private-key.path;
-        };
+  universal = {
+    config,
+    pkgs,
+    lib,
+    ...
+  }: {
+    environment.systemPackages = with pkgs; [
+      # This is how i generated the keys with elemental prefixes! :3
+      wireguard-vanity-keygen
+    ];
+    networking = {
+      nat = {
+        enable = true;
+        externalInterface = "eth0";
+        internalInterfaces = ["wg0"];
       };
+      firewall = {
+        # always listen on the wireguard port on the external interfaces
+        allowedUDPPorts = [config.networking.wireguard.interfaces.wg0.listenPort];
 
-      sops.secrets.wireguard-private-key.key = "wireguard-private-keys/${config.networking.hostName}";
-      sops.secrets.wgautomesh-gossip-secret = {};
-
-      services.wgautomesh = {
-        enable = config.networking.wireguard.enable; # disable when wireguard is disabled (e.g. in a VM)
-        gossipSecretFile = config.sops.secrets.wgautomesh-gossip-secret.path;
-        settings = {
-          interface = "wg0";
-          peers =
-            lib.mapAttrsToList (name: z: {
-              pubkey = public-keys.${name};
-              endpoint = endpoints.${name} or null;
-              address = ip z;
-            })
-            elements;
-        };
+        # allow all traffic on the wireguard interface, no matter the port
+        trustedInterfaces = ["wg0"];
       };
-    })
-  ];
+      extraHosts = builtins.concatStringsSep "\n" (nixpkgs.lib.mapAttrsToList (name: z: "${ip z} ${name}.wg") elements);
+      wireguard.interfaces.wg0 = {
+        ips = ["${ip (builtins.getAttr config.system.name elements)}/24"];
+        # School network seems to block UDP ports above 28000?
+        listenPort = 27462;
+        privateKeyFile = config.sops.secrets.wireguard-private-key.path;
+      };
+    };
+
+    sops.secrets.wireguard-private-key.key = "wireguard-private-keys/${config.networking.hostName}";
+    sops.secrets.wgautomesh-gossip-secret = {};
+
+    services.wgautomesh = {
+      enable = config.networking.wireguard.enable; # disable when wireguard is disabled (e.g. in a VM)
+      gossipSecretFile = config.sops.secrets.wgautomesh-gossip-secret.path;
+      settings = {
+        interface = "wg0";
+        peers =
+          lib.mapAttrsToList (name: z: {
+            pubkey = public-keys.${name};
+            endpoint = endpoints.${name} or null;
+            address = ip z;
+          })
+          elements;
+      };
+    };
+  };
 
   # iridium.modules = [
   #   ({pkgs, ...}: {

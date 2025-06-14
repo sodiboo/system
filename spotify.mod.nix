@@ -1,15 +1,12 @@
 {
-  personal.modules = [
-    ({config, ...}: {
-      # mDNS
-      networking.firewall.allowedUDPPorts = [5353];
-      networking.firewall.allowedTCPPorts = [config.home-manager.users.sodiboo.services.spotifyd.settings.global.zeroconf_port];
+  personal = {config, ...}: {
+    # mDNS
+    networking.firewall.allowedUDPPorts = [5353];
+    networking.firewall.allowedTCPPorts = [config.home-manager.users.sodiboo.services.spotifyd.settings.global.zeroconf_port];
 
-      # sops.secrets."spotify/username".owner = config.users.users.sodiboo.name;
-      # sops.secrets."spotify/password".owner = config.users.users.sodiboo.name;
-    })
-  ];
-  personal.home_modules = [
+    # sops.secrets."spotify/username".owner = config.users.users.sodiboo.name;
+    # sops.secrets."spotify/password".owner = config.users.users.sodiboo.name;
+
     # Spotify has started to block direct login, such that providing username+password to spotifyd causes a forced password reset.
     # This honestly doesn't affect me that much because i can use zeroconf mode, and this still works fine. That's fine on sodium.
     # However, on nitrogen, i would love to use username+password. This is because it is frequently on a public network,
@@ -41,7 +38,8 @@
     #     configFile
     #   ]}";
     # })
-    ({
+
+    home-shortcut = {
       nixosConfig,
       pkgs,
       ...
@@ -59,6 +57,6 @@
       ];
 
       programs.fish.shellAliases.sptlrx = "sptlrx --before faint";
-    })
-  ];
+    };
+  };
 }

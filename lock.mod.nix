@@ -45,32 +45,25 @@ let
       '';
   };
 in {
-  personal.modules = [
-    ({
-      lib,
-      pkgs,
-      config,
-      ...
-    }: let
-      scripts' = scripts {
-        inherit pkgs;
-        config = config.home-manager.users.sodiboo;
+  personal = {
+    lib,
+    pkgs,
+    config,
+    ...
+  }: let
+    scripts' = scripts {
+      inherit pkgs;
+      config = config.home-manager.users.sodiboo;
+    };
+  in {
+    options.stylix.blurred-image = with lib;
+      mkOption {
+        type = types.coercedTo types.package toString types.path;
+        default = scripts'.blur config.stylix.image;
+        readOnly = true;
       };
-    in {
-      options.stylix.blurred-image = with lib;
-        mkOption {
-          type = types.coercedTo types.package toString types.path;
-          default = scripts'.blur config.stylix.image;
-          readOnly = true;
-        };
 
-      config = {
-      };
-    })
-  ];
-
-  personal.home_modules = [
-    ({
+    config.home-shortcut = {
       lib,
       pkgs,
       config,
@@ -129,9 +122,13 @@ in {
           #   After = "niri.service";
           # };
         };
-    })
-  ];
+    };
+  };
 
-  sodium.home_modules = [{suspend-when-idle = false;}];
-  nitrogen.home_modules = [{suspend-when-idle = true;}];
+  sodium.home-shortcut = {
+    suspend-when-idle = false;
+  };
+  nitrogen.home-shortcut = {
+    suspend-when-idle = true;
+  };
 }

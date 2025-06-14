@@ -35,7 +35,7 @@
       hax.hash = "sha256-/ujHJLieuEXZUnOn981v/d1WynUi11cApgkEf8kln2E=";
     };
 in {
-  personal.modules = [
+  personal.imports = [
     stylix.nixosModules.stylix
     ({
       pkgs,
@@ -69,15 +69,11 @@ in {
     })
   ];
 
-  sodium.modules = [
-    wallpapers.firewatch-wide
-  ];
+  sodium = wallpapers.firewatch-wide;
 
-  nitrogen.modules = [
-    wallpapers.firewatch-wide
-  ];
+  nitrogen = wallpapers.firewatch-wide;
 
-  personal.home_modules = [
+  personal.home-shortcut.imports = [
     {
       # stylix.targets.gtk.enable = false;
       # stylix.targets.firefox.enable = false;
