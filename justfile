@@ -1,5 +1,6 @@
 set shell := ["fish", "-c"]
 export NIX_CONFIG := "warn-dirty = false"
+export NH_OS_FLAKE := "."
 
 niri-cfg hostname=`hostname`:
     nix eval --quiet --quiet --override-input niri /home/sodiboo/niri-flake --raw .#nixosConfigurations.{{hostname}}.config.home-manager.users.sodiboo.programs.niri.finalConfig
@@ -26,7 +27,10 @@ build hostname=`hostname`:
   nom build .#nixosConfigurations.{{hostname}}.config.system.build.toplevel
 
 fmt:
-    nix fmt -- --quiet *
+    nix fmt -- --quiet **.nix
 prep: fmt
     nix flake update
     git add .
+
+sys *ARGS: prep
+    nh os {{ARGS}}

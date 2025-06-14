@@ -63,6 +63,9 @@ in
         enableFlashrom = true;
       };
       programs.flashrom.enable = true;
+
+      # AMD gpu support in some packages; used for e.g. resource monitoring with btop
+      nixpkgs.config.rocmSupport = true;
     };
 }
 // builtins.listToAttrs [

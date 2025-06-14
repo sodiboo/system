@@ -61,6 +61,7 @@
 
   personal.home-shortcut = {
     programs.fish.shellAliases = {
+      nix-shell = "nix-shell --run fish";
       bwsh = "BW_SESSION=$(bw unlock --raw) fish; bw lock";
       pki-pass = "bw list items | jq -r '.[] | select(.name == \"PKI '$(hostname)'\") | .notes'";
     };
