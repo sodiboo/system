@@ -90,7 +90,8 @@
         ) (builtins.readDir dir);
 
       params = inputs // {
-        systems = configs;
+        profiles = raw-configs;
+        systems = builtins.mapAttrs (const (system: system.config)) configs;
         elements = {
           nitrogen = 7;
           oxygen = 8;
@@ -123,7 +124,7 @@
 
       raw-module-lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all-modules;
 
-      configs = builtins.mapAttrs (const (
+      raw-configs = builtins.mapAttrs (const (
         modules:
         nixpkgs.lib.nixosSystem {
           inherit modules;
@@ -132,6 +133,8 @@
           inherit modules; # expose this next to e.g. `config`, `option`, etc.
         }
       )) raw-module-lists;
+
+      configs = builtins.mapAttrs (name: const raw-configs.${name}) params.elements;
 
       vms =
         builtins.mapAttrs
@@ -202,7 +205,7 @@
             )
           )
           {
-            inherit (configs) sodium nitrogen;
+            inherit (raw-configs) sodium nitrogen;
           };
 
       systems = [
@@ -233,7 +236,7 @@
 
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
 
-      nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
+      nixosConfigurations = configs;
 
       # This is NOT intended for primary consumption.
       # It's just a shorthand so i can more easily access it when testing.

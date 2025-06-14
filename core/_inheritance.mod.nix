@@ -1,8 +1,8 @@
-{ systems, ... }:
+{ profiles, ... }:
 {
-  oxygen.imports = systems.universal.modules;
-  iridium.imports = systems.universal.modules;
+  oxygen.imports = profiles.universal.modules;
+  iridium.imports = profiles.universal.modules;
 
-  sodium.imports = systems.universal.modules ++ systems.personal.modules;
-  nitrogen.imports = systems.universal.modules ++ systems.personal.modules;
+  sodium.imports = profiles.universal.modules ++ profiles.personal.modules;
+  nitrogen.imports = profiles.universal.modules ++ profiles.personal.modules;
 }

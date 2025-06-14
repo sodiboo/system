@@ -79,10 +79,6 @@
           };
     };
 
-  sodium.personal-binary-cache-url =
-    let
-      port = toString systems.iridium.config.services.nix-serve.port;
-      # sodium and iridium are on the same network, so let's not go through a hop to germany.
-    in
-    "http://iridium.lan:${port}";
+  # sodium and iridium are on the same network, so let's not go through a hop to germany.
+  sodium.personal-binary-cache-url = "http://iridium.lan:${toString systems.iridium.services.nix-serve.port}";
 }
