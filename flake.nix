@@ -198,6 +198,11 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
       nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
 
+      # This is NOT intended for primary consumption.
+      # It's just a shorthand so i can more easily access it when testing.
+      # If you want to consume my Sharkey package, directly import `./sharkey/{package,module}.nix`.
+      packages.x86_64-linux.sharkey = self.nixosConfigurations.oxygen.pkgs.sharkey;
+
       apps.x86_64-linux =
         builtins.mapAttrs (name: script: {
           type = "app";
