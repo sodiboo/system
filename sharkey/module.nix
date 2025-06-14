@@ -237,7 +237,7 @@ in
     users.users.sharkey = {
       group = "sharkey";
       isSystemUser = true;
-      home = cfg.package;
+      home = "/run/sharkey";
       packages = [ cfg.package ];
     };
 

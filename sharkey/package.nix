@@ -18,7 +18,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
-  version = "2025.2.3";
+  version = "2025.4.2";
 
   src = fetchFromGitLab {
     domain = "activitypub.software";
@@ -26,12 +26,12 @@ stdenv.mkDerivation (finalAttrs: {
     repo = "Sharkey";
     rev = finalAttrs.version;
     fetchSubmodules = true;
-    hash = "sha256-VBfkJuoQzQ93sUmJNnr1JUjA2GQNgOIuX+j8nAz3bb4=";
+    hash = "sha256-gCZY9d/YLNQRGVFqsK7//UDiS19Jtqa7adGliIdE+4c=";
   };
 
   pnpmDeps = pnpm_9.fetchDeps {
     inherit (finalAttrs) src pname;
-    hash = "sha256-ALstAaN8dr5qSnc/ly0hv+oaeKrYFQ3GhObYXOv4E6I=";
+    hash = "sha256-2bt/sHKGNIjKfOvZ6DCXvdJcKoOJX/ueWdLULlYK3YU=";
   };
 
   nativeBuildInputs = [
