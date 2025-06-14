@@ -1,7 +1,6 @@
 {
   personal =
     {
-      pkgs,
       lib,
       config,
       ...
