@@ -1,10 +1,10 @@
-{ sops-nix, ... }:
+{ self, sops-nix, ... }:
 {
   universal = {
     imports = [ sops-nix.nixosModules.sops ];
 
     config = {
-      sops.defaultSopsFile = ./secrets.yaml;
+      sops.defaultSopsFile = "${self}/secrets.yaml";
       sops.defaultSopsFormat = "yaml";
 
       # sync ~/.ssh/sops out-of-band
