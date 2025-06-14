@@ -1,5 +1,5 @@
 {
-  self,
+  systems,
   picocss,
   ...
 }:
@@ -187,8 +187,7 @@
             "sodi.gay" = base {
               extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
             };
-            "cache.sodi.boo" =
-              proxy "iridium.wg" self.nixosConfigurations.iridium.config.services.nix-serve.port;
+            "cache.sodi.boo" = proxy systems.iridium.vpn.hostname systems.iridium.services.nix-serve.port;
             "gaysex.cloud" =
               base {
                 "/" = proxy' "127.0.0.1" config.services.sharkey.settings.port;
