@@ -1,6 +1,6 @@
 let
   settings = {
-    keyboard_layout = "no";
+    keyboard-layout = "no";
     timezone = "Europe/Stockholm";
     language = "en_US.UTF-8";
     formats = "C.UTF-8";
@@ -25,7 +25,7 @@ in
 
       config = {
         time.timeZone = config.locale.timezone;
-        console.keyMap = config.locale.keyboard_layout;
+        console.keyMap = config.locale.keyboard-layout;
 
         i18n.defaultLocale = config.locale.language;
         i18n.extraLocaleSettings = {
@@ -40,7 +40,7 @@ in
           LC_TIME = config.locale.formats;
         };
 
-        environment.variables."XKB_DEFAULT_LAYOUT" = config.locale.keyboard_layout;
+        environment.variables."XKB_DEFAULT_LAYOUT" = config.locale.keyboard-layout;
       };
     };
 }

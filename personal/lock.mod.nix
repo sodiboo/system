@@ -14,7 +14,7 @@ let
       swaylock = "${config.programs.swaylock.package}/bin/swaylock";
       niri = "${config.programs.niri.package}/bin/niri";
       # for quick iteration
-      magick_args = builtins.concatStringsSep " " [
+      magick-args = builtins.concatStringsSep " " [
         "-scale 2%"
         "-blur 0x.5"
         "-resize 5000%"
@@ -31,7 +31,7 @@ let
 
           ${grim} -o "$output" "$image"
 
-          ${convert} "$image" ${magick_args} "$image"
+          ${convert} "$image" ${magick-args} "$image"
 
           args+=" -i $output:$image"
         done
@@ -45,7 +45,7 @@ let
       blur =
         image:
         pkgs.runCommand "blurred.png" { } ''
-          ${convert} "${image}" ${magick_args} "$out"
+          ${convert} "${image}" ${magick-args} "$out"
         '';
     };
 in

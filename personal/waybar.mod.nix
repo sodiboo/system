@@ -45,7 +45,7 @@ let
     idle.off = "󰈉 ";
     vpn = "󰌆 ";
 
-    notification.red_badge = "<span foreground='red'><sup></sup></span>";
+    notification.red-badge = "<span foreground='red'><sup></sup></span>";
     notification.bell = "󰂚";
     notification.bell-badge = "󱅫";
     notification.bell-outline = "󰂜";

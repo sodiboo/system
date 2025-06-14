@@ -74,13 +74,13 @@
         ;
 
       match = flip getAttr;
-      read_dir_recursively =
+      read-dir-recursively =
         dir:
         concatMapAttrs (
           this:
           match {
             directory = mapAttrs' (subpath: nameValuePair "${this}/${subpath}") (
-              read_dir_recursively "${dir}/${this}"
+              read-dir-recursively "${dir}/${this}"
             );
             regular = {
               ${this} = "${dir}/${this}";
@@ -102,8 +102,8 @@
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
       # If you don't, the file will not be included in the flake, and the modules defined within will not be loaded.
 
-      read_all_modules = flip pipe [
-        read_dir_recursively
+      read-all-modules = flip pipe [
+        read-dir-recursively
         (filterAttrs (flip (const (hasSuffix ".mod.nix"))))
         (mapAttrs (const import))
         (mapAttrs (const (flip toFunction params)))
@@ -111,7 +111,7 @@
 
       merge = prev: this: prev ++ toList this;
 
-      all_modules = mapAttrsToList (
+      all-modules = mapAttrsToList (
         path:
         mapAttrs (
           profile: module: {
@@ -119,9 +119,9 @@
             imports = [ module ];
           }
         )
-      ) (read_all_modules "${self}");
+      ) (read-all-modules "${self}");
 
-      raw_module_lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all_modules;
+      raw-module-lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all-modules;
 
       configs = builtins.mapAttrs (const (
         modules:
@@ -131,7 +131,7 @@
         // {
           inherit modules; # expose this next to e.g. `config`, `option`, etc.
         }
-      )) raw_module_lists;
+      )) raw-module-lists;
 
       vms =
         builtins.mapAttrs
