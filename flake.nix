@@ -204,12 +204,35 @@
           {
             inherit (configs) sodium nitrogen;
           };
+
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux" # i don't have such a machine, but might as well make the devtooling in this flake work out of the box.
+      ];
+
+      forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
       # for use in nix repl
       p = s: builtins.trace "\n\n${s}\n" "---";
 
-      formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            buildInputs = [
+              pkgs.just
+              self.formatter.${system}
+            ];
+          };
+        }
+      );
+
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
+
       nixosConfigurations = builtins.mapAttrs (name: const configs.${name}) params.elements;
 
       # This is NOT intended for primary consumption.
