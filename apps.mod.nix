@@ -40,7 +40,11 @@ inputs: {
     })
   ];
   personal.home_modules = [
-    ({pkgs, ...}: {
+    ({
+      pkgs,
+      nixosConfig,
+      ...
+    }: {
       home.packages = with pkgs; [
         appimage-run
         kdePackages.dolphin
@@ -68,7 +72,26 @@ inputs: {
         rnote
       ];
       xdg.mimeApps.enable = true;
-      xdg.mimeApps.defaultApplications."inode/directory" = "org.kde.dolphin.desktop";
+      xdg.mimeApps.defaultApplications = let
+        file-manager = "org.kde.dolphin.desktop";
+        web-browser =
+          if nixosConfig.networking.hostName == "sodium"
+          then "floorp.desktop"
+          else "firefox.desktop";
+      in {
+        "inode/directory" = file-manager;
+
+        "x-scheme-handler/http" = web-browser;
+        "x-scheme-handler/https" = web-browser;
+        "x-scheme-handler/chrome" = web-browser;
+        "text/html" = web-browser;
+        "application/x-extension-htm" = web-browser;
+        "application/x-extension-html" = web-browser;
+        "application/x-extension-shtml" = web-browser;
+        "application/xhtml+xml" = web-browser;
+        "application/x-extension-xhtml" = web-browser;
+        "application/x-extension-xht" = web-browser;
+      };
 
       programs = {
         helix.enable = true;
