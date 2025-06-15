@@ -36,7 +36,7 @@ in
       database = {
         createLocally = mkOption {
           type = lib.types.bool;
-          default = true;
+          default = false;
         };
 
         host = mkOption {
@@ -70,7 +70,7 @@ in
       redis = {
         createLocally = mkOption {
           type = lib.types.bool;
-          default = true;
+          default = false;
         };
 
         host = mkOption {
@@ -97,7 +97,7 @@ in
       meilisearch = {
         createLocally = mkOption {
           type = lib.types.bool;
-          default = true;
+          default = false;
         };
 
         host = mkOption {
