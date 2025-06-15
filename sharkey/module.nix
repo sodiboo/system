@@ -53,7 +53,8 @@ in
         };
 
         passwordFile = lib.mkOption {
-          type = lib.types.path;
+          type = lib.types.nullOr lib.types.path;
+          default = null;
           description = ''
             Path to a file containing the database password.
 
@@ -79,7 +80,8 @@ in
         };
 
         passwordFile = lib.mkOption {
-          type = lib.types.path;
+          type = lib.types.nullOr lib.types.path;
+          default = null;
           description = ''
             Path to a file containing the password to the redis server.
 
@@ -110,7 +112,8 @@ in
         };
 
         apiKeyFile = lib.mkOption {
-          type = lib.types.path;
+          type = lib.types.nullOr lib.types.path;
+          default = null;
           description = ''
             Path to a file containing the Meilisearch API key.
 
@@ -138,13 +141,13 @@ in
       db.port = cfg.database.port;
       db.db = cfg.database.name;
       db.user = cfg.database.name;
-      db.pass = "@DATABASE_PASSWORD@";
+      db.pass = lib.mkIf (cfg.database.passwordFile != null) "@DATABASE_PASSWORD@";
       redis.host = cfg.redis.host;
       redis.port = cfg.redis.port;
-      redis.pass = "@REDIS_PASSWORD@";
+      redis.pass = lib.mkIf (cfg.redis.passwordFile != null) "@REDIS_PASSWORD@";
       meilisearch.host = cfg.meilisearch.host;
       meilisearch.port = cfg.meilisearch.port;
-      meilisearch.apiKey = "@MEILISEARCH_KEY@";
+      meilisearch.apiKey = lib.mkIf (cfg.meilisearch.apiKeyFile != null) "@MEILISEARCH_KEY@";
       meilisearch.index = cfg.meilisearch.index;
       meilisearch.ssl = !createMeili;
       meilisearch.scope = "global";
@@ -179,19 +182,26 @@ in
         StandardError = "journal";
         SyslogIdentifier = "sharkey";
 
-        LoadCredential = [
-          "database_password:${cfg.database.passwordFile}"
-          "redis_password:${cfg.redis.passwordFile}"
-          "meilisearch_key:${cfg.meilisearch.apiKeyFile}"
-        ];
+        LoadCredential =
+          lib.mkMerge [
+            (lib.mkIf (cfg.database.passwordFile != null) [ "database_password:${cfg.database.passwordFile}" ])
+            (lib.mkIf (cfg.redis.passwordFile != null) [ "redis_password:${cfg.redis.passwordFile}" ])
+            (lib.mkIf (cfg.meilisearch.apiKeyFile != null) [ "meilisearch_key:${cfg.meilisearch.apiKeyFile}" ])
+          ];
       };
 
-      preStart = ''
-        install -m 700 ${configFile} $MISSKEY_CONFIG_YML
-        ${lib.getExe pkgs.replace-secret} '@DATABASE_PASSWORD@' "$CREDENTIALS_DIRECTORY/database_password" $MISSKEY_CONFIG_YML
-        ${lib.getExe pkgs.replace-secret} '@REDIS_PASSWORD@' "$CREDENTIALS_DIRECTORY/redis_password" $MISSKEY_CONFIG_YML
-        ${lib.getExe pkgs.replace-secret} '@MEILISEARCH_KEY@' "$CREDENTIALS_DIRECTORY/meilisearch_key" $MISSKEY_CONFIG_YML
-      '';
+      preStart = lib.mkMerge [
+        "install -m 700 ${configFile} $MISSKEY_CONFIG_YML"
+        (lib.mkIf (cfg.database.passwordFile != null) ''
+          ${lib.getExe pkgs.replace-secret} '@DATABASE_PASSWORD@' "$CREDENTIALS_DIRECTORY/database_password" $MISSKEY_CONFIG_YML
+        '')
+        (lib.mkIf (cfg.redis.passwordFile != null) ''
+          ${lib.getExe pkgs.replace-secret} '@REDIS_PASSWORD@' "$CREDENTIALS_DIRECTORY/redis_password" $MISSKEY_CONFIG_YML
+        '')
+        (lib.mkIf (cfg.meilisearch.apiKeyFile != null) ''
+          ${lib.getExe pkgs.replace-secret} '@MEILISEARCH_KEY@' "$CREDENTIALS_DIRECTORY/meilisearch_key" $MISSKEY_CONFIG_YML
+        '')
+      ];
     };
 
     services.postgresql = lib.mkIf createDB {
