@@ -26,9 +26,11 @@ niri-rebuild:
 build hostname=`hostname`:
   nom build .#nixosConfigurations.{{hostname}}.config.system.build.toplevel
 
+nixfmt := `if command -v nixfmt >/dev/null; echo nixfmt; else; echo nix fmt --; end`
+
 fmt:
-    [ ! -L result ] || rm result
-    nix fmt -- --quiet **.nix
+    @[ ! -L result ] || rm result
+    {{ nixfmt }} --quiet **.nix
 prep: fmt
     nix flake update
     git add .

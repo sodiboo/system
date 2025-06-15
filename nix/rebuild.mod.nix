@@ -7,9 +7,20 @@
       ...
     }:
     let
-      rebuild-shorthand = pkgs.writeShellScriptBin "nixos" ''
-        exec ${lib.getExe pkgs.just} -f /etc/nixos/justfile sys "$@"
-      '';
+      rebuild-shorthand-exe = "nixos";
+
+      rebuild-shorthand =
+        pkgs.runCommand "system-rebuild-shorthand"
+          {
+            nativeBuildInputs = [
+              pkgs.makeWrapper
+            ];
+          }
+          ''
+            makeWrapper ${lib.getExe pkgs.just} $out/bin/${rebuild-shorthand-exe} \
+              --add-flags "-f /etc/nixos/justfile sys" \
+              --prefix PATH : ${lib.makeBinPath [ pkgs.nixfmt-rfc-style ]}
+          '';
     in
     {
       programs.nh.enable = true;
