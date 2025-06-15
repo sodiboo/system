@@ -23,26 +23,28 @@
         MEILI_MASTER_KEY=${config.sops.placeholder.meili-master-key}
       '';
 
-      services.sharkey.enable = true;
-      services.sharkey.domain = "gaysex.cloud";
-      services.sharkey.database.passwordFile = config.sops.secrets.sharkey-db-password.path;
-      services.sharkey.redis.passwordFile = config.sops.secrets.sharkey-redis-password.path;
-      services.sharkey.settings = {
-        id = "aidx";
+      services.sharkey = {
+        enable = true;
+        domain = "gaysex.cloud";
+        database.passwordFile = config.sops.secrets.sharkey-db-password.path;
+        redis.passwordFile = config.sops.secrets.sharkey-redis-password.path;
+        settings = {
+          id = "aidx";
 
-        port = 3001;
+          port = 3001;
 
-        maxNoteLength = 8192;
-        maxFileSize = 1024 * 1024 * 1024;
-        proxyRemoteFiles = true;
+          maxNoteLength = 8192;
+          maxFileSize = 1024 * 1024 * 1024;
+          proxyRemoteFiles = true;
 
-        # at the suggestion of Sharkey maintainers,
-        # this allows the server to run multiple workers
-        # and without this (and postgres tuning), the instance runs slowly
-        clusterLimit = 3;
+          # at the suggestion of Sharkey maintainers,
+          # this allows the server to run multiple workers
+          # and without this (and postgres tuning), the instance runs slowly
+          clusterLimit = 3;
 
-        signToActivityPubGet = true;
-        CheckActivityPubGetSigned = false;
+          signToActivityPubGet = true;
+          CheckActivityPubGetSigned = false;
+        };
       };
 
       # at the suggestion of Sharkey maintainers,
