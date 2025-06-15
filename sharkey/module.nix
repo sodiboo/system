@@ -7,7 +7,6 @@
 let
   cfg = config.services.sharkey;
 
-  createDB = cfg.database.host == "127.0.0.1" && cfg.database.createLocally;
   createRedis = cfg.redis.host == "127.0.0.1" && cfg.redis.createLocally;
   createMeili = cfg.meilisearch.host == "127.0.0.1" && cfg.meilisearch.createLocally;
 
@@ -35,21 +34,9 @@ in
         createLocally = lib.mkOption {
           type = lib.types.bool;
           default = false;
-        };
-
-        host = lib.mkOption {
-          type = lib.types.str;
-          default = "127.0.0.1";
-        };
-
-        port = lib.mkOption {
-          type = lib.types.port;
-          default = 5432;
-        };
-
-        name = lib.mkOption {
-          type = lib.types.str;
-          default = "sharkey";
+          description = ''
+            Create the PostgreSQL database locally and configure Sharkey to use it.
+          '';
         };
 
         passwordFile = lib.mkOption {
@@ -135,30 +122,41 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.sharkey.settings = {
-      url = "https://${cfg.domain}/";
-      db.host = cfg.database.host;
-      db.port = cfg.database.port;
-      db.db = cfg.database.name;
-      db.user = cfg.database.name;
-      db.pass = lib.mkIf (cfg.database.passwordFile != null) "@DATABASE_PASSWORD@";
-      redis.host = cfg.redis.host;
-      redis.port = cfg.redis.port;
-      redis.pass = lib.mkIf (cfg.redis.passwordFile != null) "@REDIS_PASSWORD@";
-      meilisearch.host = cfg.meilisearch.host;
-      meilisearch.port = cfg.meilisearch.port;
-      meilisearch.apiKey = lib.mkIf (cfg.meilisearch.apiKeyFile != null) "@MEILISEARCH_KEY@";
-      meilisearch.index = cfg.meilisearch.index;
-      meilisearch.ssl = !createMeili;
-      meilisearch.scope = "global";
-    };
+    assertions = [
+      {
+        assertion = cfg.database.createLocally -> cfg.database.passwordFile == null;
+        message = "services.sharkey.database.createLocally should not be used with a passwordFile.";
+      }
+    ];
+
+    services.sharkey.settings = lib.mkMerge [
+      {
+        url = lib.mkDefault "https://${cfg.domain}/";
+      }
+      (lib.mkIf cfg.database.createLocally {
+        db.host = lib.mkDefault "/var/run/postgresql";
+        db.port = lib.mkDefault config.services.postgresql.settings.port;
+      })
+      {
+        db.pass = lib.mkIf (cfg.database.passwordFile != null) "@DATABASE_PASSWORD@";
+        redis.host = cfg.redis.host;
+        redis.port = cfg.redis.port;
+        redis.pass = lib.mkIf (cfg.redis.passwordFile != null) "@REDIS_PASSWORD@";
+        meilisearch.host = cfg.meilisearch.host;
+        meilisearch.port = cfg.meilisearch.port;
+        meilisearch.apiKey = lib.mkIf (cfg.meilisearch.apiKeyFile != null) "@MEILISEARCH_KEY@";
+        meilisearch.index = cfg.meilisearch.index;
+        meilisearch.ssl = !createMeili;
+        meilisearch.scope = "global";
+      }
+    ];
 
     environment.etc."sharkey.yml".source = configFile;
 
     systemd.services.sharkey = {
       after =
         [ "network-online.target" ]
-        ++ lib.optionals createDB [ "postgresql.service" ]
+        ++ lib.optionals cfg.database.createLocally [ "postgresql.service" ]
         ++ lib.optionals createRedis [ "redis-sharkey.service" ]
         ++ lib.optionals createMeili [ "meilisearch.service" ];
       wantedBy = [ "multi-user.target" ];
@@ -182,12 +180,11 @@ in
         StandardError = "journal";
         SyslogIdentifier = "sharkey";
 
-        LoadCredential =
-          lib.mkMerge [
-            (lib.mkIf (cfg.database.passwordFile != null) [ "database_password:${cfg.database.passwordFile}" ])
-            (lib.mkIf (cfg.redis.passwordFile != null) [ "redis_password:${cfg.redis.passwordFile}" ])
-            (lib.mkIf (cfg.meilisearch.apiKeyFile != null) [ "meilisearch_key:${cfg.meilisearch.apiKeyFile}" ])
-          ];
+        LoadCredential = lib.mkMerge [
+          (lib.mkIf (cfg.database.passwordFile != null) [ "database_password:${cfg.database.passwordFile}" ])
+          (lib.mkIf (cfg.redis.passwordFile != null) [ "redis_password:${cfg.redis.passwordFile}" ])
+          (lib.mkIf (cfg.meilisearch.apiKeyFile != null) [ "meilisearch_key:${cfg.meilisearch.apiKeyFile}" ])
+        ];
       };
 
       preStart = lib.mkMerge [
@@ -204,16 +201,15 @@ in
       ];
     };
 
-    services.postgresql = lib.mkIf createDB {
+    services.postgresql = lib.mkIf cfg.database.createLocally {
       enable = true;
-      settings.port = cfg.database.port;
+      ensureDatabases = [ "sharkey" ];
       ensureUsers = [
         {
-          name = cfg.database.name;
+          name = "sharkey";
           ensureDBOwnership = true;
         }
       ];
-      ensureDatabases = [ cfg.database.name ];
     };
 
     services.redis = lib.mkIf createRedis {
@@ -225,10 +221,6 @@ in
         requirePassFile = cfg.redis.passwordFile;
       };
     };
-
-    systemd.services.postgresql.postStart = lib.mkIf createDB ''
-      $PSQL -tAc "ALTER ROLE ${cfg.database.name} WITH ENCRYPTED PASSWORD '$(printf "%s" $(cat ${cfg.database.passwordFile} | tr -d "\n"))';"
-    '';
 
     services.meilisearch = lib.mkIf createMeili {
       enable = true;

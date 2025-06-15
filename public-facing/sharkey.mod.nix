@@ -27,7 +27,7 @@
         enable = true;
         domain = "gaysex.cloud";
         database.createLocally = true;
-        database.passwordFile = config.sops.secrets.sharkey-db-password.path;
+        # database.passwordFile = config.sops.secrets.sharkey-db-password.path;
         redis.createLocally = true;
         redis.passwordFile = config.sops.secrets.sharkey-redis-password.path;
         meilisearch.createLocally = true;
