@@ -7,7 +7,6 @@
 let
   cfg = config.services.sharkey;
 
-  createRedis = cfg.redis.host == "127.0.0.1" && cfg.redis.createLocally;
   createMeili = cfg.meilisearch.host == "127.0.0.1" && cfg.meilisearch.createLocally;
 
   settingsFormat = pkgs.formats.yaml { };
@@ -54,16 +53,9 @@ in
         createLocally = lib.mkOption {
           type = lib.types.bool;
           default = false;
-        };
-
-        host = lib.mkOption {
-          type = lib.types.str;
-          default = "127.0.0.1";
-        };
-
-        port = lib.mkOption {
-          type = lib.types.port;
-          default = 6379;
+          description = ''
+            Create the Redis server locally and configure Sharkey to use it.
+          '';
         };
 
         passwordFile = lib.mkOption {
@@ -127,6 +119,10 @@ in
         assertion = cfg.database.createLocally -> cfg.database.passwordFile == null;
         message = "services.sharkey.database.createLocally should not be used with a passwordFile.";
       }
+      {
+        assertion = cfg.redis.createLocally -> cfg.redis.passwordFile == null;
+        message = "services.sharkey.redis.createLocally should not be used with a passwordFile.";
+      }
     ];
 
     services.sharkey.settings = lib.mkMerge [
@@ -137,9 +133,10 @@ in
         db.host = lib.mkDefault "/var/run/postgresql";
         db.port = lib.mkDefault config.services.postgresql.settings.port;
       })
+      (lib.mkIf cfg.redis.createLocally {
+        redis.path = lib.mkDefault config.services.redis.servers.sharkey.unixSocket;
+      })
       {
-        redis.host = cfg.redis.host;
-        redis.port = cfg.redis.port;
         meilisearch.host = cfg.meilisearch.host;
         meilisearch.port = cfg.meilisearch.port;
         meilisearch.index = cfg.meilisearch.index;
@@ -157,7 +154,7 @@ in
       after =
         [ "network-online.target" ]
         ++ lib.optionals cfg.database.createLocally [ "postgresql.service" ]
-        ++ lib.optionals createRedis [ "redis-sharkey.service" ]
+        ++ lib.optionals cfg.redis.createLocally [ "redis-sharkey.service" ]
         ++ lib.optionals createMeili [ "meilisearch.service" ];
       wantedBy = [ "multi-user.target" ];
 
@@ -212,13 +209,11 @@ in
       ];
     };
 
-    services.redis = lib.mkIf createRedis {
+    services.redis = lib.mkIf cfg.redis.createLocally {
       servers.sharkey = {
         enable = true;
         user = "sharkey";
-        bind = "127.0.0.1";
-        port = cfg.redis.port;
-        requirePassFile = cfg.redis.passwordFile;
+        unixSocketPerm = 600;
       };
     };
 
