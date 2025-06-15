@@ -7,8 +7,6 @@
 let
   cfg = config.services.sharkey;
 
-  createMeili = cfg.meilisearch.host == "127.0.0.1" && cfg.meilisearch.createLocally;
-
   settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
 in
@@ -75,21 +73,6 @@ in
           default = false;
         };
 
-        host = lib.mkOption {
-          type = lib.types.str;
-          default = "127.0.0.1";
-        };
-
-        port = lib.mkOption {
-          type = lib.types.port;
-          default = 7700;
-        };
-
-        index = lib.mkOption {
-          type = lib.types.str;
-          default = lib.replaceStrings [ "." ] [ "_" ] cfg.domain;
-        };
-
         apiKeyFile = lib.mkOption {
           type = lib.types.nullOr lib.types.path;
           default = null;
@@ -136,13 +119,12 @@ in
       (lib.mkIf cfg.redis.createLocally {
         redis.path = lib.mkDefault config.services.redis.servers.sharkey.unixSocket;
       })
-      {
-        meilisearch.host = cfg.meilisearch.host;
-        meilisearch.port = cfg.meilisearch.port;
-        meilisearch.index = cfg.meilisearch.index;
-        meilisearch.ssl = !createMeili;
-        meilisearch.scope = "global";
-      }
+      (lib.mkIf cfg.meilisearch.createLocally {
+        fulltextSearch.provider = lib.mkDefault "meilisearch";
+        meilisearch.host = lib.mkDefault "localhost";
+        meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
+        meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
+      })
       (lib.mkIf (cfg.database.passwordFile != null) { db.pass = "@DATABASE_PASSWORD@"; })
       (lib.mkIf (cfg.redis.passwordFile != null) { redis.pass = "@REDIS_PASSWORD@"; })
       (lib.mkIf (cfg.meilisearch.apiKeyFile != null) { meilisearch.apiKey = "@MEILISEARCH_KEY@"; })
@@ -155,7 +137,7 @@ in
         [ "network-online.target" ]
         ++ lib.optionals cfg.database.createLocally [ "postgresql.service" ]
         ++ lib.optionals cfg.redis.createLocally [ "redis-sharkey.service" ]
-        ++ lib.optionals createMeili [ "meilisearch.service" ];
+        ++ lib.optionals cfg.meilisearch.createLocally [ "meilisearch.service" ];
       wantedBy = [ "multi-user.target" ];
 
       environment.MISSKEY_CONFIG_YML = "/run/sharkey/config.yml";
@@ -217,10 +199,8 @@ in
       };
     };
 
-    services.meilisearch = lib.mkIf createMeili {
+    services.meilisearch = lib.mkIf cfg.meilisearch.createLocally {
       enable = true;
-      listenAddress = "127.0.0.1";
-      listenPort = cfg.meilisearch.port;
       environment = "production";
     };
 

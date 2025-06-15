@@ -35,6 +35,8 @@
         settings = {
           id = "aidx";
 
+          meilisearch.scope = "global";
+
           port = 3001;
 
           maxNoteLength = 8192;
