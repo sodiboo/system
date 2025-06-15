@@ -37,6 +37,7 @@
         kakoune
         socat
         jq
+        just
         file
         bc
         dust
