@@ -18,10 +18,10 @@ let
 in
 {
   options = {
-    services.sharkey = with lib; {
-      enable = mkEnableOption "sharkey";
+    services.sharkey = {
+      enable = lib.mkEnableOption "sharkey";
 
-      domain = mkOption {
+      domain = lib.mkOption {
         type = lib.types.str;
         example = "shonk.social";
       };
@@ -34,27 +34,27 @@ in
       };
 
       database = {
-        createLocally = mkOption {
+        createLocally = lib.mkOption {
           type = lib.types.bool;
           default = false;
         };
 
-        host = mkOption {
+        host = lib.mkOption {
           type = lib.types.str;
           default = "127.0.0.1";
         };
 
-        port = mkOption {
+        port = lib.mkOption {
           type = lib.types.port;
           default = 5432;
         };
 
-        name = mkOption {
+        name = lib.mkOption {
           type = lib.types.str;
           default = "sharkey";
         };
 
-        passwordFile = mkOption {
+        passwordFile = lib.mkOption {
           description = ''
             Path to a file containing the password for the database user.
 
@@ -68,22 +68,22 @@ in
       };
 
       redis = {
-        createLocally = mkOption {
+        createLocally = lib.mkOption {
           type = lib.types.bool;
           default = false;
         };
 
-        host = mkOption {
+        host = lib.mkOption {
           type = lib.types.str;
           default = "127.0.0.1";
         };
 
-        port = mkOption {
+        port = lib.mkOption {
           type = lib.types.port;
           default = 6379;
         };
 
-        passwordFile = mkOption {
+        passwordFile = lib.mkOption {
           description = ''
             Path to a file containing the password for the redis server.
 
@@ -95,33 +95,33 @@ in
       };
 
       meilisearch = {
-        createLocally = mkOption {
+        createLocally = lib.mkOption {
           type = lib.types.bool;
           default = false;
         };
 
-        host = mkOption {
+        host = lib.mkOption {
           type = lib.types.str;
           default = "127.0.0.1";
         };
 
-        port = mkOption {
+        port = lib.mkOption {
           type = lib.types.port;
           default = 7700;
         };
 
-        index = mkOption {
+        index = lib.mkOption {
           type = lib.types.str;
-          default = replaceStrings [ "." ] [ "_" ] cfg.domain;
+          default = lib.replaceStrings [ "." ] [ "_" ] cfg.domain;
         };
 
-        key = mkOption {
+        key = lib.mkOption {
           type = lib.types.str;
           default = "$MEILI_MASTER_KEY";
         };
       };
 
-      settings = mkOption {
+      settings = lib.mkOption {
         type = settingsFormat.type;
         default = { };
         description = ''
