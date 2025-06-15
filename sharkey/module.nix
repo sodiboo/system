@@ -134,8 +134,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    documentation.enable = false;
-
     assertions = [
       {
         assertion = createMeiliKey -> createMeili;
