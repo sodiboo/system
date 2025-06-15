@@ -11,8 +11,6 @@ let
   createRedis = cfg.redis.host == "127.0.0.1" && cfg.redis.createLocally;
   createMeili = cfg.meilisearch.host == "127.0.0.1" && cfg.meilisearch.createLocally;
 
-  createMeiliKey = cfg.meilisearch.key == lib.fakeSha256;
-
   settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
 in
@@ -55,15 +53,12 @@ in
         };
 
         passwordFile = lib.mkOption {
-          description = ''
-            Path to a file containing the password for the database user.
-
-            This file must be readable by the `sharkey` user.
-
-            If creating a database locally, it must also be readable by the `postgres` user.
-          '';
           type = lib.types.path;
-          example = "/run/secrets/sharkey-db-password";
+          description = ''
+            Path to a file containing the database password.
+
+            Corresponds to `services.sharkey.settings.db.pass`.
+          '';
         };
       };
 
@@ -84,13 +79,12 @@ in
         };
 
         passwordFile = lib.mkOption {
-          description = ''
-            Path to a file containing the password for the redis server.
-
-            This file must be readable by the `sharkey` user.
-          '';
           type = lib.types.path;
-          example = "/run/secrets/sharkey-redis-password";
+          description = ''
+            Path to a file containing the password to the redis server.
+
+            Corresponds to `services.sharkey.settings.redis.pass`.
+          '';
         };
       };
 
@@ -115,9 +109,13 @@ in
           default = lib.replaceStrings [ "." ] [ "_" ] cfg.domain;
         };
 
-        key = lib.mkOption {
-          type = lib.types.str;
-          default = "$MEILI_MASTER_KEY";
+        apiKeyFile = lib.mkOption {
+          type = lib.types.path;
+          description = ''
+            Path to a file containing the Meilisearch API key.
+
+            Corresponds to `services.sharkey.settings.meilisearch.apiKey`.
+          '';
         };
       };
 
@@ -134,26 +132,19 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = createMeiliKey -> createMeili;
-        message = "services.sharkey.meilisearch.key is required to be set when connecting to a remote meilisearch instance";
-      }
-    ];
-
     services.sharkey.settings = {
       url = "https://${cfg.domain}/";
       db.host = cfg.database.host;
       db.port = cfg.database.port;
       db.db = cfg.database.name;
       db.user = cfg.database.name;
-      db.pass = "$SHARKEY_DB_PASSWORD";
+      db.pass = "@DATABASE_PASSWORD@";
       redis.host = cfg.redis.host;
       redis.port = cfg.redis.port;
-      redis.pass = "$SHARKEY_REDIS_PASSWORD";
+      redis.pass = "@REDIS_PASSWORD@";
       meilisearch.host = cfg.meilisearch.host;
       meilisearch.port = cfg.meilisearch.port;
-      meilisearch.apiKey = cfg.meilisearch.key;
+      meilisearch.apiKey = "@MEILISEARCH_KEY@";
       meilisearch.index = cfg.meilisearch.index;
       meilisearch.ssl = !createMeili;
       meilisearch.scope = "global";
@@ -169,19 +160,10 @@ in
         ++ lib.optionals createMeili [ "meilisearch.service" ];
       wantedBy = [ "multi-user.target" ];
 
-      preStart = ''
-        SHARKEY_DB_PASSWORD="$(cat ${lib.escapeShellArg cfg.database.passwordFile})" \
-        SHARKEY_REDIS_PASSWORD="$(cat ${lib.escapeShellArg cfg.redis.passwordFile})" \
-        ${pkgs.envsubst}/bin/envsubst -i "${configFile}" > $MISSKEY_CONFIG_YML
-      '';
-
       environment.MISSKEY_CONFIG_YML = "/run/sharkey/config.yml";
       environment.NODE_ENV = "production";
 
       serviceConfig = {
-        EnvironmentFile = lib.mkIf (
-          config.services.meilisearch.masterKeyEnvironmentFile != null
-        ) config.services.meilisearch.masterKeyEnvironmentFile;
         Type = "simple";
         User = "sharkey";
 
@@ -196,7 +178,20 @@ in
         StandardOutput = "journal";
         StandardError = "journal";
         SyslogIdentifier = "sharkey";
+
+        LoadCredential = [
+          "database_password:${cfg.database.passwordFile}"
+          "redis_password:${cfg.redis.passwordFile}"
+          "meilisearch_key:${cfg.meilisearch.apiKeyFile}"
+        ];
       };
+
+      preStart = ''
+        install -m 700 ${configFile} $MISSKEY_CONFIG_YML
+        ${lib.getExe pkgs.replace-secret} '@DATABASE_PASSWORD@' "$CREDENTIALS_DIRECTORY/database_password" $MISSKEY_CONFIG_YML
+        ${lib.getExe pkgs.replace-secret} '@REDIS_PASSWORD@' "$CREDENTIALS_DIRECTORY/redis_password" $MISSKEY_CONFIG_YML
+        ${lib.getExe pkgs.replace-secret} '@MEILISEARCH_KEY@' "$CREDENTIALS_DIRECTORY/meilisearch_key" $MISSKEY_CONFIG_YML
+      '';
     };
 
     services.postgresql = lib.mkIf createDB {

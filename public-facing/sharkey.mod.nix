@@ -31,6 +31,7 @@
         redis.createLocally = true;
         redis.passwordFile = config.sops.secrets.sharkey-redis-password.path;
         meilisearch.createLocally = true;
+        meilisearch.apiKeyFile = config.sops.secrets.meili-master-key.path;
         settings = {
           id = "aidx";
 
