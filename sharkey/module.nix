@@ -138,17 +138,17 @@ in
         db.port = lib.mkDefault config.services.postgresql.settings.port;
       })
       {
-        db.pass = lib.mkIf (cfg.database.passwordFile != null) "@DATABASE_PASSWORD@";
         redis.host = cfg.redis.host;
         redis.port = cfg.redis.port;
-        redis.pass = lib.mkIf (cfg.redis.passwordFile != null) "@REDIS_PASSWORD@";
         meilisearch.host = cfg.meilisearch.host;
         meilisearch.port = cfg.meilisearch.port;
-        meilisearch.apiKey = lib.mkIf (cfg.meilisearch.apiKeyFile != null) "@MEILISEARCH_KEY@";
         meilisearch.index = cfg.meilisearch.index;
         meilisearch.ssl = !createMeili;
         meilisearch.scope = "global";
       }
+      (lib.mkIf (cfg.database.passwordFile != null) { db.pass = "@DATABASE_PASSWORD@"; })
+      (lib.mkIf (cfg.redis.passwordFile != null) { redis.pass = "@REDIS_PASSWORD@"; })
+      (lib.mkIf (cfg.meilisearch.apiKeyFile != null) { meilisearch.apiKey = "@MEILISEARCH_KEY@"; })
     ];
 
     environment.etc."sharkey.yml".source = configFile;
