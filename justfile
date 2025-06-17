@@ -3,7 +3,7 @@ export NIX_CONFIG := "warn-dirty = false"
 export NH_OS_FLAKE := "."
 
 niri-cfg hostname=`hostname`:
-    nix eval --quiet --quiet --override-input niri /home/sodiboo/niri-flake --raw .#nixosConfigurations.{{hostname}}.config.home-manager.users.sodiboo.programs.niri.finalConfig
+    nix eval --override-input niri /home/sodiboo/niri-flake --raw .#nixosConfigurations.{{hostname}}.config.home-manager.users.sodiboo --apply 'cfg: cfg.programs.niri.finalConfig'
 niri-cfg-validate hostname=`hostname`:
     just niri-cfg {{hostname}} > config.kdl
     cat config.kdl; echo
