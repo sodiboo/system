@@ -30,6 +30,11 @@
           "-device virtio-vga-gl"
         ];
 
+        home-shortcut.programs.niri.settings.input = {
+          mod-key = "Alt";
+          mod-key-nested = "Mod5"; # AltGr
+        };
+
         environment.etc.issue.text = ''
           Welcome to ${config.networking.hostName}! You're in a virtual machine.
 
