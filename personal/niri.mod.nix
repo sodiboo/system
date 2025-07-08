@@ -264,7 +264,7 @@
                     name: op:
                     pkgs.writeScript "${name}" ''
                       if [ "$(${get-wayland-display})" ${op} "$WAYLAND_DISPLAY" ]; then
-                        exec "$@"
+                        niri msg action spawn -- "$@"
                       fi
                     '';
                   only-on-session = wrapper "only-on-session" "=";
@@ -434,6 +434,7 @@
 
             programs.fuzzel = {
               enable = true;
+              settings.main.launch-prefix = "niri msg action spawn --";
               settings.main.terminal = "foot";
             };
 
