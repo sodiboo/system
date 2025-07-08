@@ -389,7 +389,7 @@
 
               layer-rules = [
                 {
-                  matches = [ { namespace = "swaync-notification-window"; } ];
+                  matches = [ { namespace = "^swaync-notification-window$"; } ];
 
                   block-out-from = "screencast";
                 }
