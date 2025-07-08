@@ -6,7 +6,6 @@ inputs: {
         home.packages = with pkgs; [
           fastfetch
           fm-go
-          python311
           dig
           whois
           libqalculate

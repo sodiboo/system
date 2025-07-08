@@ -55,11 +55,6 @@
         (
           { pkgs, ... }:
           {
-            home.packages = with pkgs; [
-              clang
-              bun
-            ];
-
             programs.git.enable = true;
             programs.git.userName = "sodiboo";
             programs.git.userEmail = "git@sodi.boo";
