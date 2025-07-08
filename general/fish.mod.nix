@@ -11,7 +11,7 @@
           interactiveShellInit = ''
             set fish_greeting
             function fish_command_not_found
-              , $argv
+              command -v , &>/dev/null && , $argv
             end
 
             set machines "iridium" "sodium" "nitrogen" "oxygen"
