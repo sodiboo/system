@@ -85,8 +85,6 @@
               input.tablet.map-to-output = "eDP-1";
               input.touch.map-to-output = "eDP-1";
 
-              # input.warp-mouse-to-focus = true;
-
               prefer-no-csd = true;
 
               layout = {
