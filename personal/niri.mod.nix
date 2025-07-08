@@ -354,19 +354,6 @@
                     clip-to-geometry = true;
                   }
                   {
-                    matches = [ { is-focused = false; } ];
-                    opacity = 0.95;
-                  }
-                  {
-                    # the terminal is already transparent from stylix
-                    matches = [ { app-id = "^kitty$"; } ];
-                    opacity = 1.0;
-                  }
-                  {
-                    matches = [ { app-id = "^niri$"; } ];
-                    opacity = 1.0;
-                  }
-                  {
                     matches = [
                       {
                         app-id = "^kitty$";
