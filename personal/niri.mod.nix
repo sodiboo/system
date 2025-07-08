@@ -126,6 +126,8 @@
               hotkey-overlay.skip-at-startup = !nixosConfig.is-virtual-machine;
               clipboard.disable-primary = true;
 
+              overview.zoom = 0.5;
+
               screenshot-path = "~/Pictures/Screenshots/%Y-%m-%dT%H:%M:%S.png";
 
               switch-events =
