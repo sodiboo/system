@@ -53,12 +53,32 @@
   };
 
   outputs =
-    {
-      self,
-      nixpkgs,
-      ...
-    }@inputs:
+    raw-inputs:
     let
+      inputs = builtins.mapAttrs (
+        input-name: raw-input:
+        builtins.foldl'
+          (
+            input: module-class:
+            if input ? ${module-class} then
+              input
+              // {
+                ${module-class} = builtins.mapAttrs (
+                  module-name: nixpkgs.lib.setDefaultModuleLocation "${input-name}.${module-class}.${module-name}"
+                ) input.${module-class};
+              }
+            else
+              input
+          )
+          raw-input
+          [
+            "nixosModules"
+            "homeModules"
+          ]
+      ) raw-inputs;
+
+      inherit (inputs) self nixpkgs;
+
       inherit (nixpkgs.lib)
         flip
         pipe
