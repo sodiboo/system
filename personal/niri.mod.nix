@@ -1,4 +1,4 @@
-{ niri, ... }:
+{ niri, swww, ... }:
 {
   # enable the binary cache on all systems; useful for remote build
   universal.imports = [ niri.nixosModules.niri ];
@@ -17,6 +17,7 @@
         gamescope
         xwayland-satellite-unstable
         swaybg
+        swww.packages.${pkgs.system}.swww
       ];
       home-shortcut.imports = [
         (
@@ -164,7 +165,6 @@
                     "Mod+W".action = sh (
                       builtins.concatStringsSep "; " [
                         "systemctl --user restart waybar.service"
-                        "systemctl --user restart swaybg.service"
                       ]
                     );
 
@@ -269,13 +269,8 @@
                         exec "$@"
                       fi
                     '';
-
                   only-on-session = wrapper "only-on-session" "=";
                   only-without-session = wrapper "only-without-session" "!=";
-
-                  modulated-wallpaper = pkgs.runCommand "modulated-wallpaper.png" { } ''
-                    ${lib.getExe pkgs.imagemagick} ${config.stylix.image} -modulate 100,100,14 $out
-                  '';
                 in
                 [
                   {
@@ -294,12 +289,16 @@
                   }
                   {
                     command = [
-                      "${only-without-session}"
-                      "${lib.getExe pkgs.swaybg}"
-                      "-m"
-                      "fill"
-                      "-i"
-                      "${modulated-wallpaper}"
+                      "${lib.getExe' swww.packages.${pkgs.system}.swww "swww-daemon"}"
+                      "-n"
+                      "main"
+                    ];
+                  }
+                  {
+                    command = [
+                      "${lib.getExe' swww.packages.${pkgs.system}.swww "swww-daemon"}"
+                      "-n"
+                      "overview"
                     ];
                   }
                   {
@@ -408,6 +407,11 @@
                   matches = [ { namespace = "swaync-notification-window"; } ];
 
                   block-out-from = "screencast";
+                }
+                {
+                  matches = [ { namespace = "^swww-daemonoverview$"; } ];
+
+                  place-within-backdrop = true;
                 }
               ];
             };

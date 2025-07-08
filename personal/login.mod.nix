@@ -52,7 +52,7 @@
                           command = [
                             (lib.getExe pkgs.swaybg)
                             "-i"
-                            config.stylix.blurred-image
+                            "${config.wallpaper.blurred}"
                           ];
                         }
                         {

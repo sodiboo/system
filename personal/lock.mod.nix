@@ -8,17 +8,10 @@ let
     let
       # wl-copy = "${pkgs.wl-clipboard}/bin/wl-copy";
       # wl-paste = "${pkgs.wl-clipboard}/bin/wl-paste";
-      convert = "${pkgs.imagemagick}/bin/convert";
       grim = "${pkgs.grim}/bin/grim";
       jq = "${pkgs.jq}/bin/jq";
       swaylock = "${config.programs.swaylock.package}/bin/swaylock";
       niri = "${config.programs.niri.package}/bin/niri";
-      # for quick iteration
-      magick-args = builtins.concatStringsSep " " [
-        "-scale 2%"
-        "-blur 0x.5"
-        "-resize 5000%"
-      ];
     in
     {
       lock = pkgs.writeScriptBin "blurred-locker" ''
@@ -31,7 +24,7 @@ let
 
           ${grim} -o "$output" "$image"
 
-          ${convert} "$image" ${magick-args} "$image"
+          ${config.scripts.blur} "$image" "$image"
 
           args+=" -i $output:$image"
         done
@@ -41,12 +34,6 @@ let
 
         rm -r $dir
       '';
-
-      blur =
-        image:
-        pkgs.runCommand "blurred.png" { } ''
-          ${convert} "${image}" ${magick-args} "$out"
-        '';
     };
 in
 {
@@ -57,21 +44,7 @@ in
       config,
       ...
     }:
-    let
-      scripts' = scripts {
-        inherit pkgs;
-        config = config.home-manager.users.sodiboo;
-      };
-    in
     {
-      options.stylix.blurred-image =
-        with lib;
-        mkOption {
-          type = types.coercedTo types.package toString types.path;
-          default = scripts'.blur config.stylix.image;
-          readOnly = true;
-        };
-
       config.home-shortcut =
         {
           lib,

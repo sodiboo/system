@@ -54,6 +54,8 @@ in
       {
         stylix.enable = true;
 
+        stylix.image = config.wallpaper.base;
+
         stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/atelier-dune.yaml";
         stylix.polarity = "dark";
 
@@ -80,38 +82,9 @@ in
     )
   ];
 
-  sodium = wallpapers.firewatch-wide;
-
-  nitrogen = wallpapers.firewatch-wide;
-
-  personal.home-shortcut.imports = [
-    {
-      # stylix.targets.gtk.enable = false;
-      # stylix.targets.firefox.enable = false;
-      stylix.targets.vscode.enable = false;
-    }
-    (
-      {
-        lib,
-        pkgs,
-        config,
-        ...
-      }:
-      {
-        systemd-fuckery.auto-restart = [ "swaybg" ];
-        systemd.user.services."swaybg" = {
-          Unit = {
-            Description = "wallpapers! brought to you by stylix! :3";
-            PartOf = [ "graphical-session.target" ];
-            After = [ "graphical-session.target" ];
-          };
-          Install.WantedBy = [ "graphical-session.target" ];
-          Service = {
-            ExecStart = "${lib.getExe pkgs.swaybg} -m fill -i ${config.stylix.image}";
-            Restart = "on-failure";
-          };
-        };
-      }
-    )
-  ];
+  personal.home-shortcut = {
+    # stylix.targets.gtk.enable = false;
+    # stylix.targets.firefox.enable = false;
+    stylix.targets.vscode.enable = false;
+  };
 }
