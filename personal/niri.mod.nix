@@ -334,7 +334,7 @@
                   }
                 ];
 
-              animations.shaders.window-resize = builtins.readFile ./resize.glsl;
+              animations.window-resize.custom-shader = builtins.readFile ./resize.glsl;
 
               window-rules =
                 let
