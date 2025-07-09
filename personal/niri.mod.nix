@@ -275,7 +275,6 @@
                 [
                   {
                     command = [
-                      "${only-on-session}"
                       "${lib.getExe pkgs.gammastep}"
                       "-l"
                       "59:11" # lol, doxxed
