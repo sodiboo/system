@@ -401,6 +401,7 @@
                   place-within-backdrop = true;
                 }
               ];
+              xwayland-satellite.path = "${lib.getExe pkgs.xwayland-satellite-unstable}";
             };
           }
         )
