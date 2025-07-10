@@ -61,8 +61,6 @@ in
       ...
     }:
     {
-      systemd-fuckery.auto-restart = [ "waybar" ];
-
       programs.waybar = {
         enable = true;
         systemd.enable = true;
