@@ -256,16 +256,9 @@
 
       devShells = forAllSystems (
         system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-          default = pkgs.mkShell {
-            buildInputs = [
-              pkgs.just
-              self.formatter.${system}
-            ];
-          };
+        import ./shell.nix {
+          inherit system;
+          flake = self;
         }
       );
 
