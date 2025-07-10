@@ -16,8 +16,6 @@
         cage
         gamescope
         xwayland-satellite-unstable
-        swaybg
-        swww.packages.${pkgs.system}.swww
       ];
       home-shortcut.imports = [
         (
@@ -256,49 +254,6 @@
                     "Mod+Shift+P".action = power-off-monitors;
 
                     "Mod+Shift+Ctrl+T".action = toggle-debug-tint;
-                  }
-                ];
-
-              spawn-at-startup =
-                let
-                  get-wayland-display = "systemctl --user show-environment | awk -F 'WAYLAND_DISPLAY=' '{print $2}' | awk NF";
-                  wrapper =
-                    name: op:
-                    pkgs.writeScript "${name}" ''
-                      if [ "$(${get-wayland-display})" ${op} "$WAYLAND_DISPLAY" ]; then
-                        niri msg action spawn -- "$@"
-                      fi
-                    '';
-                  only-on-session = wrapper "only-on-session" "=";
-                  only-without-session = wrapper "only-without-session" "!=";
-                in
-                [
-                  {
-                    command = [
-                      "${lib.getExe pkgs.gammastep}"
-                      "-l"
-                      "59:11" # lol, doxxed
-                    ];
-                  }
-                  {
-                    command = [
-                      "${only-without-session}"
-                      "${lib.getExe pkgs.waybar}"
-                    ];
-                  }
-                  {
-                    command = [
-                      "${lib.getExe' swww.packages.${pkgs.system}.swww "swww-daemon"}"
-                      "-n"
-                      "main"
-                    ];
-                  }
-                  {
-                    command = [
-                      "${lib.getExe' swww.packages.${pkgs.system}.swww "swww-daemon"}"
-                      "-n"
-                      "overview"
-                    ];
                   }
                 ];
 

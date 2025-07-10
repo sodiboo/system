@@ -63,7 +63,7 @@ in
     {
       programs.waybar = {
         enable = true;
-        systemd.enable = true;
+        systemd.transient.enable = true;
       };
       programs.waybar.settings.mainBar = {
         layer = "top";
