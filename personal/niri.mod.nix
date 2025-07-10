@@ -300,37 +300,6 @@
                       "overview"
                     ];
                   }
-                  {
-                    command =
-                      let
-                        units = [
-                          "niri"
-                          "graphical-session.target"
-                          "xdg-desktop-portal"
-                          "xdg-desktop-portal-gnome"
-                          "waybar"
-                        ];
-                        commands = builtins.concatStringsSep ";" (map (unit: "systemctl --user status ${unit}") units);
-                      in
-                      [
-                        "${only-on-session}"
-                        "kitty"
-                        "--"
-                        "sh"
-                        "-c"
-                        "env SYSTEMD_COLORS=1 watch -n 1 -d --color '${commands}'"
-                      ];
-                  }
-                  {
-                    command = [
-                      "${only-without-session}"
-                      "kitty"
-                      "--"
-                      "sh"
-                      "-c"
-                      "${lib.getExe pkgs.wayvnc} -L=debug"
-                    ];
-                  }
                 ];
 
               animations.window-resize.custom-shader = builtins.readFile ./resize.glsl;
