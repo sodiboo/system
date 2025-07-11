@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  modulesPath,
   ...
 }:
 let
@@ -11,6 +12,8 @@ let
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
 in
 {
+  disabledModules = [ "${modulesPath}/services/web-apps/sharkey.nix" ];
+
   options = {
     services.sharkey = {
       enable = lib.mkEnableOption "sharkey";
