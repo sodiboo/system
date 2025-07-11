@@ -4,7 +4,7 @@
     imports = [ sops-nix.nixosModules.sops ];
 
     config = {
-      sops.defaultSopsFile = "${self}/secrets.yaml";
+      sops.defaultSopsFile = ../secrets.yaml;
       sops.defaultSopsFormat = "yaml";
 
       # sync ~/.ssh/sops out-of-band
