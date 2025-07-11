@@ -67,7 +67,8 @@
               input
               // {
                 ${module-class} = builtins.mapAttrs (
-                  module-name: nixpkgs.lib.setDefaultModuleLocation "${input-name}.${module-class}.${module-name}"
+                  module-name:
+                  raw-inputs.nixpkgs.lib.setDefaultModuleLocation "${input-name}.${module-class}.${module-name}"
                 ) input.${module-class};
               }
             else
@@ -79,69 +80,30 @@
             "homeModules"
           ]
       ) raw-inputs;
-
+    in
+    let
       inherit (inputs) self nixpkgs;
 
-      inherit (nixpkgs.lib)
-        flip
-        pipe
-        getAttr
-        concatMapAttrs
-        mapAttrs'
-        nameValuePair
-        filterAttrs
-        const
-        hasSuffix
-        mapAttrs
-        toFunction
-        toList
-        mapAttrsToList
-        ;
+      inherit (nixpkgs.lib.attrsets) filterAttrs mapAttrs zipAttrs;
+      inherit (nixpkgs.lib.strings) hasSuffix;
+      inherit (nixpkgs.lib.lists) filter map;
 
-      match = flip getAttr;
-      read-dir-recursively =
-        dir:
-        concatMapAttrs (
-          this:
-          match {
-            directory = mapAttrs' (subpath: nameValuePair "${this}/${subpath}") (
-              read-dir-recursively "${dir}/${this}"
-            );
-            regular = {
-              ${this} = "${dir}/${this}";
-            };
-            symlink = { };
-          }
-        ) (builtins.readDir dir);
+      inherit (nixpkgs.lib.trivial) const toFunction;
+      inherit (nixpkgs.lib.filesystem) listFilesRecursive;
+      inherit (nixpkgs.lib.modules) setDefaultModuleLocation;
 
       params = inputs // {
         profiles = raw-configs;
-        systems = builtins.mapAttrs (const (system: system.config)) configs;
+        systems = mapAttrs (const (system: system.config)) configs;
       };
 
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
       # If you don't, the file will not be included in the flake, and the modules defined within will not be loaded.
-
-      read-all-modules = flip pipe [
-        read-dir-recursively
-        (filterAttrs (flip (const (hasSuffix ".mod.nix"))))
-        (mapAttrs (const import))
-        (mapAttrs (const (flip toFunction params)))
-      ];
-
-      merge = prev: this: prev ++ toList this;
-
       all-modules =
-        mapAttrsToList (
+        map (
           path:
-          mapAttrs (
-            profile: module: {
-              _file = "${path}#${profile}";
-              imports = [ module ];
-            }
-          )
-        ) (read-all-modules "${self}")
-
+          mapAttrs (profile: setDefaultModuleLocation "${path}#${profile}") (toFunction (import path) params)
+        ) (filter (hasSuffix ".mod.nix") (listFilesRecursive "${self}"))
         ++ [
           {
             universal.options.id = nixpkgs.lib.mkOption {
@@ -160,9 +122,7 @@
         iridium.id = 77;
       };
 
-      raw-module-lists = builtins.zipAttrsWith (const (builtins.foldl' merge [ ])) all-modules;
-
-      raw-configs = builtins.mapAttrs (const (
+      raw-configs = mapAttrs (const (
         modules:
         nixpkgs.lib.nixosSystem {
           inherit modules;
@@ -170,12 +130,12 @@
         // {
           inherit modules; # expose this next to e.g. `config`, `option`, etc.
         }
-      )) raw-module-lists;
+      )) (zipAttrs all-modules);
 
       configs = filterAttrs (name: config: elements ? ${name}) raw-configs;
 
       vms =
-        builtins.mapAttrs
+        mapAttrs
           (
             hostname:
             {
@@ -274,7 +234,7 @@
       # If you want to consume my Sharkey package, directly import `./sharkey/{package,module}.nix`.
       packages.x86_64-linux.sharkey = self.nixosConfigurations.oxygen.pkgs.sharkey;
 
-      apps.x86_64-linux = builtins.mapAttrs (name: script: {
+      apps.x86_64-linux = mapAttrs (name: script: {
         type = "app";
         program = "${script}";
       }) vms;
@@ -285,7 +245,7 @@
           mkdir $out
         ''
         + (builtins.concatStringsSep "\n" (
-          mapAttrsToList (name: config: ''
+          nixpkgs.lib.attrsets.mapAttrsToList (name: config: ''
             ln -s ${config.config.system.build.toplevel} $out/${name}
           '') self.nixosConfigurations
         ))
