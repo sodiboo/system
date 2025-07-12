@@ -58,7 +58,7 @@ stdenv.mkDerivation (finalAttrs: {
   # Sharkey depends on some packages with native code that needs to be built.
   # These aren't built by default, so we need to run their build scripts manually.
   #
-  # The tricky thing is that not all of them required for Sharkey to "successfully" build.
+  # The tricky thing is that not all of them are required for Sharkey to "successfully" build.
   # They will trick you, make you think that Sharkey works, and successfully run your databse migrations.
   # And then, when your instance tries to run, it will crash with an error like:
   #
