@@ -144,7 +144,6 @@ in
       wantedBy = [ "multi-user.target" ];
 
       environment.MISSKEY_CONFIG_YML = "/run/sharkey/config.yml";
-      environment.NODE_ENV = "production";
 
       serviceConfig = {
         Type = "simple";

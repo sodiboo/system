@@ -105,6 +105,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
       --chdir $out/Sharkey \
+      --set-default NODE_ENV production \
       --prefix PATH : ${
         lib.makeBinPath [
           bash
