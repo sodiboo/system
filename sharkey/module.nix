@@ -10,6 +10,12 @@ let
 
   settingsFormat = pkgs.formats.yaml { };
   configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
+
+  credentials' = lib.imap0 (i: env: {
+    identifier = "sharkey-cred-${toString i}";
+    inherit env;
+    path = cfg.credentials.${env};
+  }) (builtins.attrNames cfg.credentials);
 in
 {
   disabledModules = [ "${modulesPath}/services/web-apps/sharkey.nix" ];
@@ -96,6 +102,15 @@ in
           for supported settings.
         '';
       };
+
+      credentials = lib.mkOption {
+        type = lib.types.attrsOf lib.types.path;
+        default = { };
+        description = ''
+          Credentials to be used by Sharkey, such as database passwords or API keys.
+          The key should be the environment variable `MK_CONFIG_*_FILE` that matches the relevant Sharkey config option.
+        '';
+      };
     };
   };
 
@@ -109,6 +124,20 @@ in
         assertion = cfg.redis.createLocally -> cfg.redis.passwordFile == null;
         message = "services.sharkey.redis.createLocally should not be used with a passwordFile.";
       }
+      (
+        let
+          badly-named-credentials = builtins.filter (env: builtins.match "^MK_CONFIG_.*_FILE$" env == null) (
+            builtins.attrNames cfg.credentials
+          );
+        in
+        {
+          assertion = badly-named-credentials == [ ];
+          message = ''
+            services.sharkey.credentials contains invalid environment variables: ${builtins.concatStringsSep ", " badly-named-credentials}
+            They should all be of the form MK_CONFIG_*_FILE.
+          '';
+        }
+      )
     ];
 
     services.sharkey.settings = lib.mkMerge [
@@ -128,10 +157,15 @@ in
         meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
         meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
       })
-      (lib.mkIf (cfg.database.passwordFile != null) { db.pass = "@DATABASE_PASSWORD@"; })
-      (lib.mkIf (cfg.redis.passwordFile != null) { redis.pass = "@REDIS_PASSWORD@"; })
-      (lib.mkIf (cfg.meilisearch.apiKeyFile != null) { meilisearch.apiKey = "@MEILISEARCH_KEY@"; })
     ];
+
+    services.sharkey.credentials = {
+      MK_CONFIG_DB_PASS_FILE = lib.mkIf (cfg.database.passwordFile != null) cfg.database.passwordFile;
+      MK_CONFIG_REDIS_PASS_FILE = lib.mkIf (cfg.redis.passwordFile != null) cfg.redis.passwordFile;
+      MK_CONFIG_MEILISEARCH_APIKEY_FILE = lib.mkIf (
+        cfg.meilisearch.apiKeyFile != null
+      ) cfg.meilisearch.apiKeyFile;
+    };
 
     environment.etc."sharkey.yml".source = configFile;
 
@@ -142,8 +176,6 @@ in
         ++ lib.optionals cfg.redis.createLocally [ "redis-sharkey.service" ]
         ++ lib.optionals cfg.meilisearch.createLocally [ "meilisearch.service" ];
       wantedBy = [ "multi-user.target" ];
-
-      environment.MISSKEY_CONFIG_YML = "/run/sharkey/config.yml";
 
       serviceConfig = {
         Type = "simple";
@@ -161,25 +193,15 @@ in
         StandardError = "journal";
         SyslogIdentifier = "sharkey";
 
-        LoadCredential = lib.mkMerge [
-          (lib.mkIf (cfg.database.passwordFile != null) [ "database_password:${cfg.database.passwordFile}" ])
-          (lib.mkIf (cfg.redis.passwordFile != null) [ "redis_password:${cfg.redis.passwordFile}" ])
-          (lib.mkIf (cfg.meilisearch.apiKeyFile != null) [ "meilisearch_key:${cfg.meilisearch.apiKeyFile}" ])
-        ];
+        LoadCredential = map (cred: "${cred.identifier}:${cred.path}") credentials';
       };
 
-      preStart = lib.mkMerge [
-        "install -m 700 ${configFile} $MISSKEY_CONFIG_YML"
-        (lib.mkIf (cfg.database.passwordFile != null) ''
-          ${lib.getExe pkgs.replace-secret} '@DATABASE_PASSWORD@' "$CREDENTIALS_DIRECTORY/database_password" $MISSKEY_CONFIG_YML
-        '')
-        (lib.mkIf (cfg.redis.passwordFile != null) ''
-          ${lib.getExe pkgs.replace-secret} '@REDIS_PASSWORD@' "$CREDENTIALS_DIRECTORY/redis_password" $MISSKEY_CONFIG_YML
-        '')
-        (lib.mkIf (cfg.meilisearch.apiKeyFile != null) ''
-          ${lib.getExe pkgs.replace-secret} '@MEILISEARCH_KEY@' "$CREDENTIALS_DIRECTORY/meilisearch_key" $MISSKEY_CONFIG_YML
-        '')
-      ];
+      environment = lib.mkMerge (
+        [ { MISSKEY_CONFIG_YML = "${configFile}"; } ]
+        ++ map (cred: {
+          ${cred.env} = "%d/${cred.identifier}";
+        }) credentials'
+      );
     };
 
     services.postgresql = lib.mkIf cfg.database.createLocally {
