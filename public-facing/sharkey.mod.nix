@@ -76,6 +76,6 @@
         max_parallel_maintenance_workers = "4";
       };
 
-      services.meilisearch.masterKeyEnvironmentFile = config.sops.templates.meili-master-key-env.path;
+      services.meilisearch.masterKeyFile = config.sops.secrets.meili-master-key.path;
     };
 }
