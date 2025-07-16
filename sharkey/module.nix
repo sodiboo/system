@@ -123,61 +123,25 @@ in
         description = "Sharkey package to use.";
       };
 
-      database = {
-        createLocally = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = ''
-            Create the PostgreSQL database locally and configure Sharkey to use it.
-          '';
-        };
-
-        passwordFile = lib.mkOption {
-          type = lib.types.nullOr lib.types.path;
-          default = null;
-          description = ''
-            Path to a file containing the database password.
-
-            Corresponds to `services.sharkey.settings.db.pass`.
-          '';
-        };
+      database.createLocally = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Create the PostgreSQL database locally and configure Sharkey to use it.
+        '';
       };
 
-      redis = {
-        createLocally = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = ''
-            Create the Redis server locally and configure Sharkey to use it.
-          '';
-        };
-
-        passwordFile = lib.mkOption {
-          type = lib.types.nullOr lib.types.path;
-          default = null;
-          description = ''
-            Path to a file containing the password to the redis server.
-
-            Corresponds to `services.sharkey.settings.redis.pass`.
-          '';
-        };
+      redis.createLocally = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Create the Redis server locally and configure Sharkey to use it.
+        '';
       };
 
-      meilisearch = {
-        createLocally = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-        };
-
-        apiKeyFile = lib.mkOption {
-          type = lib.types.nullOr lib.types.path;
-          default = null;
-          description = ''
-            Path to a file containing the Meilisearch API key.
-
-            Corresponds to `services.sharkey.settings.meilisearch.apiKey`.
-          '';
-        };
+      meilisearch.createLocally = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
       };
 
       settings = lib.mkOption {
@@ -207,14 +171,6 @@ in
 
   config = lib.mkIf cfg.enable {
     assertions = [
-      {
-        assertion = cfg.database.createLocally -> cfg.database.passwordFile == null;
-        message = "services.sharkey.database.createLocally should not be used with a passwordFile.";
-      }
-      {
-        assertion = cfg.redis.createLocally -> cfg.redis.passwordFile == null;
-        message = "services.sharkey.redis.createLocally should not be used with a passwordFile.";
-      }
       (
         let
           badly-named-credentials = builtins.filter (env: builtins.match "^MK_CONFIG_.*_FILE$" env == null) (
@@ -248,10 +204,8 @@ in
         meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
         meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
       })
-      (lib.mkIf (cfg.database.passwordFile != null) { db.pass.file = cfg.database.passwordFile; })
-      (lib.mkIf (cfg.redis.passwordFile != null) { redis.pass.file = cfg.redis.passwordFile; })
-      (lib.mkIf (cfg.meilisearch.apiKeyFile != null) {
-        meilisearch.apiKey.file = cfg.meilisearch.apiKeyFile;
+      (lib.mkIf (cfg.meilisearch.createLocally && config.services.meilisearch.masterKeyFile != null) {
+        meilisearch.apiKey = lib.mkDefault { file = config.services.meilisearch.masterKeyFile; };
       })
     ];
 
