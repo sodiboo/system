@@ -1,4 +1,5 @@
 {
+  options,
   config,
   lib,
   pkgs,
@@ -9,13 +10,99 @@ let
   cfg = config.services.sharkey;
 
   settingsFormat = pkgs.formats.yaml { };
-  configFile = settingsFormat.generate "sharkey-config.yml" cfg.settings;
 
   credentials' = lib.imap0 (i: env: {
     identifier = "sharkey-cred-${toString i}";
     inherit env;
     path = cfg.credentials.${env};
   }) (builtins.attrNames cfg.credentials);
+
+  scrub-secrets =
+    loc: this:
+    (
+      if builtins.typeOf this == "set" then
+        if builtins.attrNames this == [ "file" ] then
+          {
+            leaf = "secret";
+            value = "";
+            secret =
+              if lib.types.path.check this.file then
+                this.file
+              else
+                # we lose definition file information here. but fuck it we ball. half decent error still :3
+                throw ''
+                  The value for the option `${
+                    lib.showOption (loc ++ [ "file" ])
+                  }` is not of type `${lib.types.path.description}`. Value: ${
+                    lib.generators.toPretty { } (
+                      lib.generators.withRecursion {
+                        depthLimit = 10;
+                        throwOnDepthLimit = false;
+                      } this.file
+                    )
+                  }
+                '';
+          }
+        else
+          let
+            scrubbed = builtins.mapAttrs (k: scrub-secrets (loc ++ [ k ])) this;
+            except-leaves = kind: lib.filterAttrs (_: v: v.leaf or null != kind);
+
+            except-empty = lib.filterAttrs (_: v: v != { } && v != [ ]);
+          in
+          {
+            value = lib.pipe scrubbed [
+              (except-leaves "secret")
+              (builtins.mapAttrs (_: v: v.value))
+            ];
+
+            secret = lib.pipe scrubbed [
+              (except-leaves "value")
+              (builtins.mapAttrs (_: v: v.secret))
+              except-empty
+            ];
+          }
+
+      else if lib.typeOf this == "list" then
+        let
+          scrubbed = lib.imap0 (i: v: scrub-secrets (loc ++ [ "[index ${toString i}]" ]) v) this;
+        in
+        {
+          # do not eagerly prune lists: this will fuck with all the other indices.
+          value = builtins.map (builtins.getAttr "value") scrubbed;
+          secret = builtins.map (builtins.getAttr "secret") scrubbed;
+        }
+      else
+        {
+          leaf = "value";
+          value = this;
+          secret = { };
+        }
+    );
+
+  scrubbed-settings = scrub-secrets (options.services.sharkey.settings.loc) cfg.settings;
+
+  configFile = settingsFormat.generate "sharkey-config.yml" scrubbed-settings.value;
+
+  make-credentials =
+    loc: this:
+    if builtins.typeOf this == "set" then
+      lib.mapAttrsToList (name: make-credentials (loc ++ [ (lib.strings.toUpper name) ])) this
+    else if builtins.typeOf this == "list" then
+      lib.imap0 (i: make-credentials (loc ++ [ (toString i) ])) this
+    else
+      {
+        name = "MK_CONFIG_${builtins.concatStringsSep "_" loc}_FILE";
+        value = lib.mkDefinition {
+          file = lib.unknownModule;
+          value = this;
+        };
+      };
+
+  extracted-credentials = builtins.listToAttrs (
+    lib.flatten (make-credentials [ ] scrubbed-settings.secret)
+  );
+
 in
 {
   disabledModules = [ "${modulesPath}/services/web-apps/sharkey.nix" ];
@@ -103,6 +190,10 @@ in
         '';
       };
 
+      scrubbed-settings = lib.mkOption {
+        default = scrubbed-settings;
+      };
+
       credentials = lib.mkOption {
         type = lib.types.attrsOf lib.types.path;
         default = { };
@@ -157,15 +248,14 @@ in
         meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
         meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
       })
+      (lib.mkIf (cfg.database.passwordFile != null) { db.pass.file = cfg.database.passwordFile; })
+      (lib.mkIf (cfg.redis.passwordFile != null) { redis.pass.file = cfg.redis.passwordFile; })
+      (lib.mkIf (cfg.meilisearch.apiKeyFile != null) {
+        meilisearch.apiKey.file = cfg.meilisearch.apiKeyFile;
+      })
     ];
 
-    services.sharkey.credentials = {
-      MK_CONFIG_DB_PASS_FILE = lib.mkIf (cfg.database.passwordFile != null) cfg.database.passwordFile;
-      MK_CONFIG_REDIS_PASS_FILE = lib.mkIf (cfg.redis.passwordFile != null) cfg.redis.passwordFile;
-      MK_CONFIG_MEILISEARCH_APIKEY_FILE = lib.mkIf (
-        cfg.meilisearch.apiKeyFile != null
-      ) cfg.meilisearch.apiKeyFile;
-    };
+    services.sharkey.credentials = extracted-credentials;
 
     environment.etc."sharkey.yml".source = configFile;
 
