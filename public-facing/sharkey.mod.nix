@@ -35,6 +35,8 @@
         settings = {
           id = "aidx";
 
+          fulltextSearch.provider = "sqlLike";
+
           meilisearch.scope = "global";
 
           port = 3001;
