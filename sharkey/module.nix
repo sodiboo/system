@@ -240,7 +240,7 @@ in
 
     systemd.services.sharkey = {
       after =
-        [ "network-online.target" ]
+        [ "network.target" ]
         ++ lib.optionals cfg.database.createLocally [ "postgresql.service" ]
         ++ lib.optionals cfg.redis.createLocally [ "redis-sharkey.service" ]
         ++ lib.optionals cfg.meilisearch.createLocally [ "meilisearch.service" ];
