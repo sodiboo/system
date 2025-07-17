@@ -277,11 +277,10 @@ in
         };
       })
       (lib.mkIf cfg.redis.createLocally {
-        systemd.services.sharkey.after = [ "redis-sharkey.service" ];
-        services.redis.servers.sharkey = {
-          enable = true;
-          user = "sharkey";
-          unixSocketPerm = 600;
+        services.redis.servers.sharkey.enable = true;
+        systemd.services.sharkey = {
+          after = [ "redis-sharkey.service" ];
+          serviceConfig.SupplementaryGroups = [ config.services.redis.servers.sharkey.group ];
         };
         services.sharkey.settings = {
           redis.path = lib.mkDefault config.services.redis.servers.sharkey.unixSocket;
