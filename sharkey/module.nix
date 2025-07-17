@@ -183,7 +183,7 @@ in
                   https://activitypub.software/TransFem-org/Sharkey/-/blob/05a499ac55f13d654453eb3419ddae2c8eab1a34/.config/example.yml#L5-60
                 ''
                 + lib.optionalString (has-git-repo-url && !has-patches) ''
-                  note: you probably need to ensure the repostiory in the settings is ${cfg.package.src.gitRepoUrl}
+                  note: you probably need to ensure the repository in the settings is ${cfg.package.src.gitRepoUrl}
                 '';
             }
           )
