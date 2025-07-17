@@ -272,7 +272,7 @@ in
           ];
         };
         services.sharkey.settings = {
-          db.host = lib.mkDefault "/var/run/postgresql";
+          db.host = lib.mkDefault "/run/postgresql";
           db.port = lib.mkDefault config.services.postgresql.settings.port;
         };
       })
