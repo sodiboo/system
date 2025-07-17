@@ -6,22 +6,7 @@
       ...
     }:
     {
-      users.groups.sharkey-db-password = { };
-      users.users.sharkey.extraGroups = [ config.users.groups.sharkey-db-password.name ];
-      users.users.postgres.extraGroups = [ config.users.groups.sharkey-db-password.name ];
-
-      sops.secrets.sharkey-db-password = {
-        mode = "0440";
-        group = config.users.groups.sharkey-db-password.name;
-      };
-
-      sops.secrets.sharkey-redis-password.owner = config.users.users.sharkey.name;
-
       sops.secrets.meili-master-key = { };
-
-      sops.templates.meili-master-key-env.content = ''
-        MEILI_MASTER_KEY=${config.sops.placeholder.meili-master-key}
-      '';
 
       services.sharkey = {
         enable = true;
@@ -31,9 +16,6 @@
         meilisearch.createLocally = true;
         settings = {
           id = "aidx";
-
-          # db.passs.file = config.sops.secrets.sharkey-db-password.path;
-          # redis.pass.file = config.sops.secrets.sharkey-redis-password.path;
 
           fulltextSearch.provider = "sqlLike";
 
