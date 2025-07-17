@@ -99,7 +99,6 @@ stdenv.mkDerivation (finalAttrs: {
 
     mkdir -p $out/Sharkey
 
-    ln -s /var/lib/sharkey $out/Sharkey/files
     cp -r * $out/Sharkey
 
     makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \

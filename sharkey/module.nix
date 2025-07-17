@@ -198,6 +198,8 @@ in
         };
         users.groups.sharkey = { };
 
+        services.sharkey.settings.mediaDirectory = lib.mkForce "/var/lib/sharkey";
+
         systemd.services.sharkey = {
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
