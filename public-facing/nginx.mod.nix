@@ -105,33 +105,29 @@
                   + conf.extraConfig or "";
               }
             );
-            base-http = locations: {
-              extraConfig =
-                ''
-                  error_page 502 /.nginx/502.html;
-                ''
-                + locations.extraConfig or "";
-              locations =
-                (builtins.removeAttrs locations [ "extraConfig" ])
-                // static {
-                  "/.nginx/" = {
-                    root = static-root;
-                    extraConfig = ''
-                      try_files /$server_name$uri $uri @picocss;
-                    '';
-                  };
-                  "@picocss" = {
-                    root = "${pico-just-the-css}";
-                  };
+
+            scaffold = {
+              locations = {
+                "^~ /.nginx/" = {
+                  root = static-root;
+                  tryFiles = "/$server_name$uri $uri @picocss";
+                  extraConfig = ''
+                    rewrite ^/\.nginx(.+)$ $1 break;
+                  '';
                 };
-            };
-            base =
-              locations:
-              base-http locations
-              // {
-                forceSSL = true;
-                enableACME = true;
+                "@picocss".root = "${pico-just-the-css}";
               };
+
+              extraConfig = ''
+                error_page 502 /.nginx/502.html;
+              '';
+            };
+
+            acme = {
+              forceSSL = true;
+              enableACME = true;
+            };
+
             personal-website = inactive: status: redirect: ''
               location = /blog {
                 return 301 /blog/;
@@ -147,7 +143,7 @@
               }
             '';
 
-            unknown."= /".extraConfig = ''
+            unknown.locations."= /".extraConfig = ''
               rewrite . /.nginx/raw-ip.html last;
             '';
             unused-domains = [
@@ -161,30 +157,56 @@
               "infodumping.place"
             ];
           in
-          lib.mkMerge (
-            (map (name: { ${name} = base unknown; }) unused-domains)
-            ++ [
-              {
-                "0-sort-first" = base-http unknown // {
+          lib.mkMerge ([
+            {
+              _ = lib.mkMerge [
+                scaffold
+                unknown
+                {
+                  # default = true;
                   rejectSSL = true;
-                };
-                "sodi.boo" = base {
-                  "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
+                }
+              ];
+            }
+            (lib.genAttrs unused-domains (
+              lib.const (
+                lib.mkMerge [
+                  scaffold
+                  acme
+                  unknown
+                ]
+              )
+            ))
+            {
+              "sodi.boo" = lib.mkMerge [
+                scaffold
+                acme
+                {
+                  locations."= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
                   extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
-                };
-                "sodi.gay" = base {
+                }
+              ];
+              "sodi.gay" = lib.mkMerge [
+                scaffold
+                acme
+                {
                   extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
-                };
-              }
-              (builtins.mapAttrs (
-                _name: cfg:
-                base (
-                  builtins.mapAttrs (loc: cfg: {
-                    proxyPass = cfg.url;
-                    proxyWebsockets = true;
-                  }) cfg.locations
-                )
-                // {
+                }
+              ];
+            }
+            (builtins.mapAttrs (
+              _name: cfg:
+              lib.mkMerge [
+                scaffold
+                acme
+                {
+                  locations = (
+                    builtins.mapAttrs (loc: cfg: {
+                      proxyPass = cfg.url;
+                      proxyWebsockets = true;
+                    }) cfg.locations
+                  );
+
                   listen =
                     let
                       l = addr: port: ssl: { inherit addr port ssl; };
@@ -198,9 +220,9 @@
                     in
                     builtins.concatLists ([ (http 80) ] ++ map https ([ 443 ] ++ cfg.extra-public-ports));
                 }
-              ) config.reverse-proxy)
-            ]
-          );
+              ]
+            ) config.reverse-proxy)
+          ]);
       };
       security.acme = {
         acceptTerms = true;
