@@ -274,6 +274,10 @@ in
         services.sharkey.settings = {
           db.host = lib.mkDefault "/run/postgresql";
           db.port = lib.mkDefault config.services.postgresql.settings.port;
+          # ^^^^^ this port number is supposed to be here.
+          # because postgres's sockets are at /run/postgresql/.s.PGSQL.$PORT
+          # but all configs should point to the directory the socket is in.
+          # so, the port number affects the socket path
         };
       })
       (lib.mkIf cfg.redis.createLocally {
