@@ -123,6 +123,18 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  fixupPhase = ''
+    runHook preFixup
+
+    # Sharkey locks an older version of `pnpm`, which makes newer versions download that older version into $HOME.
+    # Let's patch it out.
+
+    substituteInPlace $out/Sharkey/package.json \
+      --replace-fail '"packageManager": "pnpm@9.6.0",' ""
+
+    runHook postFixup
+  '';
+
   passthru = {
     inherit (finalAttrs) pnpmDeps;
   };
