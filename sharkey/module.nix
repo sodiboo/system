@@ -105,11 +105,6 @@ in
     services.sharkey = {
       enable = lib.mkEnableOption "sharkey";
 
-      domain = lib.mkOption {
-        type = lib.types.str;
-        example = "shonk.social";
-      };
-
       package = lib.mkOption {
         type = lib.types.package;
         default = pkgs.sharkey;
@@ -165,9 +160,6 @@ in
 
   config = lib.mkIf cfg.enable (
     lib.mkMerge [
-      {
-        services.sharkey.settings.url = lib.mkDefault "https://${cfg.domain}/";
-      }
       {
         assertions = [
           (
@@ -305,7 +297,7 @@ in
           fulltextSearch.provider = lib.mkDefault "meilisearch";
           meilisearch.host = lib.mkDefault "localhost";
           meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
-          meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
+          meilisearch.index = lib.mkDefault "sharkey";
           meilisearch.apiKey = lib.mkIf (config.services.meilisearch.masterKeyFile != null) (
             lib.mkDefault {
               file = config.services.meilisearch.masterKeyFile;

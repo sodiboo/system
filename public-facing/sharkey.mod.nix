@@ -12,12 +12,12 @@
 
       services.sharkey = {
         enable = true;
-        domain = "gaysex.cloud";
         database.createLocally = true;
         redis.createLocally = true;
         meilisearch.createLocally = true;
         settings = {
           id = "aidx";
+          url = "https://gaysex.cloud/";
 
           fulltextSearch.provider = "sqlLike";
 
