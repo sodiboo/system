@@ -16,12 +16,6 @@
         mkdir $out && cp -r ${picocss}/css $out
       '';
 
-      # These should match `vps.sodi.boo` DNS records.
-      # All other domains are (flattened) CNAMEs to `vps.sodi.boo`.
-
-      oxygen-ipv4 = "85.190.241.69"; # IPv4 is unused here,
-      oxygen-ipv6 = "2a02:c202:2189:7245::1"; # But DHCP doesn't give me IPv6.
-
       rapid-testing = false;
       generated-site = pkgs.callPackage ./nginx/gen.nix { };
       static-root = if rapid-testing then "/etc/nixos/nginx/result" else "${generated-site}";
@@ -32,16 +26,6 @@
         firewall.allowedTCPPorts = [
           80
           443
-        ];
-
-        enableIPv6 = true;
-        defaultGateway6.address = "fe80::1";
-        defaultGateway6.interface = "ens18";
-        interfaces.ens18.ipv6.addresses = [
-          {
-            address = oxygen-ipv6;
-            prefixLength = 64;
-          }
         ];
       };
       services.nginx = {
