@@ -132,15 +132,6 @@
                 forceSSL = true;
                 enableACME = true;
               };
-            proxy' = host: port: {
-              proxyPass = "http://${host}:${toString port}";
-              proxyWebsockets = true;
-            };
-            proxy =
-              host: port:
-              base {
-                "/" = proxy' host port;
-              };
             personal-website = inactive: status: redirect: ''
               location = /blog {
                 return 301 /blog/;
@@ -170,45 +161,46 @@
               "infodumping.place"
             ];
           in
-          builtins.listToAttrs (
-            map (name: {
-              inherit name;
-              value = base unknown;
-            }) unused-domains
-          )
-          // {
-            "0-sort-first" = base-http unknown // {
-              rejectSSL = true;
-            };
-            "sodi.boo" = base {
-              "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
-              extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
-            };
-            "sodi.gay" = base {
-              extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
-            };
-            "cache.sodi.boo" = proxy systems.iridium.vpn.hostname systems.iridium.services.nix-serve.port;
-            "gaysex.cloud" =
-              base {
-                "/" = proxy' "127.0.0.1" config.services.sharkey.settings.port;
-                "/_matrix" = proxy' "127.0.0.1" config.services.matrix-conduit.settings.global.port;
+          lib.mkMerge (
+            (map (name: { ${name} = base unknown; }) unused-domains)
+            ++ [
+              {
+                "0-sort-first" = base-http unknown // {
+                  rejectSSL = true;
+                };
+                "sodi.boo" = base {
+                  "= /.well-known/discord".alias = ./sodi.boo/discord-domain-verification;
+                  extraConfig = personal-website "$is_gay_redirectable" 307 "sodi.gay";
+                };
+                "sodi.gay" = base {
+                  extraConfig = personal-website "$isnt_gay_redirectable" 307 "sodi.boo";
+                };
               }
-              // {
-                listen =
-                  let
-                    l = addr: port: ssl: { inherit addr port ssl; };
-                    p = port: ssl: [
-                      (l "0.0.0.0" port ssl)
-                      (l "[::0]" port ssl)
-                    ];
-                  in
-                  p 80 false ++ p 443 true ++ p 8448 true;
-              };
-            "vpn.sodi.boo" = base {
-              "/" = proxy' "127.0.0.1" config.services.headscale.port;
-              "/metrics".proxyPass = "http://${config.services.headscale.settings.metrics_listen_addr}/metrics";
-            };
-          };
+              (builtins.mapAttrs (
+                _name: cfg:
+                base (
+                  builtins.mapAttrs (loc: cfg: {
+                    proxyPass = cfg.url;
+                    proxyWebsockets = true;
+                  }) cfg.locations
+                )
+                // {
+                  listen =
+                    let
+                      l = addr: port: ssl: { inherit addr port ssl; };
+                      p = ssl: port: [
+                        (l "0.0.0.0" port ssl)
+                        (l "[::0]" port ssl)
+                      ];
+
+                      http = p false;
+                      https = p true;
+                    in
+                    builtins.concatLists ([ (http 80) ] ++ map https ([ 443 ] ++ cfg.extra-public-ports));
+                }
+              ) config.reverse-proxy)
+            ]
+          );
       };
       security.acme = {
         acceptTerms = true;

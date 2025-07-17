@@ -6,6 +6,8 @@
       ...
     }:
     {
+      reverse-proxy."gaysex.cloud".locations."/".localhost.port = config.services.sharkey.settings.port;
+
       sops.secrets.meili-master-key = { };
 
       services.sharkey = {

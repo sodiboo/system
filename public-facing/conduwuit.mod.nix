@@ -7,7 +7,11 @@
       ...
     }:
     {
+      reverse-proxy."gaysex.cloud".locations."/_matrix".localhost.port =
+        config.services.matrix-conduit.settings.global.port;
+      reverse-proxy."gaysex.cloud".extra-public-ports = [ 8448 ];
       networking.firewall.allowedTCPPorts = [ 8448 ];
+
       services.matrix-conduit = {
         enable = true;
         package = conduwuit.packages.x86_64-linux.default;

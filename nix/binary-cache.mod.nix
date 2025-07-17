@@ -20,6 +20,9 @@
       };
     };
 
+  oxygen.reverse-proxy."cache.sodi.boo".locations."/".vpn.iridium.port =
+    systems.iridium.services.nix-serve.port;
+
   iridium =
     {
       config,
