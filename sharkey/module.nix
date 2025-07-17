@@ -190,8 +190,6 @@ in
         ];
       }
       {
-        environment.etc."sharkey.yml".source = configFile;
-
         users.users.sharkey = {
           group = "sharkey";
           isSystemUser = true;
