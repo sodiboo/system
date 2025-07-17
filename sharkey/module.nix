@@ -11,12 +11,6 @@ let
 
   settingsFormat = pkgs.formats.yaml { };
 
-  credentials' = lib.imap0 (i: env: {
-    identifier = "sharkey-cred-${toString i}";
-    inherit env;
-    path = cfg.credentials.${env};
-  }) (builtins.attrNames cfg.credentials);
-
   scrub-secrets =
     loc: this:
     (
@@ -169,142 +163,157 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    assertions = [
-      (
-        let
-          badly-named-credentials = builtins.filter (env: builtins.match "^MK_CONFIG_.*_FILE$" env == null) (
-            builtins.attrNames cfg.credentials
-          );
-        in
-        {
-          assertion = badly-named-credentials == [ ];
-          message = ''
-            services.sharkey.credentials contains invalid environment variables: ${builtins.concatStringsSep ", " badly-named-credentials}
-            They should all be of the form MK_CONFIG_*_FILE.
-          '';
-        }
-      )
-      (
-        let
-          package-is-very-likely-unmodified =
-            cfg.package.src.gitRepoUrl or null == "https://activitypub.software/TransFem-org/Sharkey.git"
-            && cfg.package.patches or [ ] == [ ];
-
-          has-git-repo-url = cfg.package.src.gitRepoUrl or null != null;
-          has-patches = cfg.package.patches or [ ] != [ ];
-
-          user-probably-knows-what-they're-doing = cfg.settings ? publishTarballInsteadOfProvideRepositoryUrl;
-        in
-        {
-          assertion = package-is-very-likely-unmodified || user-probably-knows-what-they're-doing;
-
-          message =
-            ''
-              The Sharkey setting `publishTarballInsteadOfProvideRepositoryUrl` must be explicitly set.
-              Please read its documentation to avoid violating the AGPLv3 license that Sharkey is distributed under.
-              https://activitypub.software/TransFem-org/Sharkey/-/blob/05a499ac55f13d654453eb3419ddae2c8eab1a34/.config/example.yml#L5-60
-            ''
-            + lib.optionalString (has-git-repo-url && !has-patches) ''
-              note: you probably need to ensure the repostiory in the settings is ${cfg.package.src.gitRepoUrl}
-            '';
-        }
-      )
-    ];
-
-    services.sharkey.settings = lib.mkMerge [
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
       {
-        url = lib.mkDefault "https://${cfg.domain}/";
+        services.sharkey.settings.url = lib.mkDefault "https://${cfg.domain}/";
       }
+      {
+        assertions = [
+          (
+            let
+              package-is-very-likely-unmodified =
+                cfg.package.src.gitRepoUrl or null == "https://activitypub.software/TransFem-org/Sharkey.git"
+                && cfg.package.patches or [ ] == [ ];
+
+              has-git-repo-url = cfg.package.src.gitRepoUrl or null != null;
+              has-patches = cfg.package.patches or [ ] != [ ];
+
+              user-probably-knows-what-they're-doing = cfg.settings ? publishTarballInsteadOfProvideRepositoryUrl;
+            in
+            {
+              assertion = package-is-very-likely-unmodified || user-probably-knows-what-they're-doing;
+
+              message =
+                ''
+                  The Sharkey setting `publishTarballInsteadOfProvideRepositoryUrl` must be explicitly set.
+                  Please read its documentation to avoid violating the AGPLv3 license that Sharkey is distributed under.
+                  https://activitypub.software/TransFem-org/Sharkey/-/blob/05a499ac55f13d654453eb3419ddae2c8eab1a34/.config/example.yml#L5-60
+                ''
+                + lib.optionalString (has-git-repo-url && !has-patches) ''
+                  note: you probably need to ensure the repostiory in the settings is ${cfg.package.src.gitRepoUrl}
+                '';
+            }
+          )
+        ];
+      }
+      {
+        environment.etc."sharkey.yml".source = configFile;
+
+        users.users.sharkey = {
+          group = "sharkey";
+          isSystemUser = true;
+          home = "/run/sharkey";
+          packages = [ cfg.package ];
+        };
+        users.groups.sharkey = { };
+
+        systemd.services.sharkey = {
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+
+          environment.MISSKEY_CONFIG_YML = "${configFile}";
+          serviceConfig = {
+            Type = "simple";
+            User = "sharkey";
+
+            StateDirectory = "sharkey";
+            StateDirectoryMode = "0700";
+            RuntimeDirectory = "sharkey";
+            RuntimeDirectoryMode = "0700";
+            ExecStart = "${pkgs.sharkey}/bin/sharkey migrateandstart";
+            TimeoutSec = 60;
+            Restart = "always";
+
+            StandardOutput = "journal";
+            StandardError = "journal";
+            SyslogIdentifier = "sharkey";
+          };
+        };
+      }
+      {
+
+        assertions = [
+          (
+            let
+              badly-named-credentials = builtins.filter (env: builtins.match "^MK_CONFIG_.*_FILE$" env == null) (
+                builtins.attrNames cfg.credentials
+              );
+            in
+            {
+              assertion = badly-named-credentials == [ ];
+              message = ''
+                services.sharkey.credentials contains invalid environment variables: ${builtins.concatStringsSep ", " badly-named-credentials}
+                They should all be of the form MK_CONFIG_*_FILE.
+              '';
+            }
+          )
+        ];
+
+        services.sharkey.credentials = extracted-credentials;
+      }
+      (
+        let
+          credentials' = lib.imap0 (i: env: {
+            identifier = "sharkey-cred-${toString i}";
+            inherit env;
+            path = cfg.credentials.${env};
+          }) (builtins.attrNames cfg.credentials);
+        in
+        {
+          systemd.services.sharkey = {
+            serviceConfig.LoadCredential = map (cred: "${cred.identifier}:${cred.path}") credentials';
+            environment = lib.mkMerge (map (cred: { ${cred.env} = "%d/${cred.identifier}"; }) credentials');
+          };
+        }
+      )
       (lib.mkIf cfg.database.createLocally {
-        db.host = lib.mkDefault "/var/run/postgresql";
-        db.port = lib.mkDefault config.services.postgresql.settings.port;
+        systemd.services.sharkey.after = [ "postgresql.service" ];
+        services.postgresql = {
+          enable = true;
+          ensureDatabases = [ "sharkey" ];
+          ensureUsers = [
+            {
+              name = "sharkey";
+              ensureDBOwnership = true;
+            }
+          ];
+        };
+        services.sharkey.settings = {
+          db.host = lib.mkDefault "/var/run/postgresql";
+          db.port = lib.mkDefault config.services.postgresql.settings.port;
+        };
       })
       (lib.mkIf cfg.redis.createLocally {
-        redis.path = lib.mkDefault config.services.redis.servers.sharkey.unixSocket;
+        systemd.services.sharkey.after = [ "redis-sharkey.service" ];
+        services.redis.servers.sharkey = {
+          enable = true;
+          user = "sharkey";
+          unixSocketPerm = 600;
+        };
+        services.sharkey.settings = {
+          redis.path = lib.mkDefault config.services.redis.servers.sharkey.unixSocket;
+        };
       })
       (lib.mkIf cfg.meilisearch.createLocally {
-        fulltextSearch.provider = lib.mkDefault "meilisearch";
-        meilisearch.host = lib.mkDefault "localhost";
-        meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
-        meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
+        systemd.services.sharkey.after = [ "meilisearch.service" ];
+        services.meilisearch = {
+          enable = true;
+          environment = "production";
+        };
+        services.sharkey.settings = {
+          fulltextSearch.provider = lib.mkDefault "meilisearch";
+          meilisearch.host = lib.mkDefault "localhost";
+          meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
+          meilisearch.index = lib.mkDefault (lib.replaceStrings [ "." ] [ "_" ] cfg.domain);
+          meilisearch.apiKey = lib.mkIf (config.services.meilisearch.masterKeyFile != null) (
+            lib.mkDefault {
+              file = config.services.meilisearch.masterKeyFile;
+            }
+          );
+        };
       })
-      (lib.mkIf (cfg.meilisearch.createLocally && config.services.meilisearch.masterKeyFile != null) {
-        meilisearch.apiKey = lib.mkDefault { file = config.services.meilisearch.masterKeyFile; };
-      })
-    ];
-
-    services.sharkey.credentials = extracted-credentials;
-
-    environment.etc."sharkey.yml".source = configFile;
-
-    systemd.services.sharkey = {
-      after =
-        [ "network.target" ]
-        ++ lib.optionals cfg.database.createLocally [ "postgresql.service" ]
-        ++ lib.optionals cfg.redis.createLocally [ "redis-sharkey.service" ]
-        ++ lib.optionals cfg.meilisearch.createLocally [ "meilisearch.service" ];
-      wantedBy = [ "multi-user.target" ];
-
-      serviceConfig = {
-        Type = "simple";
-        User = "sharkey";
-
-        StateDirectory = "sharkey";
-        StateDirectoryMode = "0700";
-        RuntimeDirectory = "sharkey";
-        RuntimeDirectoryMode = "0700";
-        ExecStart = "${pkgs.sharkey}/bin/sharkey migrateandstart";
-        TimeoutSec = 60;
-        Restart = "always";
-
-        StandardOutput = "journal";
-        StandardError = "journal";
-        SyslogIdentifier = "sharkey";
-
-        LoadCredential = map (cred: "${cred.identifier}:${cred.path}") credentials';
-      };
-
-      environment = lib.mkMerge (
-        [ { MISSKEY_CONFIG_YML = "${configFile}"; } ]
-        ++ map (cred: {
-          ${cred.env} = "%d/${cred.identifier}";
-        }) credentials'
-      );
-    };
-
-    services.postgresql = lib.mkIf cfg.database.createLocally {
-      enable = true;
-      ensureDatabases = [ "sharkey" ];
-      ensureUsers = [
-        {
-          name = "sharkey";
-          ensureDBOwnership = true;
-        }
-      ];
-    };
-
-    services.redis = lib.mkIf cfg.redis.createLocally {
-      servers.sharkey = {
-        enable = true;
-        user = "sharkey";
-        unixSocketPerm = 600;
-      };
-    };
-
-    services.meilisearch = lib.mkIf cfg.meilisearch.createLocally {
-      enable = true;
-      environment = "production";
-    };
-
-    users.users.sharkey = {
-      group = "sharkey";
-      isSystemUser = true;
-      home = "/run/sharkey";
-      packages = [ cfg.package ];
-    };
-
-    users.groups.sharkey = { };
-  };
+    ]
+  );
   meta.maintainers = with lib.maintainers; [ sodiboo ];
 }
