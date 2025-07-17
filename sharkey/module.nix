@@ -302,9 +302,7 @@ in
           meilisearch.port = lib.mkDefault config.services.meilisearch.listenPort;
           meilisearch.index = lib.mkDefault "sharkey";
           meilisearch.apiKey = lib.mkIf (config.services.meilisearch.masterKeyFile != null) (
-            lib.mkDefault {
-              file = config.services.meilisearch.masterKeyFile;
-            }
+            lib.mkDefault { file = config.services.meilisearch.masterKeyFile; }
           );
         };
       })
