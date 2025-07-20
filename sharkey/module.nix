@@ -9,6 +9,13 @@
 let
   cfg = config.services.sharkey;
 
+  sharkey-precise = pkgs.callPackage ./precise.nix {
+    sharkey = cfg.package;
+  };
+
+  sharkey-migrate = lib.getExe' sharkey-precise "sharkey-migrate";
+  sharkey-start = lib.getExe' sharkey-precise "sharkey-start";
+
   settingsFormat = pkgs.formats.yaml { };
 
   scrub-secrets =
@@ -213,7 +220,8 @@ in
             StateDirectoryMode = "0700";
             RuntimeDirectory = "sharkey";
             RuntimeDirectoryMode = "0700";
-            ExecStart = "${pkgs.sharkey}/bin/sharkey migrateandstart";
+            ExecStartPre = sharkey-migrate;
+            ExecStart = sharkey-start;
             TimeoutSec = 60;
             Restart = "always";
 
