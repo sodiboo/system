@@ -41,91 +41,6 @@ in
             example = "example.com";
             description = "The server_name is the name of this server. It is used as a suffix for user and room ids.";
           };
-          global.address = lib.mkOption {
-            type = lib.types.nullOr (lib.types.listOf lib.types.nonEmptyStr);
-            default = null;
-            example = [
-              "127.0.0.1"
-              "::1"
-            ];
-            description = ''
-              Addresses (IPv4 or IPv6) to listen on for connections by the reverse proxy/tls terminator.
-              If set to `null`, continuwuity will listen on IPv4 and IPv6 localhost.
-              Must be `null` if `unix_socket_path` is set.
-            '';
-          };
-          global.port = lib.mkOption {
-            type = lib.types.listOf lib.types.port;
-            default = [ 6167 ];
-            description = ''
-              The port(s) continuwuity will be running on.
-              You need to set up a reverse proxy in your web server (e.g. apache or nginx),
-              so all requests to /_matrix on port 443 and 8448 will be forwarded to the continuwuity
-              instance running on this port.
-            '';
-          };
-          global.unix_socket_path = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-            description = ''
-              Listen on a UNIX socket at the specified path. If listening on a UNIX socket,
-              listening on an address will be disabled. The `address` option must be set to
-              `null` (the default value). The option {option}`services.continuwuity.group` must
-              be set to a group your reverse proxy is part of.
-
-              This will automatically add a system user "continuwuity" to your system if
-              {option}`services.continuwuity.user` is left at the default, and a "continuwuity"
-              group if {option}`services.continuwuity.group` is left at the default.
-            '';
-          };
-          global.unix_socket_perms = lib.mkOption {
-            type = lib.types.ints.positive;
-            default = 660;
-            description = "The default permissions (in octal) to create the UNIX socket with.";
-          };
-          global.max_request_size = lib.mkOption {
-            type = lib.types.ints.positive;
-            default = 20000000;
-            description = "Max request size in bytes. Don't forget to also change it in the proxy.";
-          };
-          global.allow_registration = lib.mkOption {
-            type = lib.types.bool;
-            default = false;
-            description = ''
-              Whether new users can register on this server.
-
-              Registration with token requires `registration_token` or `registration_token_file` to be set.
-
-              If set to true without a token configured, and
-              `yes_i_am_very_very_sure_i_want_an_open_registration_server_prone_to_abuse`
-              is set to true, users can freely register.
-            '';
-          };
-          global.allow_encryption = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-            description = "Whether new encrypted rooms can be created. Note: existing rooms will continue to work.";
-          };
-          global.allow_federation = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-            description = ''
-              Whether this server federates with other servers.
-            '';
-          };
-          global.trusted_servers = lib.mkOption {
-            type = lib.types.listOf lib.types.nonEmptyStr;
-            default = [ "matrix.org" ];
-            description = ''
-              Servers listed here will be used to gather public keys of other servers
-              (notary trusted key servers).
-
-              Currently, continuwuity doesn't support inbound batched key requests, so
-              this list should only contain other Synapse servers.
-
-              Example: `[ "matrix.org" "constellatory.net" "tchncs.de" ]`
-            '';
-          };
           global.database_path = lib.mkOption {
             readOnly = true;
             type = lib.types.path;
@@ -135,19 +50,9 @@ in
               Note that database_path cannot be edited because of the service's reliance on systemd StateDir.
             '';
           };
-          global.allow_announcements_check = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-            description = ''
-              If enabled, continuwuity will send a simple GET request periodically to
-              <https://continuwuity.org/.well-known/continuwuity/announcements> for any new announcements made.
-            '';
-          };
         };
       };
       default = { };
-      # TOML does not allow null values, so we use null to omit those fields
-      apply = lib.filterAttrsRecursive (_: v: v != null);
       description = ''
         Generates the continuwuity.toml configuration file. Refer to
         <https://continuwuity.org/configuration.html>
