@@ -6,7 +6,7 @@
   ...
 }:
 let
-  cfg = config.services.matrix-continuwuity;
+  cfg = config.services.continuwuity;
   defaultUser = "continuwuity";
   defaultGroup = "continuwuity";
 
@@ -20,7 +20,7 @@ in
 
   meta.maintainers = with lib.maintainers; [ sodiboo ];
 
-  options.services.matrix-continuwuity = {
+  options.services.continuwuity = {
     enable = lib.mkEnableOption "continuwuity";
 
     user = lib.mkOption {
