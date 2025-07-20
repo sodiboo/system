@@ -13,7 +13,7 @@
       networking.firewall.allowedTCPPorts = [ 8448 ];
 
       services.matrix-conduit = {
-        enable = true;
+        enable = false;
         package = conduwuit.packages.x86_64-linux.default;
         settings.global = {
           server_name = "gaysex.cloud";
@@ -23,8 +23,8 @@
         };
       };
 
-      systemd.services.conduit.serviceConfig.ExecStart = lib.mkForce (
-        lib.getExe config.services.matrix-conduit.package
-      ); # wrong in nixpkgs lol
+      # systemd.services.conduit.serviceConfig.ExecStart = lib.mkForce (
+      #   lib.getExe config.services.matrix-conduit.package
+      # ); # wrong in nixpkgs lol
     };
 }
