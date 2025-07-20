@@ -18,10 +18,7 @@ in
     "${modulesPath}/services/matrix/continuwuity.nix"
   ];
 
-  meta.maintainers = with lib.maintainers; [
-    nyabinary
-    snaki
-  ];
+  meta.maintainers = with lib.maintainers; [ sodiboo ];
 
   options.services.matrix-continuwuity = {
     enable = lib.mkEnableOption "continuwuity";
