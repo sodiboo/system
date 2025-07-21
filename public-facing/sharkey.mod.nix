@@ -24,7 +24,7 @@
           bindsTo = [ "sharkey.service" ];
           after = [ "sharkey.service" ];
         };
-        backend = config.services.sharkey.settings.socket;
+        upstream = config.services.sharkey.settings.socket;
       };
 
       services.sharkey = {

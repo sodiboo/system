@@ -32,11 +32,11 @@
             '';
           };
 
-          backend = lib.mkOption {
+          upstream = lib.mkOption {
             type = lib.types.str;
             example = "/run/path/to/socket";
             description = ''
-              The backend socket to which the socket proxy will forward connections.
+              The upstream socket to which the socket proxy will forward connections.
 
               Can be one of the following:
               - starting with `/`: a file system socket in the `AF_UNIX` family
@@ -71,8 +71,7 @@
 
           Each socket proxy is a socket-activated service.
 
-          The options `listenStreams` and `socketConfig` are used to configure the `.socket` unit.
-          All other options are used to configure the socket proxy service.
+          You can define the addresses/paths they listens on in `socket.listenStreams`.
         '';
       };
 
@@ -83,43 +82,124 @@
             {
               imports = [ cfg.socket ];
               config.enable = cfg.enable;
+              config.socketConfig = {
+                # this "polling" only applies *before* the connection is established.
+                # in particular, if a service doesn't create its socket right away (it's `ready` too early)
+                # then, the socket proxy will not initialize (`ConditionPathExists`) and that connection will be dropped
+                PollLimitBurst = 1;
+                PollLimitIntervalSec = 1;
+
+                # additionally, when it fails that way, we want to ensure the remaining "pending" connections do not *immediately* flood the trigger limit.
+                # as such, we flush them and just disconnect those clients.
+                FlushPending = true;
+              };
             };
           services."socket-proxy-${name}" =
             { ... }:
             {
               imports = [ cfg.service ];
-              config = {
-                enable = cfg.enable;
-                requires = [ config.systemd.sockets."socket-proxy-${name}".name ];
-                serviceConfig = lib.mkMerge [
-                  {
-                    Type = "notify";
-                    ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd ${
-                      lib.escapeShellArgs [
-                        "--connections-max"
-                        cfg.connections-max
-                        "--exit-idle-time"
-                        cfg.exit-idle-time
-                        cfg.backend
-                      ]
-                    }";
+              config =
+                let
+                  is-fs-upstream = lib.strings.hasPrefix "/" cfg.upstream;
+                  is-abstract-upstream = lib.strings.hasPrefix "@" cfg.upstream;
+                  is-internet-upstream = !(is-fs-upstream || is-abstract-upstream);
+                in
+                {
+                  enable = cfg.enable;
+                  requires = [ config.systemd.sockets."socket-proxy-${name}".name ];
+                  unitConfig = lib.mkIf is-fs-upstream {
+                    ConditionPathExists = [ cfg.upstream ];
+                    AssertPathIsDirectory = [ "!${cfg.upstream}" ];
+                  };
+                  serviceConfig = lib.mkMerge [
+                    {
+                      Type = "notify";
+                      ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd ${
+                        lib.escapeShellArgs [
+                          "--connections-max"
+                          cfg.connections-max
+                          "--exit-idle-time"
+                          cfg.exit-idle-time
+                          (if is-fs-upstream then "/upstream" else cfg.upstream)
+                        ]
+                      }";
 
-                    # `systemd-socket-proxyd` has to run as root (Scary!)
-                    # so, let's should harden it as much as possible.
-                    #   RootDirectory = "/var/empty";
-                    #   PrivateMounts = true;
-                    #   PrivatePIDs = true;
-                    #   PrivateUsers = true;
-                    # }
-                    # (lib.mkIf (lib.strings.hasPrefix "/" cfg.backend) {
-                    #   BindPaths = cfg.backend;
-                    #   PrivateNetwork = true;
-                    # })
-                    # {
+                      # This service needs access to the upstream socket file, and nothing else.
+                      # So, let's put it in "chroot jail", in its own runtime directory.
+                      # I would use something like `/var/empty` for this,
+                      # but its permissions are too restrictive; so a runtime dir will do.
+                      RuntimeDirectory = "socket-proxy/${name}";
+                      RuntimeDirectoryMode = "0700";
+                      RootDirectory = "%t/socket-proxy/${name}";
+                      BindReadOnlyPaths = [ "/nix/store" ];
 
-                  }
-                ];
-              };
+                      ProtectSystem = "strict";
+                      ProtectHome = true;
+                      ProtectClock = true;
+                      ProtectHostname = true;
+                      ProtectKernelLogs = true;
+                      ProtectKernelModules = true;
+                      ProtectKernelTunables = true;
+                      ProtectControlGroups = true;
+                      PrivateTmp = true;
+                      PrivateMounts = true;
+                      PrivateDevices = true;
+                      RestrictRealtime = true;
+                      RestrictNamespaces = true;
+                      RestrictSUIDSGID = true;
+                      LockPersonality = true;
+                      MemoryDenyWriteExecute = true;
+
+                      ProcSubset = "pid";
+                      ProtectProc = "invisible";
+
+                      NoNewPrivileges = true;
+
+                      SystemCallArchitectures = "native";
+                      SystemCallFilter = [
+                        "@system-service"
+                        "~@sync"
+                        "~@chown"
+                        "~@setuid"
+                        "~@keyring"
+                        "~@resources"
+                        "~@privileged"
+                      ];
+
+                      UMask = "0777";
+                      DynamicUser = true;
+
+                      CapabilityBoundingSet = lib.mkDefault ""; # no implicit capabilities
+                    }
+                    (lib.mkIf is-fs-upstream {
+                      RestrictAddressFamilies = "AF_UNIX";
+
+                      # `systemd-socket-proxyd` needs to be able to read/write the upstream socket.
+                      # this is desirable, because one of the primary use cases of this service
+                      # is for fine-grained permissions management (many listen -> one upstream, with varying perms)
+                      AmbientCapabilities = [ "CAP_DAC_OVERRIDE" ];
+                      CapabilityBoundingSet = [ "CAP_DAC_OVERRIDE" ];
+
+                      # systemd recommends *not* using `BindPaths` in a `DynamicUser`.
+                      # in particular, you can potentially leak the dynamic uid through this.
+                      # however, systemd-socket-proxyd never creates or chmods anything, so it's a non-issue.
+                      BindPaths = [ "${cfg.upstream}:/upstream" ];
+
+                      # in an fs socket (but not an abstract socket),
+                      # we can always isolate the networking namespace
+                      PrivateNetwork = true;
+                    })
+                    (lib.mkIf is-abstract-upstream {
+                      RestrictAddressFamilies = "AF_UNIX";
+                    })
+                    (lib.mkIf is-internet-upstream {
+                      RestrictAddressFamilies = [
+                        "AF_INET"
+                        "AF_INET6"
+                      ];
+                    })
+                  ];
+                };
             };
         }) config.systemd-socket-proxyd
       );
