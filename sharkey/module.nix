@@ -208,9 +208,6 @@ in
         services.sharkey.settings.mediaDirectory = lib.mkForce "/var/lib/sharkey";
 
         systemd.services.sharkey = {
-          wantedBy = [ "multi-user.target" ];
-          after = [ "network.target" ];
-
           environment.MISSKEY_CONFIG_YML = "${configFile}";
           serviceConfig = {
             Type = "simple";

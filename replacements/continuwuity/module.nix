@@ -67,9 +67,6 @@ in
     systemd.services.continuwuity = {
       description = "Continuwuity Matrix Server";
       documentation = [ "https://continuwuity.org/" ];
-      wantedBy = [ "multi-user.target" ];
-      wants = [ "network-online.target" ];
-      after = [ "network-online.target" ];
       environment.CONTINUWUITY_CONFIG = configFile;
       startLimitBurst = 5;
       startLimitIntervalSec = 60;
