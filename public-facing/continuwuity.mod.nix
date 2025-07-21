@@ -12,7 +12,7 @@
       networking.firewall.allowedTCPPorts = [ 8448 ];
 
       services.continuwuity = {
-        enable = false;
+        enable = true;
         settings.global = {
           server_name = "gaysex.cloud";
           max_request_size = 1024 * 1024 * 1024;
