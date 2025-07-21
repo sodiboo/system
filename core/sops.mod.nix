@@ -1,4 +1,4 @@
-{ self, sops-nix, ... }:
+{ sops-nix, ... }:
 {
   universal = {
     imports = [ sops-nix.nixosModules.sops ];
