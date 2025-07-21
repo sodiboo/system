@@ -32,8 +32,6 @@
 
     lan-mouse.url = "github:feschber/lan-mouse";
 
-    conduwuit.url = "github:girlbossceo/conduwuit";
-
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
 
     picocss.url = "github:picocss/pico";
