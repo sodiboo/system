@@ -31,6 +31,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   pnpmDeps = pnpm_9.fetchDeps {
     inherit (finalAttrs) src pname;
+    fetcherVersion = 1;
     hash = "sha256-2bt/sHKGNIjKfOvZ6DCXvdJcKoOJX/ueWdLULlYK3YU=";
   };
 
