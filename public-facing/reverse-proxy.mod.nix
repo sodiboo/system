@@ -44,7 +44,7 @@
                   _: cfg:
                   {
                     url = cfg;
-                    socket.url = "unix:${cfg.socket}";
+                    socket.url = "http://unix:${cfg.socket}";
                     localhost.url = "http://127.0.0.1:${toString cfg.localhost.port}";
                     vpn.url = "http://${systems.${cfg.vpn.host}.vpn.hostname}:${toString cfg.vpn.port}";
                   }
