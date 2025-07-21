@@ -8,8 +8,6 @@
     {
       reverse-proxy."gaysex.cloud".locations."/".localhost.port = config.services.sharkey.settings.port;
 
-      sops.secrets.meili-master-key = { };
-
       services.sharkey = {
         enable = true;
         database.createLocally = true;
@@ -62,6 +60,7 @@
         max_parallel_maintenance_workers = "4";
       };
 
+      sops.secrets.meili-master-key = { };
       services.meilisearch.masterKeyFile = config.sops.secrets.meili-master-key.path;
     };
 }
