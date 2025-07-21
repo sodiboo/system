@@ -21,15 +21,6 @@ in
   options.services.continuwuity = {
     enable = lib.mkEnableOption "continuwuity";
 
-    extraEnvironment = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
-      description = "Extra Environment variables to pass to the continuwuity server.";
-      default = { };
-      example = {
-        RUST_BACKTRACE = "yes";
-      };
-    };
-
     package = lib.mkPackageOption pkgs "matrix-continuwuity" { };
 
     settings = lib.mkOption {
@@ -79,10 +70,7 @@ in
       wantedBy = [ "multi-user.target" ];
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ];
-      environment = lib.mkMerge [
-        { CONTINUWUITY_CONFIG = configFile; }
-        cfg.extraEnvironment
-      ];
+      environment.CONTINUWUITY_CONFIG = configFile;
       startLimitBurst = 5;
       startLimitIntervalSec = 60;
       serviceConfig = {
