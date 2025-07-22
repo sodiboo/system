@@ -82,11 +82,10 @@
               path: conf:
               conf
               // {
-                extraConfig =
-                  ''
-                    rewrite ^${lib.escapeRegex (lib.removeSuffix "/" path)}(.+)$ $1 break;
-                  ''
-                  + conf.extraConfig or "";
+                extraConfig = ''
+                  rewrite ^${lib.escapeRegex (lib.removeSuffix "/" path)}(.+)$ $1 break;
+                ''
+                + conf.extraConfig or "";
               }
             );
 

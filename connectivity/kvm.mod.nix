@@ -12,7 +12,8 @@ let
           enable = true;
           settings = {
             inherit port;
-          } // hosts;
+          }
+          // hosts;
         };
       };
     };

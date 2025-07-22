@@ -12,14 +12,16 @@ let
           networking.hostName = name;
           nixpkgs.hostPlatform = system;
         }
-      ] ++ additional;
+      ]
+      ++ additional;
     };
   };
 
   filesystem = fsType: path: device: options: {
     fileSystems.${path} = {
       inherit device fsType;
-    } // (if options == null then { } else { inherit options; });
+    }
+    // (if options == null then { } else { inherit options; });
   };
 
   fs.mergerfs = filesystem "fuse.mergerfs";
