@@ -1,8 +1,8 @@
 {
   oxygen = {
     imports = [
-      ./continuwuity/module.nix
-      ./sharkey/module.nix
+      ./continuwuity/continuwuity.nix
+      ./sharkey/sharkey.nix
     ];
     config.nixpkgs.overlays = [
       (final: prev: {
