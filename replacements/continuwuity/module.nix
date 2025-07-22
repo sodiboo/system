@@ -101,6 +101,7 @@ in
         RestrictRealtime = true;
         RestrictSUIDSGID = true;
         SystemCallArchitectures = "native";
+        CapabilityBoundingSet = "";
         SystemCallFilter = [
           "@system-service @resources"
           "~@clock @debug @module @mount @reboot @swap @cpu-emulation @obsolete @timer @chown @setuid @privileged @keyring @ipc"
