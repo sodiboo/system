@@ -81,6 +81,7 @@ in
           imports = [ cfg.socket ];
           config = {
             enable = cfg.enable;
+            requiredBy = [ config.systemd.services."socket-proxy-${name}".name ];
             socketConfig = {
               # this "polling" only applies *before* the connection is established.
               # in particular, if a service doesn't create its socket right away (it's `ready` too early)
@@ -106,7 +107,6 @@ in
             in
             {
               enable = cfg.enable;
-              requires = [ config.systemd.sockets."socket-proxy-${name}".name ];
               unitConfig = lib.mkIf is-fs-upstream {
                 ConditionPathExists = [ cfg.upstream ];
                 AssertPathIsDirectory = [ "!${cfg.upstream}" ];
