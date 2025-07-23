@@ -158,12 +158,8 @@ in
                   SystemCallArchitectures = "native";
                   SystemCallFilter = [
                     "@system-service"
-                    "~@sync"
-                    "~@chown"
-                    "~@setuid"
-                    "~@keyring"
-                    "~@resources"
-                    "~@privileged"
+                    "~@privileged @resources"
+                    "~@chown @setuid @keyring"
                   ];
 
                   UMask = "0777";
