@@ -79,17 +79,19 @@ in
         { ... }:
         {
           imports = [ cfg.socket ];
-          config.enable = cfg.enable;
-          config.socketConfig = {
-            # this "polling" only applies *before* the connection is established.
-            # in particular, if a service doesn't create its socket right away (it's `ready` too early)
-            # then, the socket proxy will not initialize (`ConditionPathExists`) and that connection will be dropped
-            PollLimitBurst = 1;
-            PollLimitIntervalSec = 3;
+          config = {
+            enable = cfg.enable;
+            socketConfig = {
+              # this "polling" only applies *before* the connection is established.
+              # in particular, if a service doesn't create its socket right away (it's `ready` too early)
+              # then, the socket proxy will not initialize (`ConditionPathExists`) and that connection will be dropped
+              PollLimitBurst = 1;
+              PollLimitIntervalSec = 3;
 
-            # additionally, when it fails that way, we want to ensure the remaining "pending" connections do not *immediately* flood the trigger limit.
-            # as such, we flush them and just disconnect those clients.
-            FlushPending = true;
+              # additionally, when it fails that way, we want to ensure the remaining "pending" connections do not *immediately* flood the trigger limit.
+              # as such, we flush them and just disconnect those clients.
+              FlushPending = true;
+            };
           };
         };
       services."socket-proxy-${name}" =
