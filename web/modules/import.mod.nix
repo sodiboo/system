@@ -1,5 +1,5 @@
 {
-  oxygen = {
+  universal = {
     imports = [
       ./continuwuity/continuwuity.nix
       ./sharkey/sharkey.nix
