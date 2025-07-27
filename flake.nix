@@ -14,23 +14,29 @@
     flashrom-meson.flake = false;
 
     nix-monitored.url = "github:ners/nix-monitored";
+    nix-monitored.inputs.nixpkgs.follows = "nixpkgs";
 
     sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     stylix.url = "github:nix-community/stylix";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
 
     nari.url = "github:sodiboo/nixos-razer-nari";
 
     niri.url = "github:sodiboo/niri-flake";
 
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
+    nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
 
     lan-mouse.url = "github:feschber/lan-mouse";
+    lan-mouse.inputs.nixpkgs.follows = "nixpkgs";
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
 
@@ -43,6 +49,7 @@
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     nil.url = "github:oxalica/nil";
+    nil.inputs.nixpkgs.follows = "nixpkgs";
 
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -51,6 +58,7 @@
     firefox-addons.inputs.nixpkgs.follows = "nixpkgs";
 
     swww.url = "github:LGFae/swww";
+    swww.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
