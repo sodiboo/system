@@ -129,16 +129,6 @@ in
   (config "iridium" "x86_64-linux" [
     (cpu "intel")
     (fs.ext4 "/" "/dev/disk/by-uuid/8fa79a3b-aebf-4be7-8698-f59f3db0752f" null)
-    (fs.btrfs "/mnt/pool/1" "/dev/disk/by-uuid/631d0802-ec2c-4388-a7e1-1e6da8018cc9" [ "nofail" ])
-    (fs.btrfs "/mnt/pool/2" "/dev/disk/by-uuid/be2ecc7e-46fd-441a-b479-5f97128049b3" [ "nofail" ])
-    (fs.btrfs "/mnt/pool/3" "/dev/disk/by-uuid/5711a16b-f3fb-48f2-908a-227fcb0bf1d4" [ "nofail" ])
-    (fs.btrfs "/mnt/pool/4" "/dev/disk/by-uuid/775cb21e-235d-47ba-9e5e-71a55e15fc6a" [ "nofail" ])
-    (fs.mergerfs "/storage" "/mnt/pool/*" [
-      "cache.files=partial"
-      "dropcacheonclose=true"
-      "category.create=mfs"
-      "nofail"
-    ])
     {
       boot.loader.grub.enable = true;
       boot.loader.grub.device = "/dev/disk/by-id/wwn-0x5000c5004f368909";
