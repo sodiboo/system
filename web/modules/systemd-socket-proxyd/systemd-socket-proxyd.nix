@@ -119,14 +119,15 @@ in
             enable = cfg.enable;
             requiredBy = [ config.systemd.services."socket-proxy-${name}".name ];
             socketConfig = {
-              # this "polling" only applies *before* the connection is established.
-              # in particular, if a service doesn't create its socket right away (it's `ready` too early)
-              # then, the socket proxy will not initialize (`ConditionPathExists`) and that connection will be dropped
+              # if the upstream service is ready too early, its socket may not exist yet
+              # and therefore the socket proxy startup is skipped.
+              # but, that's a "cheap" fail; it shouldn't prevent triggering the socket proxy ever again.
+              TriggerLimitBurst = 0;
+
+              # additionally, let's not spam the logs: when inactive, poll once every 3 seconds.
               PollLimitBurst = 1;
               PollLimitIntervalSec = 3;
-
-              # additionally, when it fails that way, we want to ensure the remaining "pending" connections do not *immediately* flood the trigger limit.
-              # as such, we flush them and just disconnect those clients.
+              # and after one is skipped, flush the rest.
               FlushPending = true;
             };
           };
