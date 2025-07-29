@@ -36,7 +36,7 @@
           server_name = "gaysex.cloud";
           max_request_size = 1024 * 1024 * 1024;
           unix_socket_path = "/run/continuwuity/socket";
-          unix_socket_perms = 660;
+          unix_socket_perms = 666;
         };
       };
     };

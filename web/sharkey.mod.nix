@@ -37,7 +37,7 @@
           url = "https://gaysex.cloud/";
 
           socket = "/run/sharkey/socket";
-          chmodSocket = "600";
+          chmodSocket = "666";
 
           fulltextSearch.provider = "sqlLike";
 

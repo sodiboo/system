@@ -43,6 +43,24 @@ let
 
           If connecting to an internet socket, or an abstract socket, the socket proxy service will run in the host namespace by default.
           You can use `service.serviceConfig` to configure a private namespace for the service if needed.
+
+          If connecting to a filesystem socket, the socket file must be accessible to all users (chmod 666).
+          The containing directory can have more restrictive permissions, as the socket file is bind-mounted by systemd.
+        '';
+      };
+
+      bypass-file-permissions = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          If `upstream` is a file system socket, it is subject to file permissions.
+          By default, we assume that it is accessible (chmod 666).
+
+          If the socket has more restrictive permissions than chmod 666, you can set this option to `true`.
+          This grants the socket proxy service the `CAP_DAC_OVERRIDE` ambient capability,
+          allowing it to connect to the socket regardless of its permissions.
+
+          This is not recommended, as it grants a powerful capability, but it can be useful in certain setups.
         '';
       };
 
@@ -72,6 +90,24 @@ in
       You can define the addresses/paths they listens on in `socket.listenStreams`.
     '';
   };
+
+  config.assertions = builtins.concatLists (
+    lib.mapAttrsToList (
+      name: cfg:
+      let
+        is-fs-upstream = lib.strings.hasPrefix "/" cfg.upstream;
+      in
+      [
+        {
+          assertion = cfg.bypass-file-permissions -> is-fs-upstream;
+          message = ''
+            systemd-socket-proxyd.${name}.bypass-file-permissions is enabled, but the upstream socket is not a filesystem socket.
+            upstream = ${cfg.upstream}
+          '';
+        }
+      ]
+    ) config.systemd-socket-proxyd
+  );
 
   config.systemd = lib.mkMerge (
     lib.mapAttrsToList (name: cfg: {
@@ -170,12 +206,6 @@ in
                 (lib.mkIf is-fs-upstream {
                   RestrictAddressFamilies = "AF_UNIX";
 
-                  # `systemd-socket-proxyd` needs to be able to read/write the upstream socket.
-                  # this is desirable, because one of the primary use cases of this service
-                  # is for fine-grained permissions management (many listen -> one upstream, with varying perms)
-                  AmbientCapabilities = [ "CAP_DAC_OVERRIDE" ];
-                  CapabilityBoundingSet = [ "CAP_DAC_OVERRIDE" ];
-
                   # systemd recommends *not* using `BindPaths` in a `DynamicUser`.
                   # in particular, you can potentially leak the dynamic uid through this.
                   # however, systemd-socket-proxyd never creates or chmods anything, so it's a non-issue.
@@ -185,6 +215,16 @@ in
                   # in an fs socket (but not an abstract socket),
                   # we can always isolate the networking namespace
                   PrivateNetwork = true;
+                })
+                (lib.mkIf (is-fs-upstream && !cfg.bypass-file-permissions) {
+                  PrivateUsers = true;
+                })
+                (lib.mkIf (is-fs-upstream && cfg.bypass-file-permissions) {
+                  # cannot set `PrivateUsers=true` here because `CAP_DAC_OVERRIDE` allows
+                  # access to files owned by any user, but not files with an unknown owner
+
+                  AmbientCapabilities = [ "CAP_DAC_OVERRIDE" ];
+                  CapabilityBoundingSet = [ "CAP_DAC_OVERRIDE" ];
                 })
                 (lib.mkIf is-abstract-upstream {
                   RestrictAddressFamilies = "AF_UNIX";
