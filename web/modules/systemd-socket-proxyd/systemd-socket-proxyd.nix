@@ -39,9 +39,9 @@ let
           Can be one of the following:
           - starting with `/`: a file system socket in the `AF_UNIX` family
           - starting with `@`: an abstract socket in the `AF_UNIX` family
-          - a network address in the format `host:port` (TCP connection)
+          - a internet address in the format `host:port` (TCP endpoint)
 
-          If connecting to a network socket (or an abstract socket), the socket proxy service will run in the host namespace by default.
+          If connecting to an internet socket, or an abstract socket, the socket proxy service will run in the host namespace by default.
           You can use `service.serviceConfig` to configure a private namespace for the service if needed.
         '';
       };
