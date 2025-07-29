@@ -6,6 +6,8 @@
       ...
     }:
     {
+      reverse-proxy."gaysex.cloud".locations."/.well-known/matrix".socket =
+        "/run/nginx-socket-proxy/continuwuity";
       reverse-proxy."gaysex.cloud".locations."/_matrix".socket = "/run/nginx-socket-proxy/continuwuity";
       reverse-proxy."gaysex.cloud".extra-public-ports = [ 8448 ];
       networking.firewall.allowedTCPPorts = [ 8448 ];
@@ -37,6 +39,11 @@
           max_request_size = 1024 * 1024 * 1024;
           unix_socket_path = "/run/continuwuity/socket";
           unix_socket_perms = 666;
+
+          well_known = {
+            client = "https://gaysex.cloud";
+            server = "gaysex.cloud:443";
+          };
         };
       };
     };
