@@ -298,7 +298,7 @@ in
         systemd.services.sharkey.after = [ "meilisearch.service" ];
         services.meilisearch = {
           enable = true;
-          environment = "production";
+          settings.env = lib.mkDefault "production";
         };
         services.sharkey.settings = {
           fulltextSearch.provider = lib.mkDefault "meilisearch";
