@@ -46,8 +46,6 @@
     picocss.url = "github:picocss/pico";
     picocss.flake = false;
 
-    nixpkgs-with-meilisearch-secrets.url = "github:sodiboo/nixpkgs/meilisearch-secrets";
-
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 

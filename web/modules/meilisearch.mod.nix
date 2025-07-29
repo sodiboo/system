@@ -1,8 +1,4 @@
 {
-  nixpkgs-with-meilisearch-secrets,
-  ...
-}:
-{
   universal =
     {
       modulesPath,
@@ -12,12 +8,7 @@
       ...
     }:
     {
-      disabledModules = [ "${modulesPath}/services/search/meilisearch.nix" ];
-      imports = [ "${nixpkgs-with-meilisearch-secrets}/nixos/modules/services/search/meilisearch.nix" ];
-
       config = {
-        documentation.nixos.checkRedirects = false;
-
         services.meilisearch.package = pkgs.meilisearch;
 
         services.meilisearch.settings =

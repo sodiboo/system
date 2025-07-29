@@ -578,22 +578,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-with-meilisearch-secrets": {
-      "locked": {
-        "lastModified": 1752432125,
-        "narHash": "sha256-vXvajDJw+LMHBe0vNMLg9W3zyCLn2UW40hldlQSpqok=",
-        "owner": "sodiboo",
-        "repo": "nixpkgs",
-        "rev": "5a8660f10fd1d77c8f3a14cba3f755a28b37abe3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "sodiboo",
-        "ref": "meilisearch-secrets",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1753429684,
@@ -666,7 +650,6 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-wayland": "nixpkgs-wayland",
-        "nixpkgs-with-meilisearch-secrets": "nixpkgs-with-meilisearch-secrets",
         "picocss": "picocss",
         "rust-overlay": "rust-overlay_2",
         "sodipkgs-simutrans": "sodipkgs-simutrans",
