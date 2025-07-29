@@ -22,6 +22,7 @@ pkgs.mkShell {
   packages = [
     rust-nightly-toolchain
     pkgs.just
-    flake.formatter.${system}
+    pkgs.nixfmt
+    pkgs.nixfmt-tree
   ];
 }
