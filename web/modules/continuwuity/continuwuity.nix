@@ -111,7 +111,7 @@ in
         StateDirectory = "continuwuity";
         StateDirectoryMode = "0700";
         RuntimeDirectory = "continuwuity";
-        RuntimeDirectoryMode = "0750";
+        RuntimeDirectoryMode = "0700";
 
         ExecStart = lib.getExe cfg.package;
         Restart = "on-failure";
