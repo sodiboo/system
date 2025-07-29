@@ -179,6 +179,7 @@ in
                   # systemd recommends *not* using `BindPaths` in a `DynamicUser`.
                   # in particular, you can potentially leak the dynamic uid through this.
                   # however, systemd-socket-proxyd never creates or chmods anything, so it's a non-issue.
+                  # and, it also doesn't proxy ancillary data (fds), so nothing can leak through that either.
                   BindPaths = [ "${cfg.upstream}:/upstream" ];
 
                   # in an fs socket (but not an abstract socket),
