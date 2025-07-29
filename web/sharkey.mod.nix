@@ -79,8 +79,5 @@
         max_parallel_workers = "8";
         max_parallel_maintenance_workers = "4";
       };
-
-      sops.secrets.meili-master-key = { };
-      services.meilisearch.masterKeyFile = config.sops.secrets.meili-master-key.path;
     };
 }
