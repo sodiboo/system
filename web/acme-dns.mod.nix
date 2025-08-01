@@ -18,6 +18,8 @@
             tls = "none";
             use_header = true;
             header_name = "X-Forwarded-For";
+
+            disable_registration = true;
           };
 
           general = {
