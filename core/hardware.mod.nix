@@ -163,28 +163,36 @@ in
         "vmw_pvscsi"
       ];
       boot.initrd.kernelModules = [ "nvme" ];
-
-      networking =
-        let
+    }
+    (
+      { lib, config, ... }:
+      {
+        options.public-ipv4 = lib.mkOption {
+          type = lib.types.str;
+        };
+        options.public-ipv6 = lib.mkOption {
+          type = lib.types.str;
+        };
+        config = {
           # These should match `vps.sodi.boo` DNS records.
           # All other domains are (flattened) CNAMEs to `vps.sodi.boo`.
+          public-ipv4 = "85.190.241.69";
+          public-ipv6 = "2a02:c202:2189:7245::1";
 
-          oxygen-ipv4 = "85.190.241.69"; # IPv4 is unused here,
-          oxygen-ipv6 = "2a02:c202:2189:7245::1"; # But DHCP doesn't give me IPv6.
+          networking = {
 
-        in
-        {
-
-          enableIPv6 = true;
-          defaultGateway6.address = "fe80::1";
-          defaultGateway6.interface = "ens18";
-          interfaces.ens18.ipv6.addresses = [
-            {
-              address = oxygen-ipv6;
-              prefixLength = 64;
-            }
-          ];
+            enableIPv6 = true;
+            defaultGateway6.address = "fe80::1";
+            defaultGateway6.interface = "ens18";
+            interfaces.ens18.ipv6.addresses = [
+              {
+                address = config.public-ipv6;
+                prefixLength = 64;
+              }
+            ];
+          };
         };
-    }
+      }
+    )
   ])
 ]
