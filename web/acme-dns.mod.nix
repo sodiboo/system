@@ -33,6 +33,7 @@
             records = [
               "${domain}. A ${config.public-ipv4}"
               "${domain}. AAAA ${config.public-ipv6}"
+              "_acme-challenge.${domain}. CNAME acme.sodi.boo."
               "${domain}. NS ${domain}."
             ];
           };
