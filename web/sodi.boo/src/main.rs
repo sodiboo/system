@@ -7,8 +7,11 @@ use chrono::DateTime;
 use const_format::concatcp;
 use webpage::HTML;
 
+// should not be a URL but too late to change lol
+const BLOG_ID: &str = "https://sodi.boo/blog";
+
 const BASE_URL: &str = "https://sodi.boo";
-const BLOG: &str = "/blog";
+const BLOG: &str = "/blog/";
 const FEED: &str = "/blog/feed.atom";
 
 const HOME: &str = BASE_URL;
@@ -27,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut feed = FeedBuilder::default();
 
     feed.title("sodiboo's infodumping garden")
-        .id(BLOG_URL)
+        .id(BLOG_ID)
         .generator(Some(
             GeneratorBuilder::default()
                 .value("custom; written in Rust; based on opengraph attributes")

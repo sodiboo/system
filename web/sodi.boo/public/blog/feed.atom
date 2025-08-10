@@ -7,7 +7,7 @@
     <uri>https://sodi.boo</uri>
   </author>
   <generator>custom; written in Rust; based on opengraph attributes</generator>
-  <link href="https://sodi.boo/blog" rel="alternate" type="text/html"/>
+  <link href="https://sodi.boo/blog/" rel="alternate" type="text/html"/>
   <link href="https://sodi.boo/blog/feed.atom" rel="self" type="application/atom+xml"/>
   <entry>
     <title>nix formatting is a fucking joke.</title>
