@@ -8,6 +8,8 @@
     {
       reverse-proxy."gaysex.cloud".locations."/".socket = "/run/nginx-socket-proxy/sharkey";
       systemd-socket-proxyd.sharkey = {
+        connections-max = 4096;
+
         socket = {
           requiredBy = [ "nginx.service" ];
           listenStreams = [
