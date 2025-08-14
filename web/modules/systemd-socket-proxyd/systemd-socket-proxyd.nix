@@ -154,6 +154,16 @@ in
 
               serviceConfig = lib.mkMerge [
                 {
+                  # systemd-socket-proxyd is prone to exceeding the nofile soft limit.
+                  # increase it to the default hard limit.
+                  LimitNOFILE = 524288;
+                  # systemd also has a big scary warning "don't use `LimitNOFILE=`" because it breaks `select()`.
+                  # so, let's deny those syscalls, just in case. (systemd-socket-proxyd doesn't use them, anyways)
+                  SystemCallFilter = lib.mkAfter [
+                    "~select pselect6 pselect6_time64 _newselect"
+                  ];
+                }
+                {
                   Type = "notify";
                   ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd ${
                     lib.escapeShellArgs [
