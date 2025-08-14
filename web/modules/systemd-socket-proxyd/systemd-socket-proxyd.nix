@@ -148,6 +148,10 @@ in
                 ConditionPathExists = [ cfg.upstream ];
                 AssertPathIsDirectory = [ "!${cfg.upstream}" ];
               };
+
+              confinement.enable = true;
+              confinement.mode = "chroot-only";
+
               serviceConfig = lib.mkMerge [
                 {
                   Type = "notify";
@@ -160,15 +164,6 @@ in
                       (if is-fs-upstream then "/upstream" else cfg.upstream)
                     ]
                   }";
-
-                  # This service needs access to the upstream socket file, and nothing else.
-                  # So, let's put it in "chroot jail", in its own runtime directory.
-                  # I would use something like `/var/empty` for this,
-                  # but its permissions are too restrictive; so a runtime dir will do.
-                  RuntimeDirectory = "socket-proxy/${name}";
-                  RuntimeDirectoryMode = "0700";
-                  RootDirectory = "%t/socket-proxy/${name}";
-                  BindReadOnlyPaths = [ "/nix/store" ];
 
                   ProtectSystem = "strict";
                   ProtectHome = true;
