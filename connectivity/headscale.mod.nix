@@ -2,10 +2,7 @@
   oxygen =
     { config, ... }:
     {
-      reverse-proxy."vpn.sodi.boo".locations = {
-        "/".localhost.port = config.services.headscale.port;
-        "/metrics".url = "http://${config.services.headscale.settings.metrics_listen_addr}/metrics";
-      };
+      reverse-proxy."vpn.sodi.boo".locations."/".localhost.port = config.services.headscale.port;
 
       services.headscale = {
         enable = true;
