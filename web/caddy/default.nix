@@ -109,16 +109,17 @@ in
         after = [ "network.target" ];
 
         preStart = ''
-          ${substitute-config} > $RUNTIME_DIRECTORY/caddy.json
-          chmod 0600 $RUNTIME_DIRECTORY/caddy.json
+          ${substitute-config} > /run/caddy/caddy.json
         '';
 
         # Caddy needs `HOME` to be set or it throws warnings.
         environment.HOME = "%S/caddy";
 
+        confinement.enable = true;
+
         serviceConfig = {
           Type = "notify";
-          ExecStart = "${lib.getExe caddy-runner} run --config \${RUNTIME_DIRECTORY}/caddy.json";
+          ExecStart = "${lib.getExe caddy-runner} run --config /run/caddy/caddy.json";
 
           LoadCredential = builtins.map ({ identifier, path }: "${identifier}:${path}") credentials;
 
@@ -135,9 +136,43 @@ in
           RestartPreventExitStatus = 1;
           RestartSec = "5s";
 
-          NoNewPrivileges = true;
-          PrivateDevices = true;
+          ProtectSystem = "strict";
           ProtectHome = true;
+          ProtectClock = true;
+          ProtectHostname = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          ProtectKernelTunables = true;
+          ProtectControlGroups = true;
+          PrivateTmp = true;
+          PrivateMounts = true;
+          PrivateUsers = true;
+          PrivateDevices = true;
+          RestrictRealtime = true;
+          RestrictNamespaces = true;
+          RestrictSUIDSGID = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+
+          ProcSubset = "pid";
+          ProtectProc = "invisible";
+
+          NoNewPrivileges = true;
+
+          RestrictAddressFamilies = [
+            "AF_UNIX"
+            "AF_INET"
+            "AF_INET6"
+          ];
+
+          CapabilityBoundingSet = "";
+          SystemCallArchitectures = "native";
+          SystemCallFilter = [
+            "@system-service"
+            "~@privileged @resources"
+          ];
+
+          UMask = "0077";
         };
       };
     };

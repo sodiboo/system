@@ -128,7 +128,7 @@
           '';
 
           jq-incantation = pkgs.writeShellScript "substitute-caddy-secrets" ''
-            cat ${template} | ${lib.getExe pkgs.jq} ${
+            ${lib.getExe' pkgs.coreutils "cat"} ${template} | ${lib.getExe pkgs.jq} ${
               builtins.concatStringsSep " " (
                 [
                   "-f"
