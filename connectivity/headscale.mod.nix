@@ -4,6 +4,18 @@
     {
       reverse-proxy."vpn.sodi.boo".locations."/".localhost.port = config.services.headscale.port;
 
+      caddy.sites."vpn.sodi.boo".routes = [
+        {
+          terminal = true;
+          handle = [
+            {
+              handler = "reverse_proxy";
+              upstreams = [ { dial = "127.0.0.1:${toString config.services.headscale.port}"; } ];
+            }
+          ];
+        }
+      ];
+
       services.headscale = {
         enable = true;
         port = 3004;

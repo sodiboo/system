@@ -23,6 +23,20 @@
   oxygen.reverse-proxy."cache.sodi.boo".locations."/".vpn.iridium.port =
     systems.iridium.services.nix-serve.port;
 
+  oxygen.caddy.sites."cache.sodi.boo".routes = [
+    {
+      terminal = true;
+      handle = [
+        {
+          handler = "reverse_proxy";
+          upstreams = [
+            { dial = "${systems.iridium.vpn.hostname}:${toString systems.iridium.services.nix-serve.port}"; }
+          ];
+        }
+      ];
+    }
+  ];
+
   iridium =
     {
       config,

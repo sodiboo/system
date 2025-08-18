@@ -1,0 +1,13 @@
+body {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+hr {
+    margin: 5%;
+}
+
+hgroup,
+.center {
+    text-align: center;
+}

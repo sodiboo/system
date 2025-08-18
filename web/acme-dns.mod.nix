@@ -8,6 +8,18 @@
     in
     {
       reverse-proxy.${domain}.locations."/".localhost.port = api-port;
+
+      caddy.sites.${domain}.routes = [
+        {
+          handle = [
+            {
+              handler = "reverse_proxy";
+              upstreams = [ { dial = "127.0.0.1:${config.services.acme-dns.settings.api.port}"; } ];
+            }
+          ];
+        }
+      ];
+
       services.acme-dns = {
         enable = true;
 
