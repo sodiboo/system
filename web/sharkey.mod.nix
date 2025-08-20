@@ -16,8 +16,8 @@
             "/run/nginx-socket-proxy/sharkey"
           ];
           socketConfig = {
-            SocketUser = config.systemd.services.nginx.serviceConfig.User;
-            SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
+            # SocketUser = config.systemd.services.nginx.serviceConfig.User;
+            # SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
             SocketMode = "0600";
           };
         };

@@ -28,11 +28,11 @@
       config = {
         networking.firewall = {
           allowedTCPPorts = [
-            8080
-            8443
+            80
+            443
           ];
           allowedUDPPorts = [
-            8443
+            443
           ];
         };
 
@@ -48,12 +48,12 @@
           };
 
           ports = {
-            http = 8080;
-            https = 8443;
+            http = 80;
+            https = 443;
           };
 
           ports-dgram = {
-            quic = 8443;
+            quic = 443;
           };
 
           settings =
@@ -91,8 +91,7 @@
                         handler = "static_response";
                         status_code = "308"; # permanent redirect
 
-                        # messy. i don't like having to specify the port twice.
-                        headers.Location = [ "https://{http.request.host}:8443{http.request.orig_uri}" ];
+                        headers.Location = [ "https://{http.request.host}{http.request.orig_uri}" ];
                       }
                     ];
                   }

@@ -57,25 +57,12 @@
 
       caddy.sites."sodi.gay".routes = [
         {
-          # i think https://sodi.boo:/ is not technically a valid URL
-          # so, omit the colon if the port is empty.
-          match = [ { vars."{http.request.port}" = [ "" ]; } ];
           terminal = true;
           handle = [
             {
               handler = "static_response";
               status_code = "308";
               headers.Location = [ "https://sodi.boo{http.request.orig_uri}" ];
-            }
-          ];
-        }
-        {
-          terminal = true;
-          handle = [
-            {
-              handler = "static_response";
-              status_code = "308";
-              headers.Location = [ "https://sodi.boo:{http.request.port}{http.request.orig_uri}" ];
             }
           ];
         }

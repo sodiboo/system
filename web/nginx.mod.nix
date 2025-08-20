@@ -21,15 +21,8 @@
       static-root = if rapid-testing then "/etc/nixos/nginx/result" else "${generated-site}";
     in
     {
-      networking = {
-        firewall.enable = true;
-        firewall.allowedTCPPorts = [
-          80
-          443
-        ];
-      };
       services.nginx = {
-        enable = true;
+        enable = false;
 
         # !!! If you are referencing my config for Sharkey and/or Matrix, !!!
         # !!!               do not underestimate this line.               !!!

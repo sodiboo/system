@@ -19,8 +19,8 @@
             "/run/nginx-socket-proxy/continuwuity"
           ];
           socketConfig = {
-            SocketUser = config.systemd.services.nginx.serviceConfig.User;
-            SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
+            # SocketUser = config.systemd.services.nginx.serviceConfig.User;
+            # SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
             SocketMode = "0600";
           };
         };
