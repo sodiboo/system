@@ -118,6 +118,12 @@ in
         confinement.enable = true;
 
         serviceConfig = {
+          # IMPORTANT: need resolv.conf, or Go stdlib will try and (fail) to resolve DNS on localhost.
+          # DNS is *necessary* and not configurable in Caddy for things like communicating with ACME directory.
+          # and i only noticed this because i set `confinement.enable` last. i thought everything just worked. NO IT DIDN'T.
+          # lmao. ugh. horrible to debug.
+          BindReadOnlyPaths = ["/etc/resolv.conf"];
+
           Type = "notify";
           ExecStart = "${lib.getExe caddy-runner} run --config /run/caddy/caddy.json";
 
