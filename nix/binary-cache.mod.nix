@@ -96,4 +96,6 @@
 
   # sodium and iridium are on the same network, so let's not go through a hop to germany.
   sodium.personal-binary-cache-url = "http://iridium.lan:${toString systems.iridium.services.nix-serve.port}";
+  # oxygen is `cache.sodi.boo`. don't bring in the overhead of Caddy's reverse proxying.
+  oxygen.personal-binary-cache-url = "http://iridium.wg:${toString systems.iridium.services.nix-serve.port}";
 }
