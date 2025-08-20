@@ -30,7 +30,7 @@
         {
           handler = "reverse_proxy";
           upstreams = [
-            { dial = "${systems.iridium.vpn.hostname}:${toString systems.iridium.services.nix-serve.port}"; }
+            { dial = "${systems.iridium.vpn.ip-address}:${toString systems.iridium.services.nix-serve.port}"; }
           ];
         }
       ];
