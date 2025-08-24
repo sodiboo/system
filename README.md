@@ -43,7 +43,7 @@ niri doesn't work extremely well with a touch screen, so it's mostly a regular l
 
 This is a VPS with Contabo. It's their "VPS 1" with an external SSD, because that gives me more storage capcity than an NVMe drive and the performance difference likely won't ever matter to me. I installed NixOS on it using `nixos-infect`, because they charge for object storage if i want to upload a custom iso.
 
-It doesn't really have any unique hardware; it's just a qemu guest. See [`nginx.mod.nix`](./nginx.mod.nix) for a more complete overview of the stuff i host on it; nginx handles all communication with the outside world.
+It doesn't really have any unique hardware; it's just a qemu guest. See `/web/` for all the services that run mainly on this one.
 
 ### iridium
 

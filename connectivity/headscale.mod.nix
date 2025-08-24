@@ -2,8 +2,6 @@
   oxygen =
     { config, ... }:
     {
-      reverse-proxy."vpn.sodi.boo".locations."/".localhost.port = config.services.headscale.port;
-
       caddy.sites."vpn.sodi.boo".routes = [
         {
           terminal = true;

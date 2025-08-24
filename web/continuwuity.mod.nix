@@ -6,32 +6,6 @@
       ...
     }:
     {
-      reverse-proxy."gaysex.cloud".locations."/.well-known/matrix".socket =
-        "/run/nginx-socket-proxy/continuwuity";
-      reverse-proxy."gaysex.cloud".locations."/_matrix".socket = "/run/nginx-socket-proxy/continuwuity";
-      reverse-proxy."gaysex.cloud".extra-public-ports = [ 8448 ];
-      networking.firewall.allowedTCPPorts = [ 8448 ];
-
-      systemd-socket-proxyd.continuwuity = {
-        socket = {
-          requiredBy = [ "nginx.service" ];
-          listenStreams = [
-            "/run/nginx-socket-proxy/continuwuity"
-          ];
-          socketConfig = {
-            # SocketUser = config.systemd.services.nginx.serviceConfig.User;
-            # SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
-            SocketMode = "0600";
-          };
-        };
-
-        service = {
-          bindsTo = [ "continuwuity.service" ];
-          after = [ "continuwuity.service" ];
-        };
-        upstream = config.services.continuwuity.settings.global.unix_socket_path;
-      };
-
       # `lib.mkBefore` to ensure this route is ordered before sharkey
       caddy.sites."gaysex.cloud".routes = lib.mkBefore [
         {
@@ -98,7 +72,7 @@
         }
       ];
 
-      systemd-socket-proxyd.continuwuity-caddy = {
+      systemd-socket-proxyd.continuwuity = {
         socket = {
           requiredBy = [ "caddy.service" ];
           listenStreams = [ "@continuwuity" ];

@@ -7,8 +7,6 @@
       api-port = 5353;
     in
     {
-      reverse-proxy.${domain}.locations."/".localhost.port = api-port;
-
       caddy.sites.${domain}.routes = [
         {
           handle = [

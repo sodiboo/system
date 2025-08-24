@@ -6,29 +6,6 @@
       ...
     }:
     {
-      reverse-proxy."gaysex.cloud".locations."/".socket = "/run/nginx-socket-proxy/sharkey";
-      systemd-socket-proxyd.sharkey = {
-        connections-max = 4096;
-
-        socket = {
-          requiredBy = [ "nginx.service" ];
-          listenStreams = [
-            "/run/nginx-socket-proxy/sharkey"
-          ];
-          socketConfig = {
-            # SocketUser = config.systemd.services.nginx.serviceConfig.User;
-            # SocketGroup = config.systemd.services.nginx.serviceConfig.Group;
-            SocketMode = "0600";
-          };
-        };
-
-        service = {
-          bindsTo = [ "sharkey.service" ];
-          after = [ "sharkey.service" ];
-        };
-        upstream = config.services.sharkey.settings.socket;
-      };
-
       caddy.sites."gaysex.cloud".routes = [
         {
           terminal = true;
@@ -90,7 +67,7 @@
         }
       ];
 
-      systemd-socket-proxyd.sharkey-caddy = {
+      systemd-socket-proxyd.sharkey = {
         connections-max = 4096;
 
         socket = {
