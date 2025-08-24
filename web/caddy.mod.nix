@@ -121,11 +121,6 @@
                   }
                 ];
 
-                listener_wrappers = [
-                  { wrapper = "http_redirect"; }
-                  { wrapper = "tls"; }
-                ];
-
                 routes = [
                   { handle = [ default-encode ]; }
                 ]
