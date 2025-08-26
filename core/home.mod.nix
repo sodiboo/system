@@ -29,10 +29,13 @@
       };
 
       config = {
+        users.mutableUsers = false;
+        sops.secrets."user/sodiboo/password".neededForUsers = true;
         users.users.sodiboo = {
           isNormalUser = true;
           description = "sodiboo";
           extraGroups = [ "wheel" ];
+          hashedPasswordFile = config.sops.secrets."user/sodiboo/password".path;
         };
 
         home-manager.backupFileExtension = "bak";
