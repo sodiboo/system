@@ -69,6 +69,9 @@
         };
       };
 
+      systemd.network.enable = true;
+      networking.useNetworkd = true;
+
       fileSystems."/nix/persist".neededForBoot = true;
       environment.persistence."/nix/persist".enable = true;
     };
