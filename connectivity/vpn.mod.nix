@@ -79,11 +79,6 @@
             wireguard-vanity-keygen
           ];
           networking = {
-            nat = {
-              enable = true;
-              externalInterface = "eth0";
-              internalInterfaces = [ wg-interface ];
-            };
             firewall = {
               # always listen on the wireguard port on the external interfaces
               allowedUDPPorts = [ config.vpn.port ];
