@@ -118,6 +118,8 @@
               ) systems;
             };
           };
+
+          environment.persistence."/nix/persist".directories = [ "/var/lib/private/wgautomesh" ];
         };
     };
 

@@ -1,10 +1,15 @@
 { sops-nix, ... }:
 {
   universal =
-    { pkgs, ... }:
+    { pkgs, config, ... }:
     {
       imports = [ sops-nix.nixosModules.sops ];
-      sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      sops.age.sshKeyPaths =
+        if config.environment.persistence."/nix/persist".enable then
+          # secrets are decrypted *before* persistence kicks in
+          [ "/nix/persist/etc/ssh/ssh_host_ed25519_key" ]
+        else
+          [ "/etc/ssh/ssh_host_ed25519_key" ];
       sops.defaultSopsFormat = "yaml";
       environment.systemPackages = [ pkgs.sops ];
     };
