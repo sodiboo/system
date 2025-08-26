@@ -23,6 +23,7 @@
 # - oxygen needs a weird reverse proxy thing to connect to iridium (really, iridium needs to connect to oxygen, but oxygen acts like the client)
 # - nitrogen wants to connect to iridium, but can't always. so it connects to oxygen when iridium is unavailable, taking a performance hit
 {
+  carbon.vpn.public-key = "C+/Pr8YOCCoBFTHLtsoB+ILFdS6rs1Dw+XnIlNjXuAk=";
   iridium.vpn.public-key = "Ir+/fE0wl3Jf6w0QDVEsNFd0r+HCODKHTLb4FjV7GSg=";
   sodium.vpn.public-key = "Na+/Y9EMTF7+XNmRb5tGDB+uky44WQ/tAoDtkAgM7nc=";
   nitrogen.vpn.public-key = "N+/sIpsJatALo42N1tcU0O/Ps3CMzU6zuN+A7tGMWzo=";
@@ -100,7 +101,7 @@
             };
           };
 
-          sops.secrets.wireguard-private-key = {};
+          sops.secrets.wireguard-private-key = { };
           sops.secrets.wgautomesh-gossip-secret = { };
 
           services.wgautomesh = {

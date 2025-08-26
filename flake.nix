@@ -125,6 +125,7 @@
       elements = {
         # used as an identifier for ip addresses, etc.
         # and this set defines what systems are exported
+        carbon.id = 6;
         nitrogen.id = 7;
         oxygen.id = 8;
         sodium.id = 11;
