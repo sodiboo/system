@@ -1,6 +1,33 @@
 keys:
   - &personal age16ue82jtw3ugdypw7ytp64ynl50lnqhtc37azsw8c43rnxlem44qqpquulx
+  - &id_sodium ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExB5YOySRzfOx8RUZAcV8yh8SBwq5lAsQD1df8UfrHw sodiboo@sodium
+  - &id_nitrogen ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOgQnnx7CVs59yA2CBeO34FAIeEjsBs7wG4S4XnPsOyG sodiboo@nitrogen
+  # these are the host keys converted through `ssh-to-age`.
+  - &host_iridium age1r66sv7fj6hcnmqpwnhd3k3nnsuup6azkdyrfzfsfy48hzekwcakqrrnxn2
+  - &host_oxygen age1wnak6zapnd2lfgwvgz75an9lwx26p93wp2479t4lqedf0cd9jujs8c9nas
+  - &host_sodium age1p45etsvpz6d9hduj7rtup20zg2fllkvl03rac0phzshkk07385zqerdlhv
+  - &host_nitrogen age1vhew5jafg4nptyrtupjs0ly7ux2y6ft2e8khwaeg3g4lhdr33pjs2nnygj
 creation_rules:
+  - path_regex: secrets/iridium\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_iridium
+  - path_regex: secrets/oxygen\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_oxygen
+  - path_regex: secrets/sodium\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_sodium
+  - path_regex: secrets/nitrogen\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_nitrogen
   - path_regex: secrets.yaml$
     key_groups:
     - age:

@@ -105,7 +105,7 @@
             };
           };
 
-          sops.secrets.wireguard-private-key.key = "wireguard-private-keys/${config.networking.hostName}";
+          sops.secrets.wireguard-private-key = {};
           sops.secrets.wgautomesh-gossip-secret = { };
 
           services.wgautomesh = {

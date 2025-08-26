@@ -1,23 +1,30 @@
 { sops-nix, ... }:
 {
-  universal = {
-    imports = [ sops-nix.nixosModules.sops ];
-
-    config = {
-      sops.defaultSopsFile = ../secrets.yaml;
+  universal =
+    { pkgs, ... }:
+    {
+      imports = [ sops-nix.nixosModules.sops ];
       sops.defaultSopsFormat = "yaml";
-
-      # sync ~/.ssh/sops out-of-band
-      # ssh-to-age -private-key -i ~/.ssh/sops > ~/.config/sops/age/keys.txt
-      sops.age.keyFile = "/home/sodiboo/.config/sops/age/keys.txt";
-
-      home-shortcut =
-        { pkgs, ... }:
-        {
-          home.packages = with pkgs; [
-            sops
-          ];
-        };
+      environment.systemPackages = [ pkgs.sops ];
     };
+
+  iridium = {
+    sops.defaultSopsFile = ./secrets/iridium.yaml;
+    sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  oxygen = {
+    sops.defaultSopsFile = ./secrets/oxygen.yaml;
+    sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  sodium = {
+    sops.defaultSopsFile = ./secrets/sodium.yaml;
+    sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+  };
+
+  nitrogen = {
+    sops.defaultSopsFile = ./secrets/nitrogen.yaml;
+    sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
 }
