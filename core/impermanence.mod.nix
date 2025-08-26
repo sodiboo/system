@@ -28,5 +28,24 @@
         ];
         files = [ "/etc/machine-id" ];
       };
+
+      # /var/lib/private needs peculiar permissions, or systemd refuses outright.
+      systemd.tmpfiles.settings = lib.mkIf config.environment.persistence."/nix/persist".enable {
+        "00-var-lib-private" = {
+          # ephemeral parent of persistence mounts: create at boot
+          "/var/lib/private".d = {
+            user = "root";
+            group = "root";
+            mode = "0700";
+          };
+
+          # persistent backing directory: create or adjust
+          "/nix/persist/var/lib/private".d = {
+            user = "root";
+            group = "root";
+            mode = "0700";
+          };
+        };
+      };
     };
 }
