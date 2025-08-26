@@ -51,4 +51,10 @@
   iridium = {
     services.tailscale.extraSetFlags = [ "--advertise-exit-node" ];
   };
+
+  carbon =
+    { lib, ... }:
+    {
+      services.tailscale.enable = lib.mkForce false;
+    };
 }
