@@ -47,5 +47,12 @@
           };
         };
       };
+
+      home-shortcut =
+        { osConfig, ... }:
+        {
+          imports = [ impermanence.homeManagerModules.impermanence ];
+          home.persistence."/nix/persist".enable = osConfig.environment.persistence."/nix/persist".enable;
+        };
     };
 }
