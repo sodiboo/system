@@ -73,7 +73,7 @@
 
       config =
         let
-          wg-interface = "wg-infra";
+          wg-interface = "backbone";
         in
         lib.mkIf config.vpn.enable {
           environment.systemPackages = with pkgs; [
