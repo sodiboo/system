@@ -67,8 +67,7 @@
 
         port = lib.mkOption {
           type = lib.types.port;
-          # School network seems to block UDP ports above 28000?
-          default = 27462;
+          default = 51820;
         };
       };
 
