@@ -2,6 +2,8 @@
   systems,
   ...
 }:
+# NOTE: the following documentation is like 40% outdated. I will properly rewrite it eventually.
+
 # Some network topology here:
 # - My home network has a subnet of 192.168.86.0/24
 # - My private wireguard network has a subnet of 10.8.0.0/24
