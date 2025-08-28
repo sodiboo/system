@@ -4,6 +4,11 @@
     networking.useNetworkd = true;
   };
 
+  iridium = {
+    systemd.network.enable = true;
+    networking.useNetworkd = true;
+  };
+
   oxygen =
     { lib, config, ... }:
     {
