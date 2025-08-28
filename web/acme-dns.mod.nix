@@ -33,7 +33,10 @@
           };
 
           general = {
-            listen = "[::]:53";
+            # lmao . absolute hack. resolve DNS to public listen addr
+            # this prevents it from conflicting with systemd stub resolver, without hardcoding the public IP address.
+            # TODO: put this behind a real DNS server.
+            listen = "vps.sodi.boo:53";
             protocols = "both";
 
             domain = domain;
@@ -41,8 +44,9 @@
             nsadmin = zone-admin;
 
             records = [
-              "${domain}. A ${config.public-ipv4}"
-              "${domain}. AAAA ${config.public-ipv6}"
+              # but i do have to hardcode the IPs here though . i think. for now.
+              "${domain}. A 85.190.241.69"
+              "${domain}. AAAA 2a02:c202:2189:7245::1"
               "_acme-challenge.${domain}. CNAME acme.sodi.boo."
               "${domain}. NS ${domain}."
             ];

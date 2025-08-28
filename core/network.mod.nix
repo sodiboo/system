@@ -9,35 +9,35 @@
     networking.useNetworkd = true;
   };
 
-  oxygen =
-    { lib, config, ... }:
-    {
-      options.public-ipv4 = lib.mkOption {
-        type = lib.types.str;
-      };
-      options.public-ipv6 = lib.mkOption {
-        type = lib.types.str;
-      };
-      config = {
-        # These should match `vps.sodi.boo` DNS records.
-        # All other domains are (flattened) CNAMEs to `vps.sodi.boo`.
-        public-ipv4 = "85.190.241.69";
-        public-ipv6 = "2a02:c202:2189:7245::1";
+  oxygen = {
+    systemd.network.enable = true;
+    networking.useNetworkd = true;
 
-        networking = {
-
-          enableIPv6 = true;
-          defaultGateway6.address = "fe80::1";
-          defaultGateway6.interface = "ens18";
-          interfaces.ens18.ipv6.addresses = [
-            {
-              address = config.public-ipv6;
-              prefixLength = 64;
-            }
-          ];
-        };
-      };
+    # Contabo gives a /64 prefix, which requires manual configuration.
+    # Without this, i only get IPv4.
+    networking.defaultGateway6 = {
+      address = "fe80::1";
+      interface = "ens18";
     };
+    networking.interfaces.ens18.ipv6.addresses = [
+      {
+        address = "2a02:c202:2189:7245::1";
+        prefixLength = 64;
+      }
+    ];
+
+    # But configuring IPv6 breaks the IPv4 connectivity?
+    networking.defaultGateway = {
+      address = "85.190.241.1";
+      interface = "ens18";
+    };
+    networking.interfaces.ens18.ipv4.addresses = [
+      {
+        address = "85.190.241.69";
+        prefixLength = 24; # <-- That's not supposed to be a /24??? What the fuck. /32 breaks it.
+      }
+    ];
+  };
 
   nitrogen = {
     # should move to networkd eventually
