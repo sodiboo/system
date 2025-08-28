@@ -33,10 +33,7 @@
           };
 
           general = {
-            # lmao . absolute hack. resolve DNS to public listen addr
-            # this prevents it from conflicting with systemd stub resolver, without hardcoding the public IP address.
-            # TODO: put this behind a real DNS server.
-            listen = "vps.sodi.boo:53";
+            listen = "0.0.0.0:53";
             protocols = "both";
 
             domain = domain;
