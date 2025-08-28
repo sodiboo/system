@@ -4,7 +4,7 @@
     let
       domain = "acme.computers.gay";
       zone-admin = "acme.sodi.boo"; # this is an email address: "acme@sodi.boo"
-      api-port = 5353;
+      api-port = 5300;
     in
     {
       caddy.sites.${domain}.routes = [
