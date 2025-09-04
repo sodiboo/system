@@ -48,6 +48,7 @@
       # That's proxied through oxygen from nginx.
       services.nix-serve = {
         enable = true;
+        package = pkgs.nix-serve-ng;
         port = 5020;
         openFirewall = true;
         secretKeyFile = config.sops.secrets.binary-cache-secret.path;
