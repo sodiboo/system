@@ -304,6 +304,26 @@
                     ];
                     block-out-from = "screencast";
                   }
+                  {
+                    matches = [
+                      {
+                        app-id = "^signal$";
+                        title = "^Sharing screen$";
+                        # their window isn't floating when it's created? ugh
+                        # is-floating = true;
+                      }
+                    ];
+
+                    border.inactive.color = "red";
+
+                    open-focused = false;
+                    open-floating = true;
+                    default-floating-position = {
+                      relative-to = "bottom";
+                      x = 0;
+                      y = -60;
+                    };
+                  }
                 ];
 
               gestures.dnd-edge-view-scroll = {
