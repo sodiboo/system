@@ -1,4 +1,4 @@
-{ niri, swww, ... }:
+{ niri, ... }:
 {
   # enable the binary cache on all systems; useful for remote build
   universal.imports = [ niri.nixosModules.niri ];
