@@ -39,6 +39,22 @@
           "node.restore-default-targets" = false;
         };
       };
+
+      # It's discord. It's discord's Automatic Gain Control. That's the fucker.
+      # I turned it off. I think this works? It seems to respect that.
+      # But i don't EVER want to let this fuckass application touch my knobs.
+      services.pipewire.extraConfig.pipewire-pulse."51-STOP-FUCKING-WITH-MY-SHIT" = {
+        "pulse.rules" = [
+          {
+            "match" = [
+              { "application.process.binary" = "vesktop"; }
+            ];
+            "actions" = {
+              "quirks" = [ "block-source-volume" ];
+            };
+          }
+        ];
+      };
     }
   ];
 
