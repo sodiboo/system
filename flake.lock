@@ -402,26 +402,6 @@
         "type": "github"
       }
     },
-    "nil": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1754679101,
-        "narHash": "sha256-nFK2XhrDS5igmkDQWmyTcgiJsEr3KOcR31DaSy+Fy9s=",
-        "owner": "oxalica",
-        "repo": "nil",
-        "rev": "f80fe365cb441624d1608235e6e793e5dce47fb0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "nil",
-        "type": "github"
-      }
-    },
     "niri": {
       "inputs": {
         "niri-stable": "niri-stable",
@@ -648,7 +628,6 @@
         "impermanence": "impermanence",
         "lan-mouse": "lan-mouse",
         "nari": "nari",
-        "nil": "nil",
         "niri": "niri",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",

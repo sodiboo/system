@@ -1,11 +1,10 @@
-{ nil, ... }:
 {
   universal.home-shortcut =
     { pkgs, ... }:
     {
       home.packages = with pkgs; [
         cachix
-        nil.packages.x86_64-linux.nil
+        nil
         nurl
         nix-diff
         nix-output-monitor
