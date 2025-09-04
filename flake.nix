@@ -32,8 +32,6 @@
     vscode-server.url = "github:nix-community/nixos-vscode-server";
     vscode-server.inputs.nixpkgs.follows = "nixpkgs";
 
-    nari.url = "github:sodiboo/nixos-razer-nari";
-
     niri.url = "github:sodiboo/niri-flake";
 
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
