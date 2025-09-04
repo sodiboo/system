@@ -37,8 +37,8 @@
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
 
-    lan-mouse.url = "github:feschber/lan-mouse";
-    lan-mouse.inputs.nixpkgs.follows = "nixpkgs";
+    # lan-mouse.url = "github:feschber/lan-mouse";
+    # lan-mouse.inputs.nixpkgs.follows = "nixpkgs";
 
     sodipkgs-simutrans.url = "github:sodiboo/nixpkgs/simutrans";
 
