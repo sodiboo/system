@@ -1,8 +1,11 @@
 {
-  universal = {
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-  };
+  universal =
+    { pkgs, ... }:
+    {
+      nix.package = pkgs.lix;
+      nix.settings.experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+    };
 }
