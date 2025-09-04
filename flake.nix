@@ -20,9 +20,6 @@
     flashrom-meson.url = "github:roger/flashrom-meson-nix";
     flashrom-meson.flake = false;
 
-    nix-monitored.url = "github:ners/nix-monitored";
-    nix-monitored.inputs.nixpkgs.follows = "nixpkgs";
-
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
