@@ -70,7 +70,7 @@
             lib.makeBinPath (
               with pkgs;
               [
-                nix
+                config.nix.package
                 git
                 coreutils
               ]
