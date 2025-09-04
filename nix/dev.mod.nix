@@ -3,7 +3,6 @@
     { pkgs, ... }:
     {
       home.packages = with pkgs; [
-        cachix
         nil
         nurl
         nix-diff
