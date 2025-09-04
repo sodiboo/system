@@ -26,6 +26,19 @@
           "bluetooth.autoswitch-to-headset-profile" = false;
         };
       };
+
+      # Some apps fuck with settings that i don't want to persist.
+      # My whole audio setup should be configured statically.
+      # TODO: actually configure volumes (raw mic 60%, rnnoise 130%)
+      services.pipewire.wireplumber.extraConfig."51-stop-restoring-shit-you-cunt" = {
+        "wireplumber.settings" = {
+          "device.restore-profile" = false;
+          "device.restore-routes" = false;
+          "node.stream.restore-props" = false;
+          "node.stream.restore-target" = false;
+          "node.restore-default-targets" = false;
+        };
+      };
     }
   ];
 
