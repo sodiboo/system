@@ -32,7 +32,6 @@
 
           vlc
           mpv
-          stremio
         ];
       };
 
