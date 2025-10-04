@@ -298,16 +298,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1748267734,
-        "narHash": "sha256-il5MTwCdW1H8TUxKhNsVqUW+4oh9NapIVzGSIycXOp8=",
-        "owner": "nix-community",
+        "lastModified": 1757713729,
+        "narHash": "sha256-aVzQsu2Dm0QAmufkpLw3GJfF7duAgAdvVONJhpfZuqU=",
+        "owner": "sodiboo",
         "repo": "impermanence",
-        "rev": "a2f08d24271da9c2b676887ac094f15b0565b193",
+        "rev": "fdb3ee51cebfee96214f11f55356a591f1ec7e57",
         "type": "github"
       },
       "original": {
-        "owner": "nix-community",
-        "ref": "home-manager-v2",
+        "owner": "sodiboo",
         "repo": "impermanence",
         "type": "github"
       }

@@ -8,7 +8,9 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    impermanence.url = "github:nix-community/impermanence/home-manager-v2";
+    # https://github.com/nix-community/impermanence/pull/272#issuecomment-3176162704
+    # https://github.com/sodiboo/impermanence/commit/fdb3ee51cebfee96214f11f55356a591f1ec7e57
+    impermanence.url = "github:sodiboo/impermanence";
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
     impermanence.inputs.home-manager.follows = "home-manager";
 
