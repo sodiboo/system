@@ -38,9 +38,25 @@
       };
 
       networking.firewall.allowedUDPPorts = [ 3478 ];
+
+      services.tailscale = {
+        enable = true;
+        openFirewall = true;
+        useRoutingFeatures = "both";
+      };
     };
 
-  universal = {
+  iridium = {
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
+      useRoutingFeatures = "both";
+
+      extraSetFlags = [ "--advertise-exit-node" ];
+    };
+  };
+
+  nitrogen = {
     services.tailscale = {
       enable = true;
       openFirewall = true;
@@ -48,13 +64,13 @@
     };
   };
 
-  iridium = {
-    services.tailscale.extraSetFlags = [ "--advertise-exit-node" ];
+  sodium = {
+    services.tailscale = {
+      enable = true;
+      openFirewall = true;
+      useRoutingFeatures = "both";
+    };
   };
 
-  carbon =
-    { lib, ... }:
-    {
-      services.tailscale.enable = lib.mkForce false;
-    };
+  # this tailscale setup is deeprecated-ish? don't configure it on carbon and future hosts
 }
