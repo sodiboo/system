@@ -2,6 +2,9 @@
   universal =
     { config, ... }:
     {
+      systemd.network.enable = true;
+      networking.useNetworkd = true;
+
       services.resolved.enable = false;
       environment.etc."resolv.conf".text = ''
         ${builtins.concatStringsSep "\n" (map (ns: "nameserver ${ns}") config.networking.nameservers)}
@@ -16,20 +19,7 @@
       ];
     };
 
-  carbon = {
-    systemd.network.enable = true;
-    networking.useNetworkd = true;
-  };
-
-  iridium = {
-    systemd.network.enable = true;
-    networking.useNetworkd = true;
-  };
-
   oxygen = {
-    systemd.network.enable = true;
-    networking.useNetworkd = true;
-
     # Contabo gives a /64 prefix, which requires manual configuration.
     # Without this, i only get IPv4.
     networking.defaultGateway6 = {
@@ -56,14 +46,13 @@
     ];
   };
 
-  nitrogen = {
-    # should move to networkd eventually
-    networking.networkmanager.enable = true;
-    users.users.sodiboo.extraGroups = [ "networkmanager" ];
-  };
-
-  sodium = {
-    systemd.network.enable = true;
-    networking.useNetworkd = true;
-  };
+  nitrogen =
+    { lib, ... }:
+    {
+      systemd.network.enable = lib.mkForce false;
+      networking.useNetworkd = lib.mkForce false;
+      # should move to networkd eventually
+      networking.networkmanager.enable = true;
+      users.users.sodiboo.extraGroups = [ "networkmanager" ];
+    };
 }
