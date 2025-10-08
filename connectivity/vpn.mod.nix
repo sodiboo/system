@@ -43,7 +43,7 @@
     {
       options.vpn = {
         enable = lib.mkEnableOption "virtual private network" // {
-          default = true;
+          default = !config.boot.isContainer;
         };
 
         ip-address = lib.mkOption {

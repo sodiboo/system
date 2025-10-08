@@ -1,6 +1,6 @@
 # rebuild based on the justfile in this repo.
 {
-  universal =
+  physical =
     {
       pkgs,
       lib,

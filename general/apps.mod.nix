@@ -1,29 +1,27 @@
 inputs: {
-  universal.home-shortcut.imports = [
-    (
-      { pkgs, ... }:
-      {
-        home.packages = with pkgs; [
-          fastfetch
-          fm-go
-          dig
-          whois
-          libqalculate
-        ];
-
-        programs = {
-          micro.enable = true;
-
-          btop.enable = true;
-          btop.settings.theme_background = false;
-        };
-      }
-    )
-    inputs.vscode-server.homeModules.default
+  universal.home-shortcut =
+    { pkgs, ... }:
     {
-      services.vscode-server.enable = true;
-    }
-  ];
+      home.packages = with pkgs; [
+        fastfetch
+        fm-go
+        dig
+        whois
+        libqalculate
+      ];
+
+      programs = {
+        micro.enable = true;
+
+        btop.enable = true;
+        btop.settings.theme_background = false;
+      };
+    };
+
+  physical.home-shortcut = {
+    imports = [ inputs.vscode-server.homeModules.default ];
+    services.vscode-server.enable = true;
+  };
 
   personal.imports = [
     {

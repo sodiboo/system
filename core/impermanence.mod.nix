@@ -19,12 +19,6 @@
           "/var/log"
           "/var/lib/nixos"
           "/var/lib/systemd"
-          {
-            # this is where i keep a clone of this repo on each machine.
-            directory = "/etc/nixos";
-            user = "sodiboo";
-            group = "users";
-          }
         ];
         files = [ "/etc/machine-id" ];
       };
@@ -55,4 +49,13 @@
           home.persistence."/nix/persist".enable = osConfig.environment.persistence."/nix/persist".enable;
         };
     };
+
+  physical.environment.persistence."/nix/persist".directories = [
+    {
+      # this is where i keep a clone of this repo on each machine.
+      directory = "/etc/nixos";
+      user = "sodiboo";
+      group = "users";
+    }
+  ];
 }

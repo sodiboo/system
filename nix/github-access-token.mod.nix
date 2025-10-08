@@ -1,7 +1,7 @@
 # Nix ecosystem is centered around GitHub, but their unauthenticated rate limits are too low.
 # So, it is practically necessary to have a personal access token to comfortably use Nix.
 {
-  universal =
+  physical =
     { config, ... }:
     {
       # This token has no permissions, so it cannot do anything other than read public repositories.
