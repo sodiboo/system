@@ -24,7 +24,6 @@ let
     // (if options == null then { } else { inherit options; });
   };
 
-  fs.mergerfs = filesystem "fuse.mergerfs";
   fs.btrfs = filesystem "btrfs";
   fs.ntfs = filesystem "ntfs-3g";
   fs.ext4 = filesystem "ext4";
@@ -47,7 +46,6 @@ in
       ...
     }:
     {
-      environment.systemPackages = with pkgs; [ mergerfs ];
       hardware.enableRedistributableFirmware = true;
       networking.useDHCP = lib.mkDefault true;
     };
