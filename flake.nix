@@ -96,7 +96,10 @@
 
       params = inputs // {
         profiles = raw-configs;
-        systems = mapAttrs (const (system: system.config)) configs;
+        systems = mapAttrs (const (system: system.config)) configs // {
+          # ew what a hack. fix this
+          plutonium = configs.iridium.config.containers.plutonium.config;
+        };
       };
 
       # It is important to note, that when adding a new `.mod.nix` file, you need to run `git add` on the file.
@@ -123,6 +126,7 @@
         oxygen.id = 8;
         sodium.id = 11;
         iridium.id = 77;
+        plutonium.id = 94;
       };
 
       raw-configs = mapAttrs (const (

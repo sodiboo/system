@@ -4,6 +4,8 @@
   oxygen.imports = profiles.universal.modules ++ profiles.physical.modules;
   iridium.imports = profiles.universal.modules ++ profiles.physical.modules;
 
+  plutonium.imports = profiles.universal.modules;
+
   sodium.imports =
     profiles.universal.modules ++ profiles.physical.modules ++ profiles.personal.modules;
   nitrogen.imports =

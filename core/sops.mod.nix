@@ -17,6 +17,7 @@
   carbon.sops.defaultSopsFile = ./secrets/carbon.yaml;
   iridium.sops.defaultSopsFile = ./secrets/iridium.yaml;
   oxygen.sops.defaultSopsFile = ./secrets/oxygen.yaml;
+  plutonium.sops.defaultSopsFile = ./secrets/plutonium.yaml;
   sodium.sops.defaultSopsFile = ./secrets/sodium.yaml;
   nitrogen.sops.defaultSopsFile = ./secrets/nitrogen.yaml;
 }

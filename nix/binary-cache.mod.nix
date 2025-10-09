@@ -92,6 +92,9 @@
       personal-binary-cache-url = null;
     };
 
+  # plutonium inherently shares a nix store with iridium. so, likewise, also silly to try to substitute over network.
+  plutonium.personal-binary-cache-url = null;
+
   # sodium and iridium are on the same network, so let's not go through a hop to germany.
   sodium.personal-binary-cache-url = "http://iridium.wg:${toString systems.iridium.services.nix-serve.port}";
   # oxygen is `cache.sodi.boo`. don't bring in the overhead of Caddy's reverse proxying.

@@ -21,4 +21,11 @@
 
     environment.persistence."/nix/persist".files = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
+
+  plutonium =
+    { config, ... }:
+    {
+      services.openssh.openFirewall = false;
+      networking.firewall.interfaces.iridium.allowedTCPPorts = config.services.openssh.ports;
+    };
 }

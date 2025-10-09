@@ -4,6 +4,11 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOgQnnx7CVs59yA2CBeO34FAIeEjsBs7wG4S4XnPsOyG sodiboo@nitrogen"
   ];
 
+  plutonium.users.users.sodiboo.openssh.authorizedKeys.keys = [
+    # iridium can log into plutonium via `machinectl` anyways
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHmcomqG7rY6UJ7KFCR71+hlOkisAebZtGVfBz61THiy sodiboo@iridium"
+  ];
+
   personal.home-shortcut = {
     programs.ssh = {
       enable = true;

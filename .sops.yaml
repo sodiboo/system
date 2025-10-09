@@ -6,6 +6,7 @@ keys:
   - &host_carbon age188d0eg6p9ane8rk2v7msdl6vn2z7928q4keav0geufzw3ffq7dhs2y0380
   - &host_iridium age1r66sv7fj6hcnmqpwnhd3k3nnsuup6azkdyrfzfsfy48hzekwcakqrrnxn2
   - &host_oxygen age1wnak6zapnd2lfgwvgz75an9lwx26p93wp2479t4lqedf0cd9jujs8c9nas
+  - &host_plutonium age15ud008qkucv3xevke9a0unwzkfc9253m732neay0f4mppjrh4saql9933x
   - &host_sodium age1p45etsvpz6d9hduj7rtup20zg2fllkvl03rac0phzshkk07385zqerdlhv
   - &host_nitrogen age1vhew5jafg4nptyrtupjs0ly7ux2y6ft2e8khwaeg3g4lhdr33pjs2nnygj
 creation_rules:
@@ -24,6 +25,11 @@ creation_rules:
     - age:
       - *id_sodium
       - *host_oxygen
+  - path_regex: secrets/plutonium\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_plutonium
   - path_regex: secrets/sodium\.yaml$
     key_groups:
     - age:
