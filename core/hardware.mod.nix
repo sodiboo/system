@@ -106,6 +106,7 @@ in
     (fs.vfat "/boot" "/dev/disk/by-uuid/1202-D996" null)
     (swap "/dev/disk/by-uuid/310e4198-ae8a-44f2-ac58-9da6ea3dbcd7")
     {
+      boot.loader.systemd-boot.configurationLimit = 20;
       boot.initrd.availableKernelModules = [
         "xhci_pci"
         "nvme"
