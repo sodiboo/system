@@ -56,13 +56,13 @@
     };
   };
 
-  nitrogen = {
-    services.tailscale = {
-      enable = true;
-      openFirewall = true;
-      useRoutingFeatures = "both";
-    };
-  };
+  # nitrogen = {
+  #   services.tailscale = {
+  #     enable = true;
+  #     openFirewall = true;
+  #     useRoutingFeatures = "both";
+  #   };
+  # };
 
   sodium = {
     services.tailscale = {

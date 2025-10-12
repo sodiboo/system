@@ -9,12 +9,12 @@
 let
   cfg = config.services.sharkey;
 
-  sharkey-precise = pkgs.callPackage ./precise.nix {
-    sharkey = cfg.package;
-  };
+  # sharkey-precise = pkgs.callPackage ./precise.nix {
+  #   sharkey = cfg.package;
+  # };
 
-  sharkey-migrate = lib.getExe' sharkey-precise "sharkey-migrate";
-  sharkey-start = lib.getExe' sharkey-precise "sharkey-start";
+  # sharkey-migrate = lib.getExe' sharkey-precise "sharkey-migrate";
+  # sharkey-start = lib.getExe' sharkey-precise "sharkey-start";
 
   settingsFormat = pkgs.formats.yaml { };
 
@@ -196,13 +196,13 @@ in
         ];
       }
       {
-        users.users.sharkey = {
-          group = "sharkey";
-          isSystemUser = true;
-          home = "/run/sharkey";
-          packages = [ cfg.package ];
-        };
-        users.groups.sharkey = { };
+        # users.users.sharkey = {
+        #   group = "sharkey";
+        #   isSystemUser = true;
+        #   home = "/run/sharkey";
+        #   packages = [ cfg.package ];
+        # };
+        # users.groups.sharkey = { };
 
         services.sharkey.settings.mediaDirectory = lib.mkForce "/var/lib/sharkey";
 
@@ -211,13 +211,13 @@ in
           serviceConfig = {
             Type = "simple";
             User = "sharkey";
+            DynamicUser=true;
 
             StateDirectory = "sharkey";
             StateDirectoryMode = "0700";
             RuntimeDirectory = "sharkey";
             RuntimeDirectoryMode = "0700";
-            ExecStartPre = sharkey-migrate;
-            ExecStart = sharkey-start;
+            ExecStart = "${lib.getExe cfg.package} migrateandstart";
             TimeoutSec = 60;
             Restart = "always";
 

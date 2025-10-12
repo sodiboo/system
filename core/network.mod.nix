@@ -51,6 +51,9 @@
     {
       systemd.network.enable = lib.mkForce false;
       networking.useNetworkd = lib.mkForce false;
+      environment.etc."resolv.conf".enable = lib.mkForce false;
+      networking.nameservers = lib.mkForce [];
+      
       # should move to networkd eventually
       networking.networkmanager.enable = true;
       users.users.sodiboo.extraGroups = [ "networkmanager" ];
