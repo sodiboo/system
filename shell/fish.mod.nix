@@ -35,8 +35,6 @@
               }
             ];
           };
-
-          bash.enable = true; # Sometimes, applications drop me into a bash shell against my will.
         };
       };
     };
