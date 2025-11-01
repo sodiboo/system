@@ -1,25 +1,16 @@
-{ nix-index-database, ... }:
 {
   universal =
     { pkgs, ... }:
     {
-      imports = [ nix-index-database.nixosModules.nix-index ];
       programs.fish = {
         enable = true;
         interactiveShellInit = ''
           set fish_greeting
-          function fish_command_not_found
-            command -v , &>/dev/null && , $argv
-          end
 
           set machines "iridium" "sodium" "nitrogen" "oxygen"
         '';
       };
       users.defaultUserShell = pkgs.fish;
-
-      programs.nix-index-database.comma.enable = true;
-      programs.command-not-found.enable = false;
-      programs.nix-index.enableFishIntegration = false;
 
       home-shortcut = {
         home.persistence."/nix/persist".files = [ ".local/share/fish/fish_history" ];
