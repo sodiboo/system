@@ -113,7 +113,7 @@
                     foot = lib.getExe pkgs.foot;
                     alacritty = lib.getExe pkgs.alacritty;
                     kitty = lib.getExe pkgs.kitty;
-                    tuigreet = lib.getExe pkgs.greetd.tuigreet;
+                    tuigreet = lib.getExe pkgs.tuigreet;
                     systemctl = home-config.systemd.user.systemctlPath;
                   in
                   {

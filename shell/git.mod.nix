@@ -3,8 +3,8 @@
     { pkgs, ... }:
     {
       programs.git.enable = true;
-      programs.git.userName = "sodiboo";
-      programs.git.userEmail = "git@sodi.boo";
+      programs.git.settings.user.name = "sodiboo";
+      programs.git.settings.user.email = "git@sodi.boo";
       programs.gh.enable = true;
       programs.gh.gitCredentialHelper.enable = true;
 

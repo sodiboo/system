@@ -6,7 +6,7 @@ inputs: {
       ...
     }:
     let
-      package = inputs.nixpkgs-wayland.packages.${pkgs.system}.swww;
+      package = inputs.nixpkgs-wayland.packages.${pkgs.stdenv.hostPlatform.system}.swww;
       namespaces = [
         "main"
         "overview"
