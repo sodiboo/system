@@ -34,7 +34,6 @@
         bottom
         entr
         difftastic
-        kakoune
         socat
         jq
         just

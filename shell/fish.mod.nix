@@ -13,8 +13,6 @@
           end
 
           set machines "iridium" "sodium" "nitrogen" "oxygen"
-
-          set EDITOR kak
         '';
       };
       users.defaultUserShell = pkgs.fish;

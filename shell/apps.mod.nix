@@ -11,8 +11,6 @@ inputs: {
       ];
 
       programs = {
-        micro.enable = true;
-
         btop.enable = true;
         btop.settings.theme_background = false;
       };

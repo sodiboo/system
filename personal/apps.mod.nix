@@ -1,9 +1,4 @@
 inputs: {
-  physical.home-shortcut = {
-    imports = [ inputs.vscode-server.homeModules.default ];
-    services.vscode-server.enable = true;
-  };
-
   personal =
     { lib, ... }:
     {
@@ -11,9 +6,6 @@ inputs: {
 
       nixpkgs.overlays = [
         (final: prev: {
-          sodi-vscode-fhs = final.writeShellScriptBin "code-fhs" ''
-            exec ${lib.getExe final.vscode-fhs} $@
-          '';
           wayvnc = inputs.nixpkgs-wayland.packages.x86_64-linux.wayvnc;
           zen-browser = inputs.zen-browser.packages.x86_64-linux.default;
         })
@@ -49,7 +41,6 @@ inputs: {
             subversion
             wayvnc
             wlvncc
-            sodi-vscode-fhs
             rnote
           ];
           xdg.mimeApps.enable = true;
@@ -73,12 +64,6 @@ inputs: {
               "application/x-extension-xhtml" = web-browser;
               "application/x-extension-xht" = web-browser;
             };
-
-          programs = {
-            helix.enable = true;
-            vscode.enable = true;
-            # vscode.package = pkgs.vscode-fhs;
-          };
         };
     };
 }
