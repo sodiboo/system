@@ -168,9 +168,9 @@
 
                     "Mod+L".action = spawn "blurred-locker";
 
-                    "Mod+Shift+S".action = screenshot;
+                    "Mod+Shift+S".action.screenshot = [ ];
                     "Print".action.screenshot-screen = [ ];
-                    "Mod+Print".action = screenshot-window;
+                    "Mod+Print".action.screenshot-window = [ ];
 
                     "Mod+Insert".action = set-dynamic-cast-window;
                     "Mod+Shift+Insert".action = set-dynamic-cast-monitor;
