@@ -10,6 +10,7 @@
       programs.powerline-go = {
         enable = true;
         settings.hostname-only-if-ssh = true;
+        settings.duration-min = 20; # seconds
         modules = [
           "host"
           "cwd"
@@ -18,7 +19,7 @@
           "hg"
           "nix-shell"
           "jobs"
-          # "duration" # not working
+          "duration"
           "exit"
           "root"
         ];
