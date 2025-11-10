@@ -10,16 +10,19 @@
 
       check = lib.isType "caddy-secret";
       merge =
-        (lib.types.submodule {
-          options = {
-            _type = lib.mkOption { type = lib.types.enum [ "caddy-secret" ]; };
-            file = lib.mkOption {
-              type = lib.types.addCheck (lib.types.pathWith { inStore = false; }) (
-                path: !(builtins.hasContext path)
-              );
+        let
+          submodule = lib.types.submodule {
+            options = {
+              _type = lib.mkOption { type = lib.types.enum [ "caddy-secret" ]; };
+              file = lib.mkOption {
+                type = lib.types.addCheck (lib.types.pathWith { inStore = false; }) (
+                  path: !(builtins.hasContext path)
+                );
+              };
             };
           };
-        }).merge;
+        in
+        loc: defs: submodule.merge loc defs;
     };
   };
 
