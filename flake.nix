@@ -39,6 +39,9 @@
     nixpkgs-wayland.url = "github:nix-community/nixpkgs-wayland";
     nixpkgs-wayland.inputs.nixpkgs.follows = "nixpkgs";
 
+    nixpkgs-xr.url = "github:nix-community/nixpkgs-xr";
+    nixpkgs-xr.inputs.nixpkgs.follows = "nixpkgs";
+
     # lan-mouse.url = "github:feschber/lan-mouse";
     # lan-mouse.inputs.nixpkgs.follows = "nixpkgs";
 

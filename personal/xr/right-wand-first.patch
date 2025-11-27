@@ -1,0 +1,18 @@
+diff --git a/src/xrt/auxiliary/util/u_device.c b/src/xrt/auxiliary/util/u_device.c
+index a32d533bb..db1112893 100644
+--- a/src/xrt/auxiliary/util/u_device.c
++++ b/src/xrt/auxiliary/util/u_device.c
+@@ -398,10 +398,10 @@ u_device_assign_xdev_roles(struct xrt_device **xdevs, size_t xdev_count, int *he
+ 			}
+ 			break;
+ 		case XRT_DEVICE_TYPE_ANY_HAND_CONTROLLER:
+-			if (*left == XRT_DEVICE_ROLE_UNASSIGNED) {
+-				*left = (int)i;
+-			} else if (*right == XRT_DEVICE_ROLE_UNASSIGNED) {
++			if (*right == XRT_DEVICE_ROLE_UNASSIGNED) {
+ 				*right = (int)i;
++			} else if (*left == XRT_DEVICE_ROLE_UNASSIGNED) {
++				*left = (int)i;
+ 			} else {
+ 				//! @todo: do something with unassigned devices?
+ 			}
