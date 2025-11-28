@@ -118,6 +118,47 @@
               };
             };
           }
+          {
+            matches = [
+              { "node.name" = "alsa_input.usb-HTC_VIVE_Pro_Mutimedia_Audio-00.analog-stereo"; }
+            ];
+            actions = {
+              create-filter = {
+                filter-graph = {
+                  "node.description" = "VIVE Pro (rnnoise)";
+                  "media.name" = "VIVE Pro (rnnoise)";
+                  "filter.graph" = {
+                    nodes = [
+                      {
+                        type = "ladspa";
+                        name = "vive_rnnoise";
+                        plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                        label = "noise_suppressor_stereo";
+                        control = {
+                          "VAD Threshold (%)" = 50.0;
+                          "VAD Grace Period (ms)" = 200;
+                          "Retroactive VAD Grace (ms)" = 0;
+                        };
+                      }
+                    ];
+                  };
+
+                  "capture.props" = {
+                    "node.name" = "capture.vive_rnnoise_source";
+                    "node.passive" = true;
+                    "audio.rate" = 48000;
+
+                    "target.object" = "alsa_input.usb-HTC_VIVE_Pro_Mutimedia_Audio-00.analog-stereo";
+                  };
+                  "playback.props" = {
+                    "node.name" = "vive_rnnoise_source";
+                    "media.class" = "Audio/Source";
+                    "audio.rate" = 48000;
+                  };
+                };
+              };
+            };
+          }
         ];
       };
 
@@ -190,6 +231,31 @@
               update-props = {
                 "node.nick" = "RØDE XCM-50 (raw)";
                 "node.description" = "RØDE XCM-50 (raw)";
+              };
+            };
+          }
+          {
+            matches = [
+              { "node.name" = "alsa_input.usb-HTC_VIVE_Pro_Mutimedia_Audio-00.analog-stereo"; }
+            ];
+
+            actions = {
+              update-props = {
+                "node.nick" = "VIVE Pro (raw)";
+                "node.description" = "VIVE Pro (raw)";
+              };
+            };
+          }
+
+          {
+            matches = [
+              { "node.name" = "alsa_output.usb-HTC_VIVE_Pro_Mutimedia_Audio-00.analog-stereo"; }
+            ];
+
+            actions = {
+              update-props = {
+                "node.nick" = "VIVE Pro";
+                "node.description" = "VIVE Pro";
               };
             };
           }
