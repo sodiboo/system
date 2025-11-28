@@ -156,6 +156,18 @@
           }
           {
             matches = [
+              { "node.name" = "alsa_output.pci-0000_6b_00.6.analog-stereo"; }
+            ];
+
+            actions = {
+              update-props = {
+                "node.nick" = "AUX";
+                "node.description" = "AUX";
+              };
+            };
+          }
+          {
+            matches = [
               # My RØDE microphone has an analog output.
               # When headphones are plugged in, it will composite mic feedback into the output.
               # That's actually pretty cool, but i don't use it, and *this output appears when nothing is plugged in*.
