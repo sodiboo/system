@@ -243,6 +243,11 @@
               update-props = {
                 "node.nick" = "VIVE Pro (raw)";
                 "node.description" = "VIVE Pro (raw)";
+
+                # IMPORTANT: by default, at 48 kHz, i sound like glorp!!!
+                # Instead, i set this to 44.1 kHz. PipeWire resamples it to 48kHz and it sounds fine.
+                "audio.rate" = 44100;
+                "audio.allowed-rates" = [ 44100 ];
               };
             };
           }
