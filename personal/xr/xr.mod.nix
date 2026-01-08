@@ -2,7 +2,10 @@ inputs: {
   sodium =
     { lib, pkgs, ... }:
     {
-      environment.systemPackages = [ pkgs.lighthouse-steamvr ];
+      environment.systemPackages = [
+        pkgs.bs-manager
+        pkgs.lighthouse-steamvr
+      ];
 
       # TODO: power off after monado powers off?
       # need on a timeout though. not just `bindsTo = ["monado.service"];`
