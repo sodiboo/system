@@ -41,6 +41,7 @@
               Restart = "on-failure";
             };
           };
+        systemd.user.services.waybar.Service.ExecCondition = [ "false" ];
       };
     };
 }
