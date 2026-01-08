@@ -9,6 +9,10 @@
     services.devmon.enable = true;
 
     hardware.flipperzero.enable = true;
+    security.pam.u2f = {
+      enable = true;
+      settings.cue = true;
+    };
   };
 
   sodium =
