@@ -3,7 +3,7 @@ let
     {
       pkgs,
       config,
-      ...
+      niri,
     }:
     let
       # wl-copy = "${pkgs.wl-clipboard}/bin/wl-copy";
@@ -11,7 +11,6 @@ let
       grim = "${pkgs.grim}/bin/grim";
       jq = "${pkgs.jq}/bin/jq";
       swaylock = "${config.programs.swaylock.package}/bin/swaylock";
-      niri = "${config.programs.niri.package}/bin/niri";
     in
     {
       lock = pkgs.writeScriptBin "blurred-locker" ''
@@ -58,11 +57,11 @@ in
           config =
             let
               scripts' = scripts {
-                inherit pkgs config;
+                inherit pkgs config niri;
               };
               systemctl = config.systemd.user.systemctlPath;
               pidof = lib.getExe' pkgs.procps "pidof";
-              niri = lib.getExe config.programs.niri.package;
+              niri = lib.getExe nixosConfig.programs.niri.package;
 
               secondary =
                 if config.suspend-when-idle then

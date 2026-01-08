@@ -1,4 +1,4 @@
-{ niri, ... }:
+{ niri-flake, ... }:
 {
   personal.imports = [
     {
@@ -21,73 +21,21 @@
           type = lib.types.float;
         };
 
+        options.login.niri.settings = lib.mkOption {
+          type = niri-flake.lib.settings.make-type {
+            inherit lib pkgs;
+            modules = [ { _module.filename = "login-config.kdl"; } ];
+          };
+          default = { };
+        };
+
         config =
           let
             home-config = config.home-manager.users.sodiboo;
-            niri-cfg-modules = lib.evalModules {
-              modules = [
-                niri.lib.internal.settings-module
-                (
-                  let
-                    cfg = home-config.programs.niri.settings;
-                  in
-                  {
-                    programs.niri.settings = {
-                      hotkey-overlay.skip-at-startup = true;
 
-                      input = cfg.input;
-                      # causes a deprecation warning otherwise
-                      cursor = builtins.removeAttrs cfg.cursor [ "hide-on-key-press" ];
-                      outputs = cfg.outputs // {
-                        "HDMI-A-1".enable = false;
-                      };
-
-                      layout = cfg.layout // {
-                        center-focused-column = "always";
-                        default-column-width.proportion = config.login.tuigreet-width.proportion;
-                      };
-
-                      spawn-at-startup = [
-                        {
-                          command = [
-                            (lib.getExe pkgs.swaybg)
-                            "-i"
-                            "${config.wallpaper.blurred}"
-                          ];
-                        }
-                        {
-                          command = [
-                            (lib.getExe pkgs.waybar)
-                            "-c"
-                            waybar-config
-                            "-s"
-                            waybar-style
-                          ];
-                        }
-                      ];
-
-                      window-rules = [
-                        {
-                          # open-maximized = true;
-                          draw-border-with-background = false;
-                          clip-to-geometry = true;
-                          geometry-corner-radius = {
-                            top-left = 8.0;
-                            top-right = 8.0;
-                            bottom-left = 8.0;
-                            bottom-right = 8.0;
-                          };
-                        }
-                      ];
-                    };
-                  }
-                )
-              ];
+            niri-config = config.login.niri.settings.validated {
+              package = config.programs.niri.package;
             };
-
-            niri-config =
-              niri.lib.internal.validated-config-for pkgs config.programs.niri.package
-                niri-cfg-modules.config.programs.niri.finalConfig;
 
             foot-config = toString home-config.xdg.configFile."foot/foot.ini".source;
             alacritty-config = toString home-config.xdg.configFile."alacritty/alacritty.toml".source;
@@ -96,6 +44,34 @@
             waybar-style = toString home-config.xdg.configFile."waybar/style.css".source;
           in
           {
+            login.niri.settings = {
+              includes = [ "${config.programs.niri.settings}" ];
+              hotkey-overlay.skip-at-startup = true;
+
+              layout = {
+                center-focused-column = "always";
+                default-column-width.proportion = config.login.tuigreet-width.proportion;
+              };
+
+              spawn-at-startup = [
+                {
+                  command = [
+                    (lib.getExe pkgs.swaybg)
+                    "-i"
+                    "${config.wallpaper.blurred}"
+                  ];
+                }
+                {
+                  command = [
+                    (lib.getExe pkgs.waybar)
+                    "-c"
+                    waybar-config
+                    "-s"
+                    waybar-style
+                  ];
+                }
+              ];
+            };
             services.greetd = {
               enable = true;
               settings = {
