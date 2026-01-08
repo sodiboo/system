@@ -1,19 +1,23 @@
 {
-  personal = {
-    programs.adb.enable = true;
-    programs.droidcam.enable = true;
-    users.users.sodiboo.extraGroups = [ "adbusers" ];
+  personal =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = [
+        pkgs.android-tools
+      ];
 
-    services.udisks2.enable = true;
-    services.gvfs.enable = true;
-    services.devmon.enable = true;
+      programs.droidcam.enable = true;
 
-    hardware.flipperzero.enable = true;
-    security.pam.u2f = {
-      enable = true;
-      settings.cue = true;
+      services.udisks2.enable = true;
+      services.gvfs.enable = true;
+      services.devmon.enable = true;
+
+      hardware.flipperzero.enable = true;
+      security.pam.u2f = {
+        enable = true;
+        settings.cue = true;
+      };
     };
-  };
 
   sodium =
     { pkgs, ... }:
