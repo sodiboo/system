@@ -25,7 +25,7 @@
           gimp3 # <-- yay! wayland! :3
           swappy
 
-          kdePackages.kdenlive
+#         kdePackages.kdenlive
           # shotcut
           # flowblade
           # avidemux
