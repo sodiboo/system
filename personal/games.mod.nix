@@ -85,9 +85,9 @@
 
       home-shortcut = {
         home.packages = with pkgs; [
-          simutrans
+          # simutrans
           prismlauncher
-          ringracers
+          # ringracers
           lutris
           adwaita-icon-theme
           itch
