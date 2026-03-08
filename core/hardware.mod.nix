@@ -55,7 +55,7 @@ in
     {
       nixpkgs.overlays = [
         (final: prev: {
-          flashrom = final.callPackage flashrom-meson { };
+#          flashrom = final.callPackage flashrom-meson { };
         })
       ];
       services.fwupd.enable = true;
