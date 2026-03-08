@@ -1,6 +1,6 @@
 {
   personal =
-    { pkgs, ... }:
+    { lib, pkgs, ... }:
     {
       programs.steam = {
         enable = true;
@@ -10,9 +10,22 @@
           gamescope
           xwayland-run
         ];
-        extraCompatPackages = with pkgs; [
-          proton-ge-bin
-        ];
+        extraCompatPackages =
+          let
+            proton-ge-rtsp-bin = pkgs.proton-ge-bin.overrideAttrs rec {
+              version = "GE-Proton9-22-rtsp17-1";
+              src = pkgs.fetchzip {
+                url = "https://github.com/SpookySkeletons/proton-ge-rtsp/releases/download/${version}/${version}.tar.gz";
+                hash = "sha256-GeExWNW0J3Nfq5rcBGiG2BNEmBg0s6bavF68QqJfuX8=";
+              };
+            };
+            proton-ge-rtsp-bin' = proton-ge-rtsp-bin.override { steamDisplayName = "GE-Proton-rtsp"; };
+          in
+          with pkgs;
+          [
+            proton-ge-bin
+            proton-ge-rtsp-bin'
+          ];
       };
       programs.steam.package =
         let
