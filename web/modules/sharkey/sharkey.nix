@@ -206,7 +206,24 @@ in
 
         services.sharkey.settings.mediaDirectory = lib.mkForce "/var/lib/sharkey";
 
+        systemd.services.sharkey-migrate = {
+          environment.MISSKEY_CONFIG_YML = "${configFile}";
+          serviceConfig = {
+            Type = "oneshot";
+            User = "sharkey";
+
+            ExecStart = sharkey-migrate;
+
+            StandardOutput = "journal";
+            StandardError = "journal";
+            SyslogIdentifier = "sharkey-migrate";
+          };
+        };
+
         systemd.services.sharkey = {
+          requires = [ "sharkey-migrate.service" ];
+          after = [ "sharkey-migrate.service" ];
+
           environment.MISSKEY_CONFIG_YML = "${configFile}";
           serviceConfig = {
             Type = "simple";
@@ -216,7 +233,6 @@ in
             StateDirectoryMode = "0700";
             RuntimeDirectory = "sharkey";
             RuntimeDirectoryMode = "0700";
-            ExecStartPre = sharkey-migrate;
             ExecStart = sharkey-start;
             TimeoutSec = 60;
             Restart = "always";
@@ -255,15 +271,21 @@ in
             inherit env;
             path = cfg.credentials.${env};
           }) (builtins.attrNames cfg.credentials);
-        in
-        {
-          systemd.services.sharkey = {
+
+          service = {
             serviceConfig.LoadCredential = map (cred: "${cred.identifier}:${cred.path}") credentials';
             environment = lib.mkMerge (map (cred: { ${cred.env} = "%d/${cred.identifier}"; }) credentials');
           };
+        in
+        {
+          systemd.services.sharkey-migrate = service;
+          systemd.services.sharkey = service;
         }
       )
       (lib.mkIf cfg.database.createLocally {
+        systemd.services.sharkey-migrate.bindsTo = [ "postgresql.service" ];
+        systemd.services.sharkey-migrate.after = [ "postgresql.service" ];
+        systemd.services.sharkey.bindsTo = [ "postgresql.service" ];
         systemd.services.sharkey.after = [ "postgresql.service" ];
         services.postgresql = {
           enable = true;

@@ -101,14 +101,16 @@ runCommandLocal "sharkey-precise-${sharkey.version}"
     mkdir -p $typeorm/bin
 
     makeWrapper $node $typeorm/bin/typeorm \
-      --add-flags "$sharkey/packages/backend/node_modules/typeorm/cli.js --"
+      --add-flags "$sharkey/packages/backend/node_modules/typeorm/cli.js"
 
     makeWrapper $typeorm/bin/typeorm $out/bin/sharkey-migrate \
       --set-default NODE_ENV production \
+      --chdir $sharkey/packages/backend \
       --add-flags "migration:run -d $sharkey/packages/backend/ormconfig.js"
 
     makeWrapper $typeorm/bin/typeorm $out/bin/sharkey-revert \
       --set-default NODE_ENV production \
+      --chdir $sharkey/packages/backend \
       --add-flags "migration:revert -d $sharkey/packages/backend/ormconfig.js"
 
     makeWrapper $node $out/bin/sharkey-start \
