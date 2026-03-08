@@ -55,8 +55,30 @@
 
                 sed -i 's/Exec=steam/Exec=x-run steam/g' $out/share/applications/steam.desktop
               '';
+
+          patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {
+            patches = (o.patches or [ ]) ++ [
+              ./bwrap.patch
+            ];
+          });
+          steam' = pkgs.steam.override {
+            buildFHSEnv = (
+              args:
+              (
+                (pkgs.buildFHSEnv.override {
+                  bubblewrap = patchedBwrap;
+                })
+                (
+                  args
+                  // {
+                    extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [ "--cap-add ALL" ];
+                  }
+                )
+              )
+            );
+          };
         in
-        x-wrapped pkgs.steam
+        x-wrapped steam'
         // {
           override = f: x-wrapped (pkgs.steam.override f);
         };
