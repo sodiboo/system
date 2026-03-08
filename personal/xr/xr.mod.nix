@@ -22,8 +22,8 @@ inputs: {
         };
       };
 
-      systemd.user.services.wlx-overlay-s = {
-        description = "WlxOverlay-S";
+      systemd.user.services.wayvr = {
+        description = "wayvr";
 
         requires = [ "monado.socket" ];
 
@@ -32,20 +32,7 @@ inputs: {
 
         unitConfig.ConditionUser = "!root";
 
-        serviceConfig.ExecStart = lib.getExe pkgs.wlx-overlay-s;
-      };
-
-      systemd.user.services.wayvr-dashboard = {
-        description = "WayVR Dashboard";
-
-        requires = [ "monado.socket" ];
-
-        wantedBy = [ "monado.service" ];
-        bindsTo = [ "monado.service" ];
-
-        unitConfig.ConditionUser = "!root";
-
-        serviceConfig.ExecStart = lib.getExe pkgs.wayvr-dashboard;
+        serviceConfig.ExecStart = lib.getExe pkgs.wayvr;
       };
     };
 }
