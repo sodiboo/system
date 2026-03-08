@@ -1,6 +1,5 @@
 {
   lib,
-  stdenv,
   fetchFromGitLab,
   bash,
   makeWrapper,
@@ -11,11 +10,22 @@
   glib,
   vips,
   pnpm_9,
-  nodejs,
+  nodejs_22,
   pixman,
   pango,
   cairo,
+  fetchPnpmDeps,
+  pnpmConfigHook,
+  gcc14Stdenv,
 }:
+let
+  nodejs = nodejs_22;
+  pnpm = pnpm_9.override { inherit nodejs; };
+  fetchPnpmDeps' = fetchPnpmDeps.override { inherit pnpm; };
+  pnpmConfigHook' = pnpmConfigHook.override { inherit pnpm; };
+
+  stdenv = gcc14Stdenv;
+in
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
   version = "2025.4.4";
@@ -29,14 +39,15 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-h6FkjwJ+TI5NZmGYOl/+yNP7gyc7FKmpdkfXmgqxh/s=";
   };
 
-  pnpmDeps = pnpm_9.fetchDeps {
+  pnpmDeps = fetchPnpmDeps' {
     inherit (finalAttrs) src pname;
     fetcherVersion = 1;
     hash = "sha256-S8LxawbtguFOEZyYbS1FQWw/TcRm4Z6mG7dUhfXbf1c=";
   };
 
   nativeBuildInputs = [
-    pnpm_9.configHook
+    pnpmConfigHook'
+    pnpm
     nodejs
     makeWrapper
     python3
@@ -102,14 +113,14 @@ stdenv.mkDerivation (finalAttrs: {
 
     cp -r * $out/Sharkey
 
-    makeWrapper ${lib.getExe pnpm_9} $out/bin/sharkey \
+    makeWrapper ${lib.getExe pnpm} $out/bin/sharkey \
       --chdir $out/Sharkey \
       --add-flags run \
       --set-default NODE_ENV production \
       --prefix PATH : ${
         lib.makeBinPath [
           bash
-          pnpm_9
+          pnpm
           nodejs
         ]
       } \
