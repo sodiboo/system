@@ -91,6 +91,7 @@
           lutris
           adwaita-icon-theme
           itch
+          beyond-all-reason
         ];
       };
     };
