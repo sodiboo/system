@@ -28,7 +28,7 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "sharkey";
-  version = "2025.4.4";
+  version = "2025.4.5";
 
   src = fetchFromGitLab {
     domain = "activitypub.software";
@@ -36,7 +36,7 @@ stdenv.mkDerivation (finalAttrs: {
     repo = "Sharkey";
     rev = finalAttrs.version;
     fetchSubmodules = true;
-    hash = "sha256-h6FkjwJ+TI5NZmGYOl/+yNP7gyc7FKmpdkfXmgqxh/s=";
+    hash = "sha256-/cay75QEzD3e1D/C2FJeoJdBUJVvfuNeo91w5dQW3gs=";
   };
 
   pnpmDeps = fetchPnpmDeps' {
