@@ -149,6 +149,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   passthru = {
     inherit (finalAttrs) pnpmDeps;
+    inherit nodejs;
   };
 
   meta = {

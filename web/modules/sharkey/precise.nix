@@ -4,9 +4,10 @@
   jq,
   makeWrapper,
   sharkey,
-  nodejs,
 }:
-
+let
+  inherit (sharkey) nodejs;
+in
 runCommandLocal "sharkey-precise-${sharkey.version}"
   {
 
