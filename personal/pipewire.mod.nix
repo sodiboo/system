@@ -106,6 +106,7 @@
                     "node.name" = "capture.rnnoise_source";
                     "node.passive" = true;
                     "audio.rate" = 48000;
+                    "audio.position" = [ "MONO" ];
 
                     "target.object" = "alsa_input.usb-R__DE_R__DE_XCM-50_F5CD4617-00.mono-fallback";
                   };
@@ -113,6 +114,7 @@
                     "node.name" = "rnnoise_source";
                     "media.class" = "Audio/Source";
                     "audio.rate" = 48000;
+                    "audio.position" = [ "MONO" ];
                   };
                 };
               };
