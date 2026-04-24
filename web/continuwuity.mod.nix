@@ -23,31 +23,7 @@
           handle = [
             {
               handler = "subroute";
-              routes = [
-              
-                      {
-                    	  match = [
-                    	  	{
-                    	  	path = [
-                    	  	    "/_matrix/federation/v2/invite"
-                    	  		"/_matrix/federation/v2/invite/*"
-                    	  	];
-                    	  	}
-                    	  ];
-              
-                    	  terminal=true;
-                    	  handle= [
-                    	  	{
-                    	  		handler="static_response";
-                    	  		status_code="418";
-                    	  		body= builtins.toJSON {
-                    	  		   errcode = "M_UNKNOWN";
-                    	  		   error = "Critical vulnerability on this endpoint lmao";
-                    	  		 };
-                    	  	}
-                    	  ];
-                      }
-                      
+              routes = [                      
                 {
                   handle = [
                     {
