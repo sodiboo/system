@@ -138,6 +138,9 @@ in
       meilisearch.createLocally = lib.mkOption {
         type = lib.types.bool;
         default = false;
+        description = ''
+          Create the MeiliSearch server locally and configure Sharkey to use it.
+        '';
       };
 
       settings = lib.mkOption {
