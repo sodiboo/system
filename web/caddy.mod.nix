@@ -44,7 +44,7 @@
               "github.com/caddy-dns/acmedns@v0.4.1"
             ];
 
-            hash = "sha256-/Jp1OghCgtiNOpeJZwNEnTaGV6ebANwtYA8TVVoacoo=";
+            hash = "sha256-j5uxRruIpjiPCiZ3x9zbZQWohiGPSW8yFNuuW4fGD8U=";
           };
 
           ports = {

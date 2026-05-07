@@ -6,6 +6,7 @@
       networking.useNetworkd = true;
 
       services.resolved.enable = false;
+      networking.resolvconf.enable = false;
       environment.etc."resolv.conf".text = ''
         ${builtins.concatStringsSep "\n" (map (ns: "nameserver ${ns}") config.networking.nameservers)}
         options edns0
