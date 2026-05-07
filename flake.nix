@@ -58,6 +58,8 @@
 
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     firefox-addons.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixocaine.url = "git+https://git.madhouse-project.org/iocaine/nixocaine?ref=stable";
   };
 
   outputs =

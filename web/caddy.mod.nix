@@ -123,6 +123,7 @@
 
                 routes = [
                   { handle = [ default-encode ]; }
+                  config.caddy.lib.iocaine
                 ]
                 ++ map (host: {
                   match = [ { host = [ host ]; } ];
