@@ -71,7 +71,8 @@
         connections-max = 4096;
 
         socket = {
-          requiredBy = [ "caddy.service" ];
+          wantedBy = [ "sockets.target" ];
+          before = [ "sockets.target" ];
           listenStreams = [ "@sharkey" ];
         };
 

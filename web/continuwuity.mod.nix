@@ -74,7 +74,8 @@
 
       systemd-socket-proxyd.continuwuity = {
         socket = {
-          requiredBy = [ "caddy.service" ];
+          wantedBy = [ "sockets.target" ];
+          before = [ "sockets.target" ];
           listenStreams = [ "@continuwuity" ];
         };
 
