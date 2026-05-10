@@ -10,6 +10,23 @@
     {
       imports = [ nixocaine.nixosModules.default ];
 
+      nixpkgs.overlays = [
+        (final: prev: {
+          ai-robots-txt =
+            let
+
+              version = "1.45";
+            in
+            final.fetchFromGitHub {
+              name = "ai.robots.txt-${version}";
+              owner = "ai-robots-txt";
+              repo = "ai.robots.txt";
+              tag = "v${version}";
+              hash = "sha256-HwRsZKQlK0t88Sz7VDQ5qZoufPTfYofZhBQ6EY3jVkg=";
+            };
+        })
+      ];
+
       systemd.sockets.iocaine = {
         description = "iocaine main listening socket";
 
@@ -45,15 +62,7 @@
           };
 
           handler.default.config = {
-            ai-robots-txt-path =
-              let
-                ai-robots-txt-version = "1.45";
-                ai-robots-txt = builtins.fetchTarball {
-                  url = "https://github.com/ai-robots-txt/ai.robots.txt/archive/refs/tags/v${ai-robots-txt-version}.tar.gz";
-                  sha256 = "sha256-HwRsZKQlK0t88Sz7VDQ5qZoufPTfYofZhBQ6EY3jVkg=";
-                };
-              in
-              "${ai-robots-txt}/robots.json";
+            ai-robots-txt-path = "${pkgs.ai-robots-txt}/robots.json";
 
             sources = {
               wordlists = [ "${pkgs.miscfiles}/share/web2" ];

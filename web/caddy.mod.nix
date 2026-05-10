@@ -13,6 +13,10 @@
         type = lib.types.attrsOf (
           lib.types.submodule {
             options = {
+              robots-txt = lib.mkOption {
+                type = lib.types.nullOr lib.types.str;
+                default = "";
+              };
               routes = lib.mkOption { type = lib.types.listOf config.caddy.lib.types.http.route; };
             };
           }
@@ -123,6 +127,47 @@
 
                 routes = [
                   { handle = [ default-encode ]; }
+                  {
+                    match = [
+                      {
+                        method = [
+                          "GET"
+                          "HEAD"
+                        ];
+                        path = [ "/robots.txt" ];
+                      }
+                    ];
+
+                    handle = [
+                      {
+                        handler = "subroute";
+                        routes = builtins.concatLists (
+                          lib.mapAttrsToList (
+                            host: site:
+                            lib.optionals (site.robots-txt != null) [
+                              {
+                                match = [ { host = [ host ]; } ];
+                                terminal = true;
+                                handle = config.caddy.lib.static-response-file {
+                                  path = "robots.txt";
+                                  root =
+                                    pkgs.runCommand "${host}-robots.txt"
+                                      {
+                                        extraRobotsTxt = site.robots-txt;
+                                        passAsFile = [ "extraRobotsTxt" ];
+                                      }
+                                      ''
+                                        mkdir $out
+                                        cat $extraRobotsTxtPath ${pkgs.ai-robots-txt}/robots.txt > $out/robots.txt
+                                      '';
+                                };
+                              }
+                            ]
+                          ) config.caddy.sites
+                        );
+                      }
+                    ];
+                  }
                   config.caddy.lib.iocaine
                 ]
                 ++ map (host: {
