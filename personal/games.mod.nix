@@ -85,6 +85,7 @@
 
       home-shortcut = {
         home.packages = with pkgs; [
+          r2modman
           # simutrans
           prismlauncher
           # ringracers
