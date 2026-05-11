@@ -18,6 +18,7 @@ inputs: {
       home-shortcut = {
         home.packages = [
           pkgs.sodi-vscode-fhs
+          pkgs.lemminx
         ];
 
         programs = {
