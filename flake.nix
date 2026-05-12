@@ -60,6 +60,9 @@
     firefox-addons.inputs.nixpkgs.follows = "nixpkgs";
 
     nixocaine.url = "git+https://git.madhouse-project.org/iocaine/nixocaine?ref=stable";
+
+    sharkey-flake.url = "git+https://turning.computers.gay/sodiboo/sharkey-flake";
+    sharkey-flake.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

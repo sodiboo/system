@@ -866,6 +866,7 @@
         "nixpkgs-xr": "nixpkgs-xr",
         "picocss": "picocss",
         "rust-overlay": "rust-overlay",
+        "sharkey-flake": "sharkey-flake",
         "sodipkgs-simutrans": "sodipkgs-simutrans",
         "sops-nix": "sops-nix",
         "stylix": "stylix",
@@ -891,6 +892,26 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "type": "github"
+      }
+    },
+    "sharkey-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778573512,
+        "narHash": "sha256-GfuH73bKiLUKNf2IreXQgp/DoOs6dKUKF2Bxh3Mmtt0=",
+        "ref": "refs/heads/main",
+        "rev": "28259a69bd08e2abaeac9cff36dffbf9d9c5daa9",
+        "revCount": 80,
+        "type": "git",
+        "url": "https://turning.computers.gay/sodiboo/sharkey-flake"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://turning.computers.gay/sodiboo/sharkey-flake"
       }
     },
     "sodipkgs-simutrans": {

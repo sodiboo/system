@@ -1,3 +1,4 @@
+{ sharkey-flake, ... }:
 {
   oxygen =
     {
@@ -6,6 +7,9 @@
       ...
     }:
     {
+      imports = [ sharkey-flake.nixosModules.sharkey ];
+      nixpkgs.overlays = [ sharkey-flake.overlays.sharkey ];
+
       caddy.sites."gaysex.cloud".routes = [
         {
           terminal = true;
