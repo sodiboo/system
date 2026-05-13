@@ -83,6 +83,9 @@
           repository = {
             DEFAULT_REPO_UNITS = "repo.code,repo.issues,repo.pulls,repo.actions,repo.releases";
           };
+          actions = {
+            DEFAULT_ACTIONS_URL = "${config.services.forgejo.settings.server.ROOT_URL}";
+          };
         };
       };
 
@@ -105,5 +108,40 @@
             } "$@"
           '')
         ];
+
+      sops.secrets."forgejo-actions-runner-token" = { };
+
+      sops.templates.forgejo-actions-runner-env.content = ''
+        TOKEN="${config.sops.placeholder.forgejo-actions-runner-token}"
+      '';
+
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = true;
+
+        defaultNetwork.settings.dns_enabled = true;
+      };
+      services.gitea-actions-runner = {
+        package = pkgs.forgejo-runner;
+        instances.default = {
+          enable = true;
+          url = "${config.services.forgejo.settings.server.ROOT_URL}";
+          tokenFile = config.sops.templates.forgejo-actions-runner-env.path;
+          name = "runner";
+          labels = [
+            "nixos-unstable:docker://turning.computers.gay/actions/nixos:unstable"
+            "nixos-stable:docker://turning.computers.gay/actions/nixos:stable"
+            "nixos-25.11:docker://turning.computers.gay/actions/nixos:25.11"
+          ];
+
+          settings = {
+            runner = {
+              capacity = 4;
+              timeout = "2h";
+            };
+            container.network = "host";
+          };
+        };
+      };
     };
 }
