@@ -113,7 +113,6 @@
           clusterLimit = 3;
 
           signToActivityPubGet = true;
-          CheckActivityPubGetSigned = false;
         };
       };
 
