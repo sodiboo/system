@@ -89,7 +89,7 @@
           # simutrans
           prismlauncher
           # ringracers
-          lutris
+          # lutris
           adwaita-icon-theme
           itch
           beyond-all-reason
