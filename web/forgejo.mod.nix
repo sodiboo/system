@@ -139,6 +139,8 @@
               capacity = 4;
               timeout = "2h";
             };
+
+            container.options = "--memory 6G --cpus 6";
             container.network = "host";
           };
         };
