@@ -53,7 +53,7 @@
                 # and of course, make sure we can edit the desktop file again
                 chmod -R +w $out
 
-                sed -i 's/Exec=steam/Exec=x-run steam/g' $out/share/applications/steam.desktop
+                sed -i 's/Exec=steam/Exec=xwlsat-run steam -console -windowed/g' $out/share/applications/steam.desktop
               '';
 
           patchedBwrap = pkgs.bubblewrap.overrideAttrs (o: {

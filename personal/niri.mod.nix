@@ -357,6 +357,21 @@
                       y = -60;
                     };
                   }
+                  {
+                    matches = [
+                      {
+                        app-id = "steam";
+                        title = "^notificationtoasts";
+                      }
+                    ];
+                    open-focused = false;
+                    default-floating-position = {
+                      relative-to = "bottom-right";
+                      x = 8;
+                      y = 8;
+                    };
+                    block-out-from = "screencast";
+                  }
                 ];
 
               gestures.dnd-edge-view-scroll = {
