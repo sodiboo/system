@@ -88,6 +88,7 @@
           r2modman
           # simutrans
           prismlauncher
+          archipelago
           # ringracers
           # lutris
           adwaita-icon-theme
