@@ -9,8 +9,9 @@
     {
       sops.secrets.meili-master-key = { };
 
+      # theoretically i want this for Sharkey but it's been broken for MONTHS and i haven't fixed it
       services.meilisearch = {
-        enable = true;
+        # enable = true;
         package = pkgs.meilisearch; # by default, on my state version, this is 1.11
         masterKeyFile = config.sops.secrets.meili-master-key.path;
         settings = {
