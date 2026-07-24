@@ -60,7 +60,7 @@ in
       ];
       services.fwupd.enable = true;
       services.fwupd.package = pkgs.fwupd.override {
-        enableFlashrom = true;
+        # enableFlashrom = true;
       };
       programs.flashrom.enable = true;
     };
