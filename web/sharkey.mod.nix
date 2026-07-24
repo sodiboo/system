@@ -10,6 +10,13 @@
       imports = [ sharkey-flake.nixosModules.sharkey ];
       nixpkgs.overlays = [ sharkey-flake.overlays.sharkey ];
 
+      # vulnerabilities that mostly relate to using `pnpm` for development.
+      # - lockfile bypass (Nix enforces a lockfile anyways)
+      # - misc stuff that's mostly mitigated by the Nix sandbox (and the input is locked non-malicious anyways)
+      nixpkgs.config.permittedInsecurePackages = [
+        "pnpm-9.15.9"
+      ];
+
       caddy.sites."gaysex.cloud".routes = [
         {
           terminal = true;
