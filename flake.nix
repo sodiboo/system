@@ -32,7 +32,6 @@
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
     vscode-server.url = "github:nix-community/nixos-vscode-server";
-    vscode-server.inputs.nixpkgs.follows = "nixpkgs";
 
     niri-flake.url = "github:sodiboo/niri-flake/very-refactor";
 
