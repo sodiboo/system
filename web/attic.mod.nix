@@ -29,7 +29,7 @@
 
         settings = {
           listen = "127.0.0.1:2588";
-          database.url = "postgresql:///atticd?host=/run/postgresql";
+          database.url = "postgresql://atticd@localhost/atticd?host=/run/postgresql";
         };
       };
 
