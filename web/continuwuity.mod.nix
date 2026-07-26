@@ -98,6 +98,15 @@
             client = "https://gaysex.cloud";
             server = "gaysex.cloud:443";
           };
+
+          matrix_rtc = {
+            foci = [
+              {
+                type = "livekit";
+                livekit_service_url = "https://matrix.zimward.moe/livekit/jwt";
+              }
+            ];
+          };
         };
       };
     };
