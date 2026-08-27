@@ -17,9 +17,9 @@ inputs: {
 
       transient-session.services = builtins.listToAttrs (
         builtins.map (namespace: {
-          name = "swww-${namespace}@";
+          name = "awww-${namespace}@";
           value = {
-            Service.ExecStart = "${lib.getExe' package "swww-daemon"} -n ${namespace}";
+            Service.ExecStart = "${lib.getExe' package "awww-daemon"} -n ${namespace}";
           };
         }) namespaces
       );

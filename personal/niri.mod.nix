@@ -387,7 +387,7 @@
                   block-out-from = "screencast";
                 }
                 {
-                  matches = [ { namespace = "^swww-daemonoverview$"; } ];
+                  matches = [ { namespace = "^awww-daemonoverview$"; } ];
 
                   place-within-backdrop = true;
                 }
