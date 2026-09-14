@@ -15,14 +15,14 @@
           ai-robots-txt =
             let
 
-              version = "1.45";
+              version = "1.52";
             in
             final.fetchFromGitHub {
               name = "ai.robots.txt-${version}";
               owner = "ai-robots-txt";
               repo = "ai.robots.txt";
               tag = "v${version}";
-              hash = "sha256-HwRsZKQlK0t88Sz7VDQ5qZoufPTfYofZhBQ6EY3jVkg=";
+              hash = "sha256-jgLm8qvmAIkVAZBGgUNUJrwX+Z4Y/OLTD/mlS71Ha2g=";
             };
         })
       ];
