@@ -2,6 +2,7 @@
 {
   nitrogen =
     {
+      lib,
       pkgs,
       config,
       ...
@@ -104,6 +105,8 @@
           id = "aidx";
           url = "https://social.sodiboo.p.nyet/";
 
+          disableHsts = config.internyet.inspect;
+
           publishTarballInsteadOfProvideRepositoryUrl = true;
 
           socket = "/run/sharkey/socket";
@@ -114,10 +117,16 @@
           maxNoteLength = 8192;
           maxFileSize = 1024 * 1024 * 1024;
 
-          allowedPrivateNetworks = [
-            "10.13.36.0/22"
-            "fc00::/64"
-          ] ;
+          allowedPrivateNetworks = lib.mkMerge [
+            [
+              "10.13.36.0/22"
+              "fc00::/64"
+            ]
+            (lib.mkIf (config.internyet.inspect) [
+              "127.0.0.1/8"
+              "::1/128"
+            ])
+          ];
 
           signToActivityPubGet = true;
           CheckActivityPubGetSigned = false;

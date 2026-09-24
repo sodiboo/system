@@ -164,6 +164,11 @@
         sops.secrets."bazed-key".sopsFile = ./secrets.yaml;
         sops.secrets."total-anarchy-key".sopsFile = ./secrets.yaml;
 
+        networking.hosts = lib.mkIf (config.internyet.inspect) {
+          "127.0.0.1" = builtins.attrNames config.caddy.sites;
+          "::1" = builtins.attrNames config.caddy.sites;
+        };
+
         systemd.services.caddy.serviceConfig = {
           IPAddressAllow = [
             "10.13.36.0/22"
