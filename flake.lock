@@ -700,6 +700,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-stable_2": {
+      "locked": {
+        "lastModified": 1790113641,
+        "narHash": "sha256-D2aaQetafdpHxbwA4ldAxs51UX0b11pXL+JL/5L8VrM=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1bc55b9def8165e82073919945c3239903fe4dc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-26.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-wayland": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -898,6 +914,7 @@
         "nixocaine": "nixocaine",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
+        "nixpkgs-stable": "nixpkgs-stable_2",
         "nixpkgs-wayland": "nixpkgs-wayland",
         "nixpkgs-xr": "nixpkgs-xr",
         "picocss": "picocss",
@@ -937,11 +954,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779285155,
-        "narHash": "sha256-yokW/CfSlixF69ZLAVAEv77qejB8hOHgDpMsg7E69tM=",
+        "lastModified": 1790214005,
+        "narHash": "sha256-gt3sXQoGAoiVLtOTZXI9pAflCdOpA5xtPg0g1QFC+fk=",
         "ref": "refs/heads/main",
-        "rev": "ce33c85ca472c753c9a980f469387aa4dfda9eea",
-        "revCount": 84,
+        "rev": "cedba42686cb07704bf25573a3180d8276a5f6b0",
+        "revCount": 85,
         "type": "git",
         "url": "https://turning.computers.gay/sodiboo/sharkey-flake"
       },

@@ -114,6 +114,6 @@ in
     suspend-when-idle = false;
   };
   nitrogen.home-shortcut = {
-    suspend-when-idle = true;
+    suspend-when-idle = false;
   };
 }

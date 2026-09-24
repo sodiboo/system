@@ -52,6 +52,7 @@
     {
       systemd.network.enable = lib.mkForce false;
       networking.useNetworkd = lib.mkForce false;
+
       # should move to networkd eventually
       networking.networkmanager.enable = true;
       users.users.sodiboo.extraGroups = [ "networkmanager" ];

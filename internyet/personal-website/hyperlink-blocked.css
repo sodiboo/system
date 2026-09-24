@@ -1,0 +1,13 @@
+a:not([href*=".nyet"]) {
+    content: "[HYPERLINK BLOCKED]";
+    pointer-events: none;
+    color: inherit;
+    position: relative;
+
+    text-decoration: red underline;
+
+    &::before {
+        content: "[HYPERLINK BLOCKED]";
+        color: red;
+    }
+}
