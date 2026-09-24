@@ -4,7 +4,7 @@
     ephemeral = true;
     autoStart = true;
 
-    extraFlags = ["--timezone=off"]; # already set anyways
+    extraFlags = [ "--timezone=off" ]; # already set anyways
 
     config.imports = profiles.plutonium.modules;
   };

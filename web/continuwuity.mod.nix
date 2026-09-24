@@ -23,7 +23,7 @@
           handle = [
             {
               handler = "subroute";
-              routes = [                      
+              routes = [
                 {
                   handle = [
                     {
