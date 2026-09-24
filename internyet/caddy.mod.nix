@@ -163,6 +163,17 @@
         sops.secrets."internyet-server-key".sopsFile = ./secrets.yaml;
         sops.secrets."bazed-key".sopsFile = ./secrets.yaml;
         sops.secrets."total-anarchy-key".sopsFile = ./secrets.yaml;
+
+        systemd.services.caddy.serviceConfig = {
+          IPAddressAllow = [
+            "10.13.36.0/22"
+            "fc00::/64"
+            "127.0.0.1/8"
+            "::1/128"
+          ];
+
+          IPAddressDeny = "any";
+        };
       };
     };
 }

@@ -132,6 +132,8 @@
           "::1/128"
         ];
 
+        IPAddressDeny = "any";
+
         BindReadOnlyPaths = [
           "/etc/resolv.conf"
           "/etc/hosts"
