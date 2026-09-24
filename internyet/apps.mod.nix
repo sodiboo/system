@@ -1,9 +1,9 @@
 { nixpkgs-stable, ... }:
 {
-  nitrogen.nixpkgs.config.permittedInsecurePackages = [
-    "dotnet-sdk-6.0.428"
-    "dotnet-runtime-6.0.36"
-  ];
+  # nitrogen.nixpkgs.config.permittedInsecurePackages = [
+  #   "dotnet-sdk-6.0.428"
+  #   "dotnet-runtime-6.0.36"
+  # ];
   nitrogen.home-shortcut =
     { pkgs, ... }:
     let
@@ -14,7 +14,7 @@
     in
     {
       home.packages = [
-        pkgs-stable.warsow
+        # pkgs-stable.warsow
         pkgs.mindustry-wayland
         pkgs.xonotic
         pkgs.openra # borked
@@ -22,7 +22,7 @@
         pkgs.hedgewars
         pkgs-stable.zeroad
         pkgs.ddnet
-        pkgs.warzone2100
+        # pkgs.warzone2100
         pkgs-stable.openspades
         pkgs.unciv
         pkgs-stable.superTuxKart
