@@ -86,8 +86,7 @@
                       {
                         host = [
                           "*.sodiboo.p.nyet"
-                          "*.bazed.g.nyet"
-                          "*.total-anarchy.g.nyet"
+                          "*.cyberpink.g.nyet"
                         ];
                       }
                     ];
@@ -149,20 +148,15 @@
                   key = config.caddy.lib.mkSecret { file = config.sops.secrets."internyet-server-key".path; };
                 }
                 {
-                  certificate = builtins.readFile ./bazed.crt;
-                  key = config.caddy.lib.mkSecret { file = config.sops.secrets."bazed-key".path; };
-                }
-                {
-                  certificate = builtins.readFile ./total-anarchy.crt;
-                  key = config.caddy.lib.mkSecret { file = config.sops.secrets."total-anarchy-key".path; };
+                  certificate = builtins.readFile ./cyberpink.crt;
+                  key = config.caddy.lib.mkSecret { file = config.sops.secrets."cyberpink-key".path; };
                 }
               ];
             };
         };
 
         sops.secrets."internyet-server-key".sopsFile = ./secrets.yaml;
-        sops.secrets."bazed-key".sopsFile = ./secrets.yaml;
-        sops.secrets."total-anarchy-key".sopsFile = ./secrets.yaml;
+        sops.secrets."cyberpink-key".sopsFile = ./secrets.yaml;
 
         networking.hosts = lib.mkIf (config.internyet.inspect) {
           "127.0.0.1" = builtins.attrNames config.caddy.sites;
