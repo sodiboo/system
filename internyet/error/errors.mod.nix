@@ -42,6 +42,8 @@
         }
       ];
 
+      internyet.dns.slugs = ["static"];
+
       caddy.sites."static.sodiboo.p.nyet".routes = [
         {
           terminal = true;

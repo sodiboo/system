@@ -18,6 +18,8 @@
         "pnpm-9.15.9"
       ];
 
+      internyet.dns.slugs = ["social"];
+
       caddy.sites."social.sodiboo.p.nyet".routes = [
         {
           terminal = true;

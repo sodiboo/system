@@ -12,6 +12,10 @@
       '';
     in
     {
+      internyet.dns.slugs = [
+        "=" # personal apex
+        "sodiboo/cyberpink"
+      ];
       caddy.sites."sodiboo.cyberpink.g.nyet".routes = [
         {
           terminal = true;
