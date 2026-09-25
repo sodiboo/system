@@ -29,11 +29,10 @@
               ${lib.getExe pkgs.curl} --cert ${./client.crt} --key $CREDENTIALS_DIRECTORY/internyet-client-key --request POST -H 'X-SillyCSRF: false' https://v4.dns.c.nyet/api/v2/A/${subdomain}/this
             '')
             [
-              "about"
+              "="
               "static"
               "social"
-              "sodiboo/total-anarchy"
-              "sodiboo/bazed"
+              "sodiboo/cyberpink"
             ]
         );
       };
