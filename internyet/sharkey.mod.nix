@@ -1,4 +1,4 @@
-{sharkey-flake, ...}:
+{ sharkey-flake, ... }:
 {
   nitrogen =
     {
