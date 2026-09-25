@@ -1,6 +1,6 @@
 {
-  nitrogen = { pkgs, ... }: {
-    networking.nameservers = [
+  nitrogen = { lib, pkgs, ... }: {
+    networking.nameservers = lib.mkForce [
       "10.37.37.1"
       "fc00::1337"
     ];
