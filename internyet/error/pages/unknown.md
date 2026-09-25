@@ -13,6 +13,6 @@ pagetitle: what
 
 go away
 
-[~sodiboo](https://about.sodiboo.p.nyet)
+[~sodiboo](https://sodiboo.p.nyet)
 
 </div>

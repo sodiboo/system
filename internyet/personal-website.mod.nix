@@ -13,7 +13,7 @@
     in
     {
 
-      caddy.sites."about.sodiboo.p.nyet".routes = [
+      caddy.sites."sodiboo.p.nyet".routes = [
         {
           match = [
             {
