@@ -91,6 +91,7 @@
           archipelago
           # ringracers
           # lutris
+          dolphin-emu
           adwaita-icon-theme
           itch
           beyond-all-reason
