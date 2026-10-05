@@ -5,10 +5,15 @@
       lib,
       pkgs,
       config,
+      modulesPath,
       ...
     }:
     {
       imports = [ nixocaine.nixosModules.default ];
+
+      disabledModules = [
+        "${modulesPath}/services/networking/iocaine.nix"
+      ];
 
       nixpkgs.overlays = [
         (final: prev: {

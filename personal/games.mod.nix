@@ -10,21 +10,21 @@
           gamescope
           xwayland-run
         ];
+        # i dont get why that package is borked
         extraCompatPackages =
-          let
-            proton-ge-rtsp-bin = pkgs.proton-ge-bin.overrideAttrs rec {
-              version = "GE-Proton9-22-rtsp17-1";
-              src = pkgs.fetchzip {
-                url = "https://github.com/SpookySkeletons/proton-ge-rtsp/releases/download/${version}/${version}.tar.gz";
-                hash = "sha256-GeExWNW0J3Nfq5rcBGiG2BNEmBg0s6bavF68QqJfuX8=";
-              };
-            };
-            proton-ge-rtsp-bin' = proton-ge-rtsp-bin.override { steamDisplayName = "GE-Proton-rtsp"; };
-          in
-          with pkgs;
-          [
+          # let
+          # proton-ge-rtsp-bin = pkgs.proton-ge-bin.overrideAttrs rec {
+          #   steamDisplayName = "GE-Proton-rtsp";
+          #   version = "GE-Proton9-22-rtsp17-1";
+          #   src = pkgs.fetchzip {
+          #     url = "https://github.com/SpookySkeletons/proton-ge-rtsp/releases/download/${version}/${version}.tar.gz";
+          #     hash = "sha256-GeExWNW0J3Nfq5rcBGiG2BNEmBg0s6bavF68QqJfuX8=";
+          #   };
+          # };
+          # in
+          with pkgs; [
             proton-ge-bin
-            proton-ge-rtsp-bin'
+            # proton-ge-rtsp-bin
           ];
       };
       programs.steam.package =
