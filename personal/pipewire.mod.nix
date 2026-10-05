@@ -55,6 +55,20 @@
           }
         ];
       };
+
+      # IT'S EVERYTHING
+      services.pipewire.extraConfig.pipewire-pulse."51-NOBODY-GETS-TO-TOUCH-THIS-ANYMORE" = {
+        "pulse.rules" = [
+          {
+            "match" = [
+              { "application.process.binary" = "!vesktop"; }
+            ];
+            "actions" = {
+              "quirks" = [ "block-source-volume" ];
+            };
+          }
+        ];
+      };
     }
     (
       { pkgs, ... }:
