@@ -68,12 +68,12 @@
                 (pkgs.buildFHSEnv.override {
                   bubblewrap = patchedBwrap;
                 })
-                (
-                  args
-                  // {
-                    extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [ "--cap-add ALL" ];
-                  }
-                )
+                  (
+                    args
+                    // {
+                      extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [ "--cap-add ALL" ];
+                    }
+                  )
               )
             );
           };
