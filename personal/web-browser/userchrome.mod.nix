@@ -76,9 +76,7 @@
                   buildCommand = ''
                     ${prevAttrs.buildCommand}
 
-                    # this file is genuinely just present twice ???
                     ln -sf "${attrs.passthru.omni-ja}" "$libDir/browser/omni.ja"
-                    ln -sf "${attrs.passthru.omni-ja}" "$libDir/omni.ja"
                   '';
                 });
           };
