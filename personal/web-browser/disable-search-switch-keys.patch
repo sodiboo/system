@@ -1,0 +1,23 @@
+--- a/chrome/browser/content/browser/urlbar/SearchModeSwitcher.mjs
++++ b/chrome/browser/content/browser/urlbar/SearchModeSwitcher.mjs
+@@ -400,20 +400,6 @@ export class SearchModeSwitcher {
+    *   The key down event.
+    */
+   handleKeyDown(event) {
+-    if (
+-      (event.keyCode == KeyEvent.DOM_VK_UP ||
+-        event.keyCode == KeyEvent.DOM_VK_DOWN) &&
+-      (event.altKey || event.getModifierState("Accel"))
+-    ) {
+-      if (event.altKey) {
+-        this.#handleAltUpDown(event);
+-      } else if (event.getModifierState("Accel")) {
+-        this.#handleAccelUpDown(event);
+-      }
+-      event.stopPropagation();
+-      event.preventDefault();
+-      return true;
+-    }
+     return false;
+   }
+ 

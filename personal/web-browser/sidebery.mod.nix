@@ -22,6 +22,9 @@
     browser.userchrome.js = [
       ./userChrome.js
     ];
+    browser.userchrome.omni-patches = [
+      ./disable-search-switch-keys.patch
+    ];
     programs.librewolf = {
       policies.Preferences = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = {

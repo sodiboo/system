@@ -12,6 +12,10 @@
           type = lib.types.listOf lib.types.path;
           default = [ ];
         };
+        omni-patches = lib.mkOption {
+          type = lib.types.listOf lib.types.path;
+          default = [ ];
+        };
         # css = lib.mkOption {
         #   type = lib.types.listOf lib.types.path;
         #   default = [];
@@ -53,54 +57,28 @@
             # };
 
             package =
-              (pkgs.librewolf.override (prev: {
-                extraPrefsFiles =
-                  let
-                    p = drv: drv.name or null == "local-settings.js";
-                  in
-                  assert builtins.length (builtins.filter p prev.extraPrefsFiles) == 1;
-                  builtins.filter (x: !(p x)) prev.extraPrefsFiles;
-              })).overrideAttrs
-                (prevAttrs: {
+              pkgs.librewolf.overrideAttrs
+                (attrs: prevAttrs: {
+                  passthru = prevAttrs.passthru // {
+                    omni-ja = pkgs.stdenvNoCC.mkDerivation {
+                      name = "omni.ja";
+                      
+                      src = "${attrs.passthru.unwrapped}/lib/librewolf/browser/omni.ja";
+                  nativeBuildInputs = [pkgs.unzip pkgs.zip];
+                  unpackCmd =  ''unzip -qq "$curSrc" -d omni || true'';
+                  patches = config.browser.userchrome.omni-patches;
+
+                  installPhase = ''
+                    zip -rq $out *
+                  '';
+                    };
+                  };
                   buildCommand = ''
                     ${prevAttrs.buildCommand}
 
-                    cat > "$libDir/distribution/chrome.manifest" << EOF
-                      content userchromejs ./userchromejs/
-                    EOF
-
-                    ln -s ${userchrome-js-root} "$libDir/distribution/userchromejs"
-
-
-                    cat >> "$prefsDir/autoconfig.js" << EOF
-                    pref("general.config.filename", "mozilla.cfg");
-                    pref("general.config.obscure_value", 0);
-                    pref("general.config.sandbox_enabled", false);
-                    EOF
-
-                    cat >> "$libDir/mozilla.cfg" << EOF
-                    lockPref("general.config.filename", "mozilla.cfg");
-                    lockPref("general.config.obscure_value", 0);
-                    lockPref("general.config.sandbox_enabled", false);
-                    // try {
-                      // console.warn("loading userchromejs stuff!");
-                      let cmanifest = Cc['@mozilla.org/file/directory_service;1'].getService(Ci.nsIProperties).get("XREAppDist", Ci.nsIFile);
-                      cmanifest.append("chrome.manifest");
-                      Components.manager.QueryInterface(Ci.nsIComponentRegistrar).autoRegister(cmanifest);
-
-                      ${
-                        config.browser.userchrome.js
-                        |> map (lib.path.removePrefix ./.)
-                        |> map (file: ''
-
-                          // try {
-                          ChromeUtils.importESModule("chrome://userchromejs/content/${file}");
-                          // } catch {}'')
-                        |> builtins.concatStringsSep "\n"
-                      }
-                    // } catch {}
-                    EOF
-
+                    # this file is genuinely just present twice ???
+                    ln -sf "${attrs.passthru.omni-ja}" "$libDir/browser/omni.ja"
+                    ln -sf "${attrs.passthru.omni-ja}" "$libDir/omni.ja"
                   '';
                 });
           };
