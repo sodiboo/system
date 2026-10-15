@@ -23,6 +23,10 @@
                   type = lib.types.str;
                   default = "force_installed";
                 };
+                default_area = lib.mkOption {
+                  type = lib.types.str;
+                  default = "menupanel";
+                };
                 private_browsing = lib.mkOption {
                   type = lib.types.bool;
                   default = false;
@@ -35,10 +39,32 @@
                   type = lib.types.listOf lib.types.str;
                   default = [ ];
                 };
+                managed = lib.mkOption {
+                  type = (pkgs.formats.json { }).type;
+                  default = null;
+                };
+                keybindings = lib.mkOption {
+                  type = lib.types.attrsOf lib.types.str;
+                  default = { };
+                };
               };
             }
           );
         };
+
+        config.browser.extension-keybinds = lib.mkMerge (
+          config.browser.web-extensions
+          |> map (
+            cfg:
+            cfg.keybindings
+            |> lib.mapAttrs (
+              _: key: {
+                addon = cfg.package.addonId;
+                inherit key;
+              }
+            )
+          )
+        );
 
         config.programs.librewolf.policies = lib.mkMerge (
           config.browser.web-extensions
@@ -50,8 +76,10 @@
                 private_browsing
                 blocked_permissions
                 allowed_permissions
+                default_area
                 ;
             };
+            "3rdparty".Extensions.${cfg.package.addonId} = lib.mkIf (cfg.managed != null) cfg.managed;
           })
         );
 
@@ -59,6 +87,7 @@
           {
             package = pkgs.firefox-addons.ublock-origin;
             private_browsing = true;
+            default_area = "navbar";
             #   permissions = [
             #     "alarms"
             #     "dns"
@@ -88,8 +117,7 @@
 
           {
             package = pkgs.firefox-addons.bitwarden;
-            blocked_permissions = [ "*" ];
-            # allowed_permissions =["tans"];
+            default_area = "navbar";
             # permissions = [
             #   "<all_urls>"
             #   "*://*/*"
