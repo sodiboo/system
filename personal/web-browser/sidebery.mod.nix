@@ -60,7 +60,7 @@
         };
       }
     ];
-    browser.userchrome.omni-patches = [
+    browser.omni-patches = [
       # disable Alt+Up / Alt+Down keys that conflict with binds above
       ./disable-search-switch-keys.patch
     ];

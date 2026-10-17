@@ -23,7 +23,7 @@
                 pkgs.zip
               ];
               unpackCmd = ''unzip -qq "$curSrc" -d omni || true'';
-              patches = config.browser.userchrome.omni-patches;
+              patches = config.browser.omni-patches;
 
               installPhase = ''
                 zip -rq $out *
