@@ -1,8 +1,7 @@
 {
   personal.home-shortcut = { pkgs, ... }: {
-    browser.web-extensions = [
-      {
-        package = pkgs.firefox-addons.sidebery;
+    browser = {
+      extensions.sidebery = {
         default_area = "navbar";
         # permissions = [
         #   "activeTab"
@@ -58,20 +57,13 @@
           switch_to_prev_tab = "Alt+Up";
           switch_to_next_tab = "Alt+Down";
         };
-      }
-    ];
-    browser.omni-patches = [
-      # disable Alt+Up / Alt+Down keys that conflict with binds above
-      ./disable-search-switch-keys.patch
-    ];
-    programs.librewolf = {
-      policies.Preferences = {
-        "toolkit.legacyUserProfileCustomizations.stylesheets" = {
-          Value = true;
-          Status = "locked";
-        };
       };
-      profiles.sodiboo.userChrome = ./userChrome.css;
+      omni-patches = [
+        # disable Alt+Up / Alt+Down keys that conflict with binds above
+        ./disable-search-switch-keys.patch
+      ];
+      preferences."toolkit.legacyUserProfileCustomizations.stylesheets" = true;
     };
+    programs.librewolf.profiles.sodiboo.userChrome = ./userChrome.css;
   };
 }
