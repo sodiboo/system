@@ -17,6 +17,11 @@
 
       # we can have the full RFP in private browsing mode, though.
       "privacy.resistFingerprinting.pbmode" = true;
+
+      "browser.nova.enabled" = true;
+      "sidebar.revamp" = true;
+      "sidebar.verticalTabs" = true;
+      "browser.tabs.inTitlebar" = 1;
     };
 
     browser.policies = {

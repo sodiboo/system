@@ -1,50 +1,79 @@
-/**
-* Hide sidebar-panel-header (sidebar.revamp: true)
+/* these styles assume:
+    browser.nova.enabled = true
+    sidebar.revamp = true
+    sidebar.verticalTabs = true
+    browser.tabs.inTitlebar = 1
+
+  it might look ok without those options. but they all affect styles that interact with what this is trying to accomplish
 */
-#sidebar-panel-header {
+
+/* no close button! no matter what! i use a tiling window manager with keyboard shortcuts! */
+.titlebar-buttonbox-container {
     display: none;
 }
 
-/**
-* Dynamic styles
-*
-* Choose when styles below will be activated (comment/uncomment line)
-* - When Sidebery set title preface "."
-* - When Sidebery sidebar is active
-*/
-/* #main-window[titlepreface="."] { */
+/* obnoxious label that just says the name of whatever panel is open. match against `:empty` because it contains a searchbar in history.
+  ideally, i'd hide just when sidebery is active. but this is in a separate document/shadowroot, and CSS can't easily cross documents (by design; for peformance reasons) */
+#sidebar-panel-header:empty {
+    display: none !important;
+}
+
+/* right click in the top bar */
+#toolbar-context-menu {
+
+    /* vertical tabs are locked on, so remove the broken button */
+    #toolbar-context-toggle-vertical-tabs,
+    /* and the separator below (only) it */
+    #sidebarRevampSeparator {
+        display: none;
+    }
+}
+
+/* this button is also broken when its pref is locked */
+#customization-titlebar-visibility-checkbox {
+    display: none;
+}
+
+/* this spacer just Doesn't Need To Exist. why can't it be disabled in the regular UI. beyond me. */
+#nav-bar #vertical-spacer {
+    display: none;
+}
+
+/* sidebery is active */
 #main-window:has(#sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][checked="true"]) {
 
-    /* Hide horizontal native tabs toolbar */
-    #TabsToolbar>* {
-        display: none !important;
-    }
-
-    /* Hide top window border */
-    #nav-bar {
-        border-color: transparent !important;
-    }
-
-    /* Hide new Firefox sidebar, restyle addon's sidebar */
+    /* native horizontal tabs */
+    #TabsToolbar,
+    /* native vertical tabs (and some other junk in the same bar) */
     #sidebar-main,
     #sidebar-container,
     #sidebar-launcher-splitter {
         display: none !important;
     }
 
-    #sidebar-box {
+    /* sidebery doesn't really support split view, but the following styles don't account for split layout at all, and cancel styles which originally do have that selector, so might as well have it here */
+    #tabbrowser-tabpanels> :not(.split-view-panel)
+
+    /* parent of the main webpage surface */
+    .browserContainer {
+        /* don't round the top left corner of the page. it looks fine with native vertical tabs, but makes no sense with sidebery. */
+        --content-area-start-radius: 0 !important;
+        /* these tiny borders are ugly */
+        border-block-start: none !important;
+        border-inline-start: none !important;
+    }
+
+    /* give sidebery full control over its allocated screenspace */
+    #sidebar-box,
+    #sidebar {
         padding: 0 !important;
         border-radius: 0 !important;
         border: none !important;
-    }
-
-    #sidebar-box #sidebar {
-        box-shadow: none !important;
-        border: none !important;
         outline: none !important;
-        border-radius: 0 !important;
+        box-shadow: none !important;
     }
 
+    /* the divider between sidebery and the webpage. it's the grab target to resize sidebery */
     #sidebar-splitter {
         --splitter-width: 3px !important;
         min-width: var(--splitter-width) !important;
@@ -55,27 +84,14 @@
         opacity: 0 !important;
     }
 
-    /* Update background color of the #browser area (it's visible near the
-  rounded corner of the web page) so it blends with sidebery color with 
-  vertical nav-bar. */
-    /* #browser {
-    background-color: var(--lwt-accent-color) !important;
-    background-image: none !important;
-  } */
+    &[inFullscreen=true] {
 
-    /* Hide sidebar header (sidebar.revamp: false) */
-    #sidebar-header {
-        display: none !important;
+        /* hide sidebery when in fullscreen, just like the native tab bars would've been */
+        #sidebar-box,
+        #sidebar-splitter,
+        /* also hide the top bar */
+        #nav-bar {
+            display: none;
+        }
     }
-
-    /* Uncomment the block below to show window buttons in Firefox nav-bar 
-  (maybe, I didn't test it on non-linux-tiled-wm env) */
-    /* #nav-bar > .titlebar-buttonbox-container,
-  #nav-bar > .titlebar-buttonbox-container > .titlebar-buttonbox {
-    display: flex !important;
-  } */
-
-    /* Uncomment one of the lines below if you need space near window buttons */
-    /* #nav-bar > .titlebar-spacer[type="pre-tabs"] { display: flex !important; } */
-    /* #nav-bar > .titlebar-spacer[type="post-tabs"] { display: flex !important; } */
 }
