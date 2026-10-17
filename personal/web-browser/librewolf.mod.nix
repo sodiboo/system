@@ -6,6 +6,52 @@
       config,
       ...
     }:
+    let
+      pref-scalar = lib.types.oneOf [
+        lib.types.bool
+        lib.types.int
+        lib.types.str
+      ];
+
+      pref = lib.mkOptionType {
+        name = "mozilla-preference";
+        description = "mozilla preference";
+        descriptionClass = "noun";
+
+        check = _: true;
+        merge =
+          loc: defs:
+          let
+            defs' =
+              defs
+              |> map (
+                def:
+                if builtins.isAttrs def.value then
+                  def
+                else
+                  def
+                  // {
+                    value.locked = def.value;
+                  }
+              );
+            merged =
+              (lib.types.attrTag {
+                locked = lib.mkOption { type = pref-scalar; };
+                default = lib.mkOption { type = pref-scalar; };
+                mutable = lib.mkOption { type = pref-scalar; };
+              }).merge
+                loc
+                defs';
+            kind =
+              assert builtins.length (builtins.attrNames merged) == 1;
+              builtins.head (builtins.attrNames merged);
+          in
+          {
+            inherit kind;
+            value = merged.${kind};
+          };
+      };
+    in
     {
       options.browser = {
         omni-patches = lib.mkOption {
@@ -14,13 +60,7 @@
         };
 
         preferences = lib.mkOption {
-          type = lib.types.attrsOf (
-            lib.types.oneOf [
-              lib.types.bool
-              lib.types.int
-              lib.types.str
-            ]
-          );
+          type = lib.types.attrsOf pref;
           default = { };
         };
       };
@@ -66,8 +106,15 @@
                 extraPrefs = ''
                   ${prev.extraPrefs or ""}
                   ${builtins.concatStringsSep "\n" (
-                    lib.mapAttrsToList (name: value: ''
-                      lockPref("${name}", ${builtins.toJSON value});
+                    lib.mapAttrsToList (name: { kind, value }: ''
+                      ${
+                        {
+                          locked = "lockPref";
+                          default = "defaultPref";
+                          mutable = "pref";
+                        }
+                        .${kind}
+                      }("${name}", ${builtins.toJSON value});
                     '') config.browser.preferences
                   )}
                 '';
