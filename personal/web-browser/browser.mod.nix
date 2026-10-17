@@ -5,6 +5,18 @@
       "middlemouse.paste" = false;
 
       "permissions.default.shortcuts" = 2; # block sites hijacking shortcuts by default
+      "browser.startup.page" = 3; # restore tabs on startup
+
+      "privacy.sanitize.sanitizeOnShutdown" = false; # don't log me out of everything
+
+      # don't fuck with my dark theme
+      "privacy.resistFingerprinting" = false;
+      # but i'd still like to have some anti-fingerprinting measures
+      "privacy.fingerprintingProtection" = true;
+      "privacy.fingerprintingProtection.overrides" = "+AllTargets,-CSSPrefersColorScheme";
+
+      # we can have the full RFP in private browsing mode, though.
+      "privacy.resistFingerprinting.pbmode" = true;
     };
 
     browser.policies = {
@@ -45,7 +57,16 @@
       sidebery.default_area = "navbar";
       bitwarden.default_area = "navbar";
       darkreader = {
+        package = pkgs.callPackage ./darkreader.nix { };
         default_area = "navbar";
+        managed = {
+          # this feature is incredibly broken and causes horrifying problems that only bother a web developer
+          detectDarkTheme = false;
+          # most sites have a dark theme these days, and since we're not detecting that, don't try to apply darkreader also by default.
+          enabledByDefault = false;
+
+          previewNewDesign = true;
+        };
       };
 
       libredirect.default_area = "navbar";
