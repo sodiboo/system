@@ -139,6 +139,7 @@
 
           {
             package = pkgs.firefox-addons.darkreader;
+            default_area = "navbar";
             # permissions = [
             #   "alarms"
             #   "contextMenus"
@@ -150,6 +151,7 @@
           }
           {
             package = pkgs.firefox-addons.libredirect;
+            default_area = "navbar";
             # permissions = [
             #   "webRequest"
             #   "webRequestBlocking"
