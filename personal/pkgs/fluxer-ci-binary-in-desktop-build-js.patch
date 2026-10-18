@@ -1,0 +1,16 @@
+--- a/fluxer_desktop/scripts/build.mjs
++++ b/fluxer_desktop/scripts/build.mjs
+@@ -838,12 +838,8 @@ function runDesktopBuildStep(step) {
+ 		env.WORKDIR = MONOREPO_ROOT;
+ 	}
+ 	execFileSync(
+-		'cargo',
++		'fluxer-ci',
+ 		[
+-			'run',
+-			'--manifest-path',
+-			path.join(MONOREPO_ROOT, 'tools', 'ci', 'Cargo.toml'),
+-			'--',
+ 			'build-desktop',
+ 			'--step',
+ 			step,

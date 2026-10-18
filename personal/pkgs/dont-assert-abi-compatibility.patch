@@ -1,0 +1,19 @@
+--- a/fluxer_desktop/electron-builder.config.cjs
++++ b/fluxer_desktop/electron-builder.config.cjs
+@@ -619,7 +619,7 @@ async function expectedNativeRuntimeArtifactsForAppDir(platform, arch, appDir) {
+ 	const artifacts = expectedNativeRuntimeArtifacts(platform, arch);
+ 	if (platform !== 'linux') return artifacts;
+ 	const webAuthnRoot = path.join(appDir, 'node_modules', '@fluxer', 'webauthn');
+-	const linuxWebAuthnRuntimeLibraries = new Set(['libfido2.so.1']);
++	const linuxWebAuthnRuntimeLibraries = new Set([]);
+ 	try {
+ 		for (const entry of await fs.readdir(webAuthnRoot, {withFileTypes: true})) {
+ 			if (entry.isFile() && isLinuxSharedLibraryArtifact(entry.name)) {
+@@ -1014,6 +1014,7 @@ async function inspectElfGlibcRequirements(elfPath) {
+ }
+ 
+ async function findLinuxGlibcCompatibilityViolations(elfFiles) {
++	return [];
+ 	const violations = [];
+ 	for (const elfPath of elfFiles) {
+ 		const {versions, unsupportedRequirements, usesDtRelr} = await inspectElfGlibcRequirements(elfPath);
