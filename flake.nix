@@ -244,9 +244,17 @@
       nixosConfigurations = configs;
 
       # This is NOT intended for primary consumption.
-      # It's just a shorthand so i can more easily access it when testing.
-      # If you want to consume my Sharkey package, directly import `./sharkey/{package,module}.nix`.
-      packages.x86_64-linux.sharkey = self.nixosConfigurations.oxygen.pkgs.sharkey;
+      # it is only for `nix-update`.
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          fluxtop = pkgs.callPackage ./personal/pkgs/fluxtop.nix { };
+        }
+        // (pkgs.callPackage ./personal/pkgs/fluxer { }).fluxer-components
+      );
 
       apps.x86_64-linux = mapAttrs (name: script: {
         type = "app";
