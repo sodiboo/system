@@ -386,11 +386,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1757713729,
-        "narHash": "sha256-aVzQsu2Dm0QAmufkpLw3GJfF7duAgAdvVONJhpfZuqU=",
+        "lastModified": 1792590618,
+        "narHash": "sha256-huUxPPbwk8P0qAoKLL1b4ZxA1Dxbbru5JMB/Z/J0RSo=",
         "owner": "sodiboo",
         "repo": "impermanence",
-        "rev": "fdb3ee51cebfee96214f11f55356a591f1ec7e57",
+        "rev": "080ad2fa5acc62483cff3af34477ade9d06ad446",
         "type": "github"
       },
       "original": {
