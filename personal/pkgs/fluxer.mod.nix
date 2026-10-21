@@ -6,8 +6,11 @@
         let
           fluxer = final.callPackage ./fluxer { };
         in
-        fluxer.fluxer-components
-        // {
+        {
+          inherit (fluxer.fluxer-components)
+            fluxer-desktop-stable
+            fluxer-desktop-canary
+            ;
           fluxtop = final.callPackage ./fluxtop.nix { };
         }
       )
