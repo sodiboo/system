@@ -2,13 +2,6 @@
   personal =
     { pkgs, ... }:
     {
-      environment.systemPackages = [
-        pkgs.android-tools
-        pkgs.scrcpy
-      ];
-
-      programs.droidcam.enable = true;
-
       services.udisks2.enable = true;
       services.gvfs.enable = true;
       services.devmon.enable = true;
