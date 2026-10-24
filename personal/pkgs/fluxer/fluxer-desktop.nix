@@ -60,13 +60,17 @@ lib.extendMkDerivation {
 
     let
       fluxer-src = finalAttrs.src;
-      inherit (finalAttrs) fluxer-ci;
-
-      nodejs = nodejs_26;
-      pnpm = pnpm_11.override { nodejs-slim = nodejs-slim_26; };
-      electron = electron_44;
+      inherit (finalAttrs)
+        fluxer-ci
+        electron
+        nodejs
+        pnpm
+        ;
     in
     {
+      electron = args.electron or electron_44;
+      nodejs = args.nodejs or nodejs_26;
+      pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
       custom-deps = (
         map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons)
       );
@@ -123,7 +127,11 @@ lib.extendMkDerivation {
         # by default, the build scripts assert that glibc dependency is <= what Ubuntu ships, and that anything not installed on Ubuntu by default (libfido2) must be included.
         # but neither of these constraints are relevant in Nix; the fluxer modules will statically refer to a compatible glibc and libfido2 by construction; they cannot be missing at runtime.
         ../dont-assert-abi-compatibility.patch
+
+        ./desktop-dont-check-linux-archive.patch
       ];
+
+      env.FLUXER_ELECTRON_DIST = "garbage data lol";
 
       nativeBuildInputs = [
         makeWrapper

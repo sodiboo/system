@@ -12,11 +12,12 @@
 
   fetch-fluxer-source,
   make-fluxer-desktop,
+  make-fluxer-desktop-electron-bin,
   fluxer-update-script,
 }:
 make-fluxer-desktop (finalAttrs: {
   fluxer-component = "fluxer-desktop-stable";
-  version = "2026.1017.133957";
+  version = "2026.1018.223338";
 
   build-channel = "stable";
   app-id = "app.fluxer.Fluxer";
@@ -24,12 +25,26 @@ make-fluxer-desktop (finalAttrs: {
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-LG+zCRihq5u2T7wVvnMXNynsaNyN4rXfVBkwCz/rFVE=";
+    hash = "sha256-ir92ASsYrcdxXoXFTcvzrjVznW0nO5r/lD8VtFO3iJU=";
+  };
+
+  electron = make-fluxer-desktop-electron-bin {
+    version = "44.9.1-fluxer.1";
+    hashes = {
+      linux-x64 = {
+        archive = "ae36cae3dd723d94b414302598014beb6230a0c596ac6dc7a2dc95a6198a2568";
+        manifest = "7eb2c5207392dc20e3a600b4608e1a9cdcbdfd0a9ad85a0b7f414906611733e9";
+      };
+      linux-arm64 = {
+        achive = "b9160781a6f06038ad96aff2c3d3d677162281e95bbe8572f2c8b3408f769df0";
+        manifest = "e8cef0d6b2a5b21c70894f58eed757fdadcf713a61faaecc371f4014a0e0157d";
+      };
+    };
   };
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-zE2nBLHrrESjOqKzAuPbl7F3FTh6QtO4rqyddRgykJc=";
+  cargoHash = "sha256-2iJ4S4JMekzXWF7IIrhs059unEox2TaL7QnMvwH+b/Q=";
 
   pnpmDeps = fetchPnpmDeps {
     pname = "fluxer";

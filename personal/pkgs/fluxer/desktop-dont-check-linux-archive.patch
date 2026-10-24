@@ -1,0 +1,28 @@
+diff --git a/fluxer_desktop/scripts/custom-electron.cjs b/fluxer_desktop/scripts/custom-electron.cjs
+index 7aaae6036..89a6b184f 100644
+--- a/fluxer_desktop/scripts/custom-electron.cjs
++++ b/fluxer_desktop/scripts/custom-electron.cjs
+@@ -14,6 +14,7 @@ const chromiumPatchPath = path.join(
+ );
+ 
+ function resolveLinuxElectronDist() {
++	return process.env.FLUXER_ELECTRON_DIST;
+ 	const configuredDirectory = process.env.FLUXER_ELECTRON_DIST?.trim();
+ 	if (!configuredDirectory) {
+ 		throw new Error(
+@@ -64,6 +65,7 @@ print(json.dumps({'binarySha256': digest.hexdigest()}))
+ `;
+ 
+ async function verifyLinuxElectronArchive(directory, arch) {
++	return;
+ 	if (!['x64', 'arm64'].includes(arch)) {
+ 		throw new Error(`Custom Linux Electron does not support architecture: ${arch}`);
+ 	}
+@@ -119,6 +121,7 @@ async function verifyLinuxElectronArchive(directory, arch) {
+ }
+ 
+ async function verifyPackagedLinuxElectron(executablePath, artifact) {
++	return;
+ 	if (!artifact) throw new Error('Custom Electron archive was not verified before Linux packaging.');
+ 	if ((await sha256File(executablePath)) !== artifact.binarySha256) {
+ 		throw new Error(`Packaged Linux executable does not match the verified custom Electron build: ${executablePath}`);

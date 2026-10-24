@@ -17,6 +17,7 @@ rec {
     };
   fluxer-pkgs = invoke {
     make-fluxer-desktop = ./fluxer-desktop.nix;
+    make-fluxer-desktop-electron-bin = ./fluxer-desktop-electron-bin.nix;
   };
 
   fluxer-components = invoke {
