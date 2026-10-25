@@ -140,6 +140,7 @@ lib.extendMkDerivation {
         ../dont-assert-abi-compatibility.patch
 
         ./desktop-dont-check-linux-archive.patch
+        ./desktop-include-sourcemaps.patch
       ]
       ++ args.patches or [ ];
 

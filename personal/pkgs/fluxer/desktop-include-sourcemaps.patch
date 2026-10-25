@@ -1,0 +1,23 @@
+diff --git a/fluxer_desktop/electron-builder.config.cjs b/fluxer_desktop/electron-builder.config.cjs
+index 5c580a234..08139bd7e 100644
+--- a/fluxer_desktop/electron-builder.config.cjs
++++ b/fluxer_desktop/electron-builder.config.cjs
+@@ -357,18 +357,15 @@ const nativeBuildArtifactExcludes = [
+ 	'!node_modules/@fluxer/**/tsconfig.json',
+ 	'!node_modules/@fluxer/**/*.d.ts',
+ 	'!node_modules/@fluxer/**/*.d.ts.map',
+-	'!node_modules/@fluxer/**/*.map',
+ 	'!node_modules/@fluxer/**/*.rs',
+ 	'!node_modules/@fluxer/**/*.swift',
+ ];
+ const packagedRuntimeArtifactExcludes = [
+-	'!dist/**/*.map',
+ 	'!dist/.build-in-progress',
+ 	'!node_modules/**/.cache/**/*',
+ 	'!node_modules/**/.github/**/*',
+ 	'!node_modules/**/.yarn/**/*',
+ 	'!node_modules/**/.yarnrc.yml',
+-	'!node_modules/**/*.map',
+ 	'!node_modules/**/*.d.ts',
+ 	'!node_modules/**/*.d.ts.map',
+ 	'!node_modules/**/*.tsbuildinfo',
