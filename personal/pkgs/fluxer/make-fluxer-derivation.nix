@@ -35,6 +35,7 @@ lib.extendMkDerivation {
     args@{
       fluxer-component,
       version,
+      build-channel ? null,
       src,
 
       cargoHash,
@@ -58,6 +59,13 @@ lib.extendMkDerivation {
       strictDeps = true;
 
       pname = fluxer-component;
+      name =
+        let
+          inherit (finalAttrs) pname version;
+        in
+        if (version != null) then "${pname}-${version}" else "${pname}";
+
+      inherit version build-channel src;
 
       fluxer-ci = rustPlatform.buildRustPackage {
         name = "fluxer-ci";
@@ -78,6 +86,27 @@ lib.extendMkDerivation {
         ${args.postPatch or ""}
       '';
 
+      env =
+        let
+          inherit (finalAttrs) version build-channel;
+        in
+        lib.optionalAttrs (version != null) {
+          VERSION = version;
+          BUILD_VERSION = version;
+          PUBLIC_BUILD_VERSION = version;
+        }
+        // lib.optionalAttrs (build-channel != null) {
+          CHANNEL = build-channel;
+          BUILD_CHANNEL = build-channel;
+          RELEASE_CHANNEL = build-channel;
+          PUBLIC_RELEASE_CHANNEL = build-channel;
+        }
+        // lib.optionalAttrs (fluxer-ci != null) { FLUXER_CI_BIN = lib.getExe fluxer-ci; }
+        // args.env or { };
+
+      nativeBuildInputs =
+        lib.optionals (fluxer-ci != null) [ fluxer-ci ] ++ args.nativeBuildInputs or [ ];
+
       passthru = {
         inherit (finalAttrs) fluxer-ci;
         updateScript = update-script;
@@ -91,7 +120,6 @@ lib.extendMkDerivation {
               "custom-dep-${drv.name}" = drv;
             }
         ) { } finalAttrs.custom-deps;
-
       }
       // args.passthru or { };
 
@@ -102,11 +130,6 @@ lib.extendMkDerivation {
           map (cargoDeps: cargoDeps.vendorStaging) ([ root-cargoDeps ] ++ extraCargoDeps)
         )
         ++ custom-deps;
-
-      nativeBuildInputs =
-        args.nativeBuildInputs or [ ] ++ lib.optionals (fluxer-ci != null) [ fluxer-ci ];
-      env =
-        lib.optionalAttrs (fluxer-ci != null) { FLUXER_CI_BIN = lib.getExe fluxer-ci; } // args.env or { };
     };
 
   transformDrv = drv: drv // drv.custom-deps-attrs;

@@ -98,12 +98,4 @@ make-fluxer-desktop (finalAttrs: {
     linux-input-hook.cargoHash = "sha256-aOSzf5YrPfxUYYs8xsEjFBRkBxZrewNh/2srpj6mdSw=";
     platform-info.cargoHash = "sha256-qppRUj6Unyyswe4gNY4khwwBI+IAtbmMaUcrX3JW5B0=";
   };
-
-  patches = [
-    ../fluxer-ci-binary-in-desktop-build-js.patch
-
-    # by default, the build scripts assert that glibc dependency is <= what Ubuntu ships, and that anything not installed on Ubuntu by default (libfido2) must be included.
-    # but neither of these constraints are relevant in Nix; the fluxer modules will statically refer to a compatible glibc and libfido2 by construction; they cannot be missing at runtime.
-    ../dont-assert-abi-compatibility.patch
-  ];
 })

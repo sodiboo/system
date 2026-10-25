@@ -71,9 +71,9 @@ lib.extendMkDerivation {
       electron = args.electron or electron_44;
       nodejs = args.nodejs or nodejs_26;
       pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
-      custom-deps = (
-        map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons)
-      );
+      custom-deps =
+        (map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons))
+        ++ args.custom-deps or [ ];
 
       passthru = {
         inherit wasm-bindgen-cli;
@@ -119,7 +119,8 @@ lib.extendMkDerivation {
               };
           }
         ) native-addons;
-      };
+      }
+      // args.passthru or { };
 
       patches = [
         ../fluxer-ci-binary-in-desktop-build-js.patch
@@ -129,9 +130,8 @@ lib.extendMkDerivation {
         ../dont-assert-abi-compatibility.patch
 
         ./desktop-dont-check-linux-archive.patch
-      ];
-
-      env.FLUXER_ELECTRON_DIST = "garbage data lol";
+      ]
+      ++ args.patches or [ ];
 
       nativeBuildInputs = [
         makeWrapper
@@ -145,17 +145,23 @@ lib.extendMkDerivation {
         rustPlatform.cargoSetupHook
         wasm-bindgen-cli
         electron
-      ];
+      ]
+      ++ args.nativeBuildInputs or [ ];
 
       buildInputs = [
         zstd
-      ];
+      ]
+      ++ args.buildInputs or [ ];
 
-      env.npm_config_nodedir = nodejs;
-      env.BUNDLE_LOCAL_ASSETS = true;
+      env = {
+        npm_config_nodedir = nodejs;
 
-      env.VERSION = finalAttrs.version;
-      env.BUILD_CHANNEL = build-channel;
+        FLUXER_ELECTRON_DIST = "garbage data lol"; # this check is patched out for now
+        FLUXER_SKIP_NATIVE = "true";
+        ELECTRON_ARCH = "x64";
+      }
+      // args.env or { };
+
       preBuild = ''
         (
           cd fluxer_desktop
@@ -163,10 +169,6 @@ lib.extendMkDerivation {
           fluxer-ci build-desktop --step set_build_channel
         )
       '';
-
-      env.FLUXER_SKIP_NATIVE = "true";
-
-      env.ELECTRON_ARCH = "x64";
 
       buildPhase = ''
         runHook preBuild
