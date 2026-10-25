@@ -1,0 +1,13 @@
+diff --git a/fluxer_app/package.json b/fluxer_app/package.json
+index 8ba9edafd..44da6d3d3 100644
+--- a/fluxer_app/package.json
++++ b/fluxer_app/package.json
+@@ -45,7 +45,7 @@
+ 		"lingui:compile": "lingui compile --strict",
+ 		"lingui:extract": "lingui extract --clean",
+ 		"tsc:all": "pnpm wasm:codegen && pnpm tsc -p tsconfig.json",
+-		"wasm:codegen": "../tools/ci/run.sh build-app-wasm"
++		"wasm:codegen": "true"
+ 	},
+ 	"browserslist": [
+ 		"chrome >= 47",

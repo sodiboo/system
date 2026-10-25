@@ -2,6 +2,7 @@
   lib,
   stdenv,
   runCommand,
+  callPackage,
   symlinkJoin,
   makeWrapper,
 
@@ -9,59 +10,74 @@
   rsync,
 
   nodejs_26,
-  nodejs-slim_26,
   pnpm_11,
   pnpmConfigHook,
   electron_44,
 
   cargo,
   rustc,
-  fetchCrate,
   rustPlatform,
 
   pkg-config,
-  clang,
-  lld,
-
-  zstd,
-
-  buildWasmBindgenCli,
 
   make-fluxer-derivation,
 }:
-let
-  wasm-bindgen-cli = buildWasmBindgenCli rec {
-    src = fetchCrate {
-      pname = "wasm-bindgen-cli";
-      version = "0.2.128";
-      hash = "sha256-a7lcXJnnZkYReja+iUO7NqqrWyv3toxnUgQb8s4IS5s=";
-    };
-
-    cargoDeps = rustPlatform.fetchCargoVendor {
-      inherit src;
-      inherit (src) pname version;
-      hash = "sha256-R1Tas33Ursy8kqsxguAkG0ZhNed2n5uFTAhw1l2qlLY=";
-    };
-  };
-in
 lib.extendMkDerivation {
   constructDrv = make-fluxer-derivation;
 
-  excludeDrvArgNames = [ "native-addons" ];
+  excludeDrvArgNames = [
+    "libfluxcore"
+    "libfluxwebp"
+    "native-addons"
+  ];
 
   extendDrvArgs =
     finalAttrs:
     args@{
       app-id,
       build-channel,
+      libfluxcore,
+      libfluxwebp,
       native-addons,
       ...
     }:
 
     let
-      fluxer-src = finalAttrs.src;
+      libflux-args =
+        {
+          src ? finalAttrs.src,
+          version ? finalAttrs.version,
+          ...
+        }:
+        {
+          inherit src version;
+        };
+
+      renderer = callPackage ./fluxer-app-desktop-renderer.nix { } {
+        inherit (finalAttrs)
+          src
+          version
+          build-channel
+          cargoDeps
+          pnpmDeps
+          ;
+
+        libfluxcore = lib.extendMkDerivation {
+          constructDrv = callPackage ./libfluxcore.nix { };
+          extendDrvArgs = _: libflux-args;
+        } args.libfluxcore;
+
+        libfluxwebp = lib.extendMkDerivation {
+          constructDrv = callPackage ./libfluxwebp.nix { };
+          extendDrvArgs = _: libflux-args;
+        } args.libfluxwebp;
+
+        markdown-parser-wasm = callPackage ./fluxer-markdown-parser.nix { } {
+          inherit (finalAttrs) src version cargoDeps;
+        };
+      };
+
       inherit (finalAttrs)
-        fluxer-ci
         electron
         nodejs
         pnpm
@@ -73,50 +89,44 @@ lib.extendMkDerivation {
       pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
       custom-deps =
         (map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons))
+        ++ [
+          renderer.libfluxcore.cargoDeps
+          renderer.libfluxwebp.cargoDeps
+        ]
         ++ args.custom-deps or [ ];
 
       passthru = {
-        inherit wasm-bindgen-cli;
+        inherit renderer;
 
         native-addons = builtins.mapAttrs (
           addon:
           lib.extendMkDerivation {
-            constructDrv = stdenv.mkDerivation;
-            extendDrvArgs =
-              finalAttrs:
-              {
-                nativeBuildInputs ? [ ],
-                cargoHash,
-                ...
-              }:
-              {
-                name = "fluxer-desktop/${addon}";
-                src = fluxer-src;
-                cargoRoot = "fluxer_desktop/native/${addon}";
-                cargoDeps = rustPlatform.fetchCargoVendor {
-                  inherit (finalAttrs) name src cargoRoot;
-                  hash = cargoHash;
-                };
+            constructDrv = make-fluxer-derivation;
+            extendDrvArgs = _: args: {
+              fluxer-component = "fluxer-desktop/${addon}";
+              inherit (finalAttrs) src fluxer-ci;
+              version = null;
+              update-script = null;
+              cargoRoot = "fluxer_desktop/native/${addon}";
 
-                nativeBuildInputs = [
-                  cargo
-                  rustc
-                  fluxer-ci
-                  pkg-config
-                  rustPlatform.cargoSetupHook
-                ]
-                ++ nativeBuildInputs;
+              nativeBuildInputs = [
+                cargo
+                rustc
+                pkg-config
+                rustPlatform.cargoSetupHook
+              ]
+              ++ args.nativeBuildInputs or [ ];
 
-                buildPhase = ''
-                  fluxer-ci build-desktop-native-addon --addon-root fluxer_desktop/native/${addon}
-                '';
+              buildPhase = ''
+                fluxer-ci build-desktop-native-addon --addon-root fluxer_desktop/native/${addon}
+              '';
 
-                installPhase = ''
-                  pkg_dir="$out/node_modules/$(cat fluxer_desktop/native/${addon}/package.json | ${lib.getExe jq} -r .name)"
-                  mkdir -p $pkg_dir
-                  cp --target-directory $pkg_dir fluxer_desktop/native/${addon}/{package.json,*.{js,cjs,ts,node}}
-                '';
-              };
+              installPhase = ''
+                pkg_dir="$out/node_modules/$(cat fluxer_desktop/native/${addon}/package.json | ${lib.getExe jq} -r .name)"
+                mkdir -p $pkg_dir
+                cp --target-directory $pkg_dir fluxer_desktop/native/${addon}/{package.json,*.{js,cjs,ts,node}}
+              '';
+            };
           }
         ) native-addons;
       }
@@ -140,18 +150,10 @@ lib.extendMkDerivation {
         pnpmConfigHook
         cargo
         rustc
-        clang.cc
-        lld
         rustPlatform.cargoSetupHook
-        wasm-bindgen-cli
         electron
       ]
       ++ args.nativeBuildInputs or [ ];
-
-      buildInputs = [
-        zstd
-      ]
-      ++ args.buildInputs or [ ];
 
       env = {
         npm_config_nodedir = nodejs;
@@ -167,6 +169,9 @@ lib.extendMkDerivation {
           cd fluxer_desktop
           fluxer-ci build-desktop --step update_version
           fluxer-ci build-desktop --step set_build_channel
+
+          mkdir dist
+          ln -s ${renderer} dist/renderer
         )
       '';
 
@@ -175,7 +180,7 @@ lib.extendMkDerivation {
 
         (
           cd fluxer_desktop
-          pnpm build
+          pnpm build --use-shared-renderer
 
           cp -r ${electron.dist} electron-dist
           chmod -R +w electron-dist

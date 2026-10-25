@@ -5,22 +5,6 @@
   rustPlatform,
   ...
 }:
-let
-  merge-cargo-deps =
-    root-dep: extra-dep-list:
-    runCommand "merge-vendor-deps" { } ''
-      mkdir -p $out
-
-      cp -r --no-preserve=mode "${root-dep}/." "$out/"
-
-      ${lib.join "\n" (
-        lib.map (
-          deps:
-          ''cp -r --no-clobber --no-preserve=mode "${deps}/source-registry-0/." "$out/source-registry-0/"''
-        ) extra-dep-list
-      )}
-    '';
-in
 lib.extendMkDerivation {
   constructDrv = stdenv.mkDerivation;
   excludeDrvArgNames = [
@@ -38,20 +22,24 @@ lib.extendMkDerivation {
       build-channel ? null,
       src,
 
-      cargoHash,
+      cargoHash ? builtins.throw "missing cargoHash argument",
+      cargoDeps ? rustPlatform.fetchCargoVendor (
+        {
+          name = "fluxer";
+          inherit src;
+          hash = cargoHash;
+        }
+        // lib.optionalAttrs (finalAttrs ? cargoRoot) {
+          name = finalAttrs.pname;
+          inherit (finalAttrs) cargoRoot;
+        }
+      ),
       custom-deps ? [ ],
-      extraCargoDeps ? [ ],
 
       update-script,
       ...
     }:
     let
-      root-cargoDeps = rustPlatform.fetchCargoVendor {
-        name = "fluxer";
-        inherit src;
-        hash = cargoHash;
-      };
-
       inherit (finalAttrs) fluxer-ci;
     in
     {
@@ -65,24 +53,35 @@ lib.extendMkDerivation {
         in
         if (version != null) then "${pname}-${version}" else "${pname}";
 
-      inherit version build-channel src;
+      inherit
+        build-channel
+        cargoDeps
+        custom-deps
+        ;
 
-      fluxer-ci = rustPlatform.buildRustPackage {
-        name = "fluxer-ci";
-        inherit (finalAttrs) src;
-        buildAndTestSubdir = "tools/ci";
-        cargoDeps = root-cargoDeps;
+      fluxer-ci =
+        args.fluxer-ci or (
+          if finalAttrs ? cargoRoot then
+            null
+          else
+            rustPlatform.buildRustPackage {
+              name = "fluxer-ci";
+              inherit (finalAttrs) src cargoDeps;
+              buildAndTestSubdir = "tools/ci";
 
-        meta.mainProgram = "fluxer-ci";
+              meta.mainProgram = "fluxer-ci";
 
-        # using debug mode cuts down the build time of this utility from 3min to 1min on my machine.
-        # that's significant, as *everything else fluxer* blocks on this.
-        # overall, this saves about 25%-33% *total build time* for fluxer-desktop.
-        buildType = "debug";
-      };
+              # using debug mode cuts down the build time of this utility from 3min to 1min on my machine.
+              # that's significant, as *everything else fluxer* blocks on this.
+              # overall, this saves about 25%-33% *total build time* for fluxer-desktop.
+              buildType = "debug";
+            }
+        );
 
       postPatch = ''
-        patchShebangs --build tools/ci/run.sh
+        ${lib.optionalString (fluxer-ci != null) ''
+          patchShebangs --build tools/ci/run.sh
+        ''}
         ${args.postPatch or ""}
       '';
 
@@ -122,14 +121,6 @@ lib.extendMkDerivation {
         ) { } finalAttrs.custom-deps;
       }
       // args.passthru or { };
-
-      cargoDeps =
-        if extraCargoDeps != [ ] then merge-cargo-deps root-cargoDeps extraCargoDeps else root-cargoDeps;
-      custom-deps =
-        lib.optionals (extraCargoDeps != [ ]) (
-          map (cargoDeps: cargoDeps.vendorStaging) ([ root-cargoDeps ] ++ extraCargoDeps)
-        )
-        ++ custom-deps;
     };
 
   transformDrv = drv: drv // drv.custom-deps-attrs;

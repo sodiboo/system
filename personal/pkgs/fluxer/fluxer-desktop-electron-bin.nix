@@ -96,6 +96,8 @@ stdenv.mkDerivation (
         lib.licenses.mit
         lib.licenses.agpl3Plus # fluxer patches maybe aren't MIT licensed? unclear...
       ];
+
+      mainProgram = "electron";
     };
 
     pname = "electron";

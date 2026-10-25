@@ -1,5 +1,6 @@
 {
   lib,
+  callPackage,
   fetchPnpmDeps,
   rustPlatform,
 
@@ -53,20 +54,8 @@ make-fluxer-desktop (finalAttrs: {
     hash = "sha256-mmkgT7nhZ7LiaLWrwO0zKxGMuSKURsPE6AN/lYl4sp4=";
   };
 
-  extraCargoDeps = [
-    (rustPlatform.fetchCargoVendor {
-      name = "libfluxcore";
-      cargoRoot = "fluxer_app/rust/libfluxcore";
-      inherit (finalAttrs) src;
-      hash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
-    })
-    (rustPlatform.fetchCargoVendor {
-      name = "libfluxwebp";
-      cargoRoot = "fluxer_app/rust/libfluxwebp";
-      inherit (finalAttrs) src;
-      hash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
-    })
-  ];
+  libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
+  libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
 
   native-addons = {
     webauthn = {
