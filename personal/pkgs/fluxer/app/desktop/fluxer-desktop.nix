@@ -1,7 +1,5 @@
 {
   lib,
-  stdenv,
-  runCommand,
   callPackage,
   symlinkJoin,
   makeWrapper,
@@ -12,7 +10,6 @@
   nodejs_26,
   pnpm_11,
   pnpmConfigHook,
-  electron_44,
 
   cargo,
   rustc,
@@ -21,6 +18,7 @@
   pkg-config,
 
   make-fluxer-derivation,
+  make-fluxer-app-desktop ? callPackage ./fluxer-app-desktop.nix { },
 }:
 lib.extendMkDerivation {
   constructDrv = make-fluxer-derivation;
@@ -35,15 +33,14 @@ lib.extendMkDerivation {
     finalAttrs:
     args@{
       app-id,
+      electron,
       build-channel,
       libfluxcore,
       libfluxwebp,
       native-addons,
       ...
     }:
-
     let
-
       inherit (finalAttrs)
         electron
         nodejs
@@ -51,7 +48,6 @@ lib.extendMkDerivation {
         ;
     in
     {
-      electron = args.electron or electron_44;
       nodejs = args.nodejs or nodejs_26;
       pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
       custom-deps =
@@ -62,7 +58,7 @@ lib.extendMkDerivation {
         ]
         ++ args.custom-deps or [ ];
 
-      renderer = callPackage ./fluxer-app-desktop-renderer.nix { } {
+      renderer = make-fluxer-app-desktop {
         inherit (args) libfluxcore libfluxwebp;
         inherit (finalAttrs)
           src
@@ -74,7 +70,6 @@ lib.extendMkDerivation {
       };
 
       passthru = {
-
         native-addons = builtins.mapAttrs (
           addon:
           lib.extendMkDerivation {
@@ -110,14 +105,18 @@ lib.extendMkDerivation {
       // args.passthru or { };
 
       patches = [
-        ../fluxer-ci-binary-in-desktop-build-js.patch
+        ./patches/fluxer-ci-binary-in-desktop-build-js.patch
 
         # by default, the build scripts assert that glibc dependency is <= what Ubuntu ships, and that anything not installed on Ubuntu by default (libfido2) must be included.
         # but neither of these constraints are relevant in Nix; the fluxer modules will statically refer to a compatible glibc and libfido2 by construction; they cannot be missing at runtime.
-        ../dont-assert-abi-compatibility.patch
+        ./patches/dont-assert-abi-compatibility.patch
 
-        ./desktop-dont-check-linux-archive.patch
-        ./desktop-include-sourcemaps.patch
+        # the way this validation is done is currently inconvenient to do with Nix, so just skip it.
+        # (in particular, it expects the electron distribution to be zipped; but Nix doesn't love when binaries are compressed)
+        ./patches/dont-check-linux-archive.patch
+
+        # including sourcemaps makes the binary go from like 400M->500M . but on my system i think that's worth it, ish.
+        ./patches/include-sourcemaps.patch
       ]
       ++ args.patches or [ ];
 

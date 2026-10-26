@@ -1,5 +1,4 @@
 {
-  lib,
   callPackage,
   fetchPnpmDeps,
   rustPlatform,
@@ -12,9 +11,9 @@
   udev,
 
   fetch-fluxer-source,
-  make-fluxer-desktop,
-  make-fluxer-desktop-electron-bin,
   fluxer-update-script,
+  make-fluxer-desktop ? callPackage ./fluxer-desktop.nix { },
+  make-fluxer-electron-bin ? callPackage ./fluxer-electron-bin.nix { },
 }:
 make-fluxer-desktop (finalAttrs: {
   fluxer-component = "fluxer-desktop-stable";
@@ -29,7 +28,7 @@ make-fluxer-desktop (finalAttrs: {
     hash = "sha256-XF6PZDl9eq41g6QiNFcvnjrw0ZhwSJoyobyXrglRCzQ=";
   };
 
-  electron = make-fluxer-desktop-electron-bin {
+  electron = make-fluxer-electron-bin {
     version = "44.9.1-fluxer.1";
     hashes = {
       linux-x64 = {

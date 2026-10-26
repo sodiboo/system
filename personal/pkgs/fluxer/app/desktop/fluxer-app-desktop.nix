@@ -1,9 +1,11 @@
 {
   lib,
   callPackage,
+
+  make-fluxer-app ? callPackage ../fluxer-app.nix { },
 }:
 lib.extendMkDerivation {
-  constructDrv = callPackage ./fluxer-app.nix { };
+  constructDrv = make-fluxer-app;
 
   extendDrvArgs =
     finalAttrs:
@@ -12,7 +14,7 @@ lib.extendMkDerivation {
       fluxer-component = "fluxer-app-desktop-${finalAttrs.build-channel}";
 
       patches = [
-        ../fluxer-ci-binary-in-desktop-build-js.patch
+        ./patches/fluxer-ci-binary-in-desktop-build-js.patch
       ]
       ++ args.patches or [ ];
 

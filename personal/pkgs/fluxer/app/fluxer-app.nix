@@ -65,7 +65,7 @@ lib.extendMkDerivation {
         extendDrvArgs = _: libflux-args;
       } args.libfluxwebp;
 
-      markdown-parser-wasm = callPackage ./fluxer-markdown-parser.nix { } {
+      markdown-parser-wasm = callPackage ./markdown-parser.nix { } {
         inherit (finalAttrs) src version cargoDeps;
       };
 

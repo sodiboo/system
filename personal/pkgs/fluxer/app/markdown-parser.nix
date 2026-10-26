@@ -1,31 +1,14 @@
 {
   lib,
-  stdenv,
   runCommand,
-  symlinkJoin,
   makeWrapper,
-
-  jq,
-  rsync,
-
-  nodejs_26,
-  nodejs-slim_26,
-  pnpm_11,
-  pnpmConfigHook,
-  electron_44,
 
   cargo,
   rustc,
-  fetchCrate,
   rustPlatform,
 
-  pkg-config,
   clang,
   lld,
-
-  zstd,
-
-  buildWasmBindgenCli,
 
   make-fluxer-derivation,
 }:
@@ -36,12 +19,6 @@ lib.extendMkDerivation {
     finalAttrs:
     args@{ ... }:
     {
-      # nodejs = args.nodejs or nodejs_26;
-      # pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
-      # custom-deps = (
-      #   map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons)
-      # );
-
       fluxer-component = "fluxer-markdown-parser.wasm";
       version = null;
 
@@ -51,9 +28,6 @@ lib.extendMkDerivation {
 
       nativeBuildInputs = [
         makeWrapper
-        # nodejs
-        # pnpm
-        # pnpmConfigHook
         cargo
         rustc
         clang.cc
@@ -88,18 +62,6 @@ lib.extendMkDerivation {
           '';
       }
       // args.passthru or { };
-
-      # buildInputs = [ zstd ];
-
-      # env.npm_config_nodedir = nodejs;
-      # env.BUNDLE_LOCAL_ASSETS = true;
-      # preBuild = ''
-      #   (
-      #     cd fluxer_desktop
-      #     fluxer-ci build-desktop --step update_version
-      #     fluxer-ci build-desktop --step set_build_channel
-      #   )
-      # '';
 
       meta = {
         description = "A free and open source instant messaging and VoIP chat app";

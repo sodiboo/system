@@ -15,16 +15,12 @@ rec {
     // {
       inherit callPackage;
     };
-  fluxer-pkgs = invoke {
-    make-fluxer-desktop = ./fluxer-desktop.nix;
-    make-fluxer-desktop-electron-bin = ./fluxer-desktop-electron-bin.nix;
-  };
 
   fluxer-components = invoke {
-    fluxer-desktop-stable = ./fluxer-desktop-stable.nix;
-    fluxer-desktop-canary = ./fluxer-desktop-canary.nix;
-    fluxer-app-proxy = ./fluxer-app-proxy.nix;
+    fluxer-desktop-stable = ./app/desktop/fluxer-desktop-stable.nix;
+    fluxer-desktop-canary = ./app/desktop/fluxer-desktop-canary.nix;
+    fluxer-app-proxy = ./app/web/fluxer-app-proxy.nix;
   };
 
-  callPackage = lib.callPackageWith (pkgs // fluxer-utils // fluxer-pkgs // fluxer-components);
+  callPackage = lib.callPackageWith (pkgs // fluxer-utils // fluxer-components);
 }

@@ -1,51 +1,25 @@
 {
   lib,
+  callPackage,
   clangStdenv,
   stdenvNoCC,
-  runCommand,
-  symlinkJoin,
   makeWrapper,
 
   jq,
-  rsync,
-
-  nodejs_26,
-  nodejs-slim_26,
-  pnpm_11,
-  fetchPnpmDeps,
-  pnpmConfigHook,
-  electron_44,
 
   cargo,
   rustc,
-  fetchCrate,
   rustPlatform,
 
-  pkg-config,
   clang,
   lld,
 
   zstd,
 
-  buildWasmBindgenCli,
-
   make-fluxer-derivation,
 }:
 let
-
-  wasm-bindgen-cli = buildWasmBindgenCli rec {
-    src = fetchCrate {
-      pname = "wasm-bindgen-cli";
-      version = "0.2.128";
-      hash = "sha256-a7lcXJnnZkYReja+iUO7NqqrWyv3toxnUgQb8s4IS5s=";
-    };
-
-    cargoDeps = rustPlatform.fetchCargoVendor {
-      inherit src;
-      inherit (src) pname version;
-      hash = "sha256-R1Tas33Ursy8kqsxguAkG0ZhNed2n5uFTAhw1l2qlLY=";
-    };
-  };
+  wasm-bindgen-cli = callPackage ./wasm-bindgen-cli.nix { };
 
   libfluxwebp-variant = lib.extendMkDerivation {
     constructDrv = make-fluxer-derivation.override {

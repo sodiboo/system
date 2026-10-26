@@ -1,5 +1,6 @@
 {
   lib,
+  callPackage,
   clangStdenv,
   makeWrapper,
 
@@ -7,7 +8,6 @@
 
   cargo,
   rustc,
-  fetchCrate,
   rustPlatform,
 
   clang,
@@ -15,10 +15,11 @@
 
   zstd,
 
-  buildWasmBindgenCli,
-
   make-fluxer-derivation,
 }:
+let
+  wasm-bindgen-cli = callPackage ./wasm-bindgen-cli.nix { };
+in
 lib.extendMkDerivation {
   constructDrv = make-fluxer-derivation.override {
     stdenv = clangStdenv;
@@ -27,21 +28,6 @@ lib.extendMkDerivation {
   extendDrvArgs =
     finalAttrs:
     args@{ ... }:
-    let
-      wasm-bindgen-cli = buildWasmBindgenCli rec {
-        src = fetchCrate {
-          pname = "wasm-bindgen-cli";
-          version = "0.2.128";
-          hash = "sha256-a7lcXJnnZkYReja+iUO7NqqrWyv3toxnUgQb8s4IS5s=";
-        };
-
-        cargoDeps = rustPlatform.fetchCargoVendor {
-          inherit src;
-          inherit (src) pname version;
-          hash = "sha256-R1Tas33Ursy8kqsxguAkG0ZhNed2n5uFTAhw1l2qlLY=";
-        };
-      };
-    in
     {
       fluxer-component = "libfluxcore";
       version = null;

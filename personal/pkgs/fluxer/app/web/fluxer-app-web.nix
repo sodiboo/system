@@ -5,9 +5,11 @@
   compressDrvWeb,
   brotli,
   zopfli,
+
+  make-fluxer-app ? callPackage ../fluxer-app.nix { },
 }:
 lib.extendMkDerivation {
-  constructDrv = callPackage ./fluxer-app.nix { };
+  constructDrv = make-fluxer-app;
 
   extendDrvArgs = finalAttrs: args: {
     fluxer-component = "fluxer-app-web-${finalAttrs.build-channel}";
