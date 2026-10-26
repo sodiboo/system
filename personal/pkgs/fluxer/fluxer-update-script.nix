@@ -6,6 +6,8 @@ nix-update-script {
     "--use-github-releases"
     "--version-regex"
     "${fluxer-component}@(.*)"
+    "--version"
+    "unstable"
   ]
   ++ builtins.concatLists (
     builtins.map (drv: [
