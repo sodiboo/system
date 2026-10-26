@@ -1,65 +1,40 @@
 {
   lib,
-  callPackage,
-  makeWrapper,
 
-  fetchPnpmDeps,
-
-  cargo,
   rustc,
+  cargo,
   rustPlatform,
 
-  fetch-fluxer-source,
-  fluxer-update-script,
   make-fluxer-derivation,
 }:
-make-fluxer-derivation (finalAttrs: {
-  fluxer-component = "fluxer-app-proxy";
-  version = "2026.1026.2930";
+lib.extendMkDerivation {
+  constructDrv = make-fluxer-derivation;
 
-  src = fetch-fluxer-source {
-    inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-qGeyZHvhdDd0d0bs/qCPmOG4N4a+ixhItTb7w5m1aHc=";
-  };
-
-  fluxer-ci = null;
-  cargoHash = "sha256-mC7Y84XD1GkEPvrQi2sTit3HMRObsDIryfSPmwhf69A=";
-
-  update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
-
-  custom-deps = [
-    finalAttrs.dist.pnpmDeps
-    finalAttrs.dist.libfluxcore.cargoDeps.vendorStaging
-    finalAttrs.dist.libfluxwebp.cargoDeps.vendorStaging
-  ];
-
-  unwrapped = make-fluxer-derivation {
-    inherit (finalAttrs)
-      fluxer-component
-      version
-      src
-      cargoDeps
-      ;
+  extendDrvArgs = finalAttrs: args: {
+    fluxer-component = "fluxer-app-proxy";
 
     fluxer-ci = null;
     update-script = null;
 
     nativeBuildInputs = [
-      makeWrapper
       rustc
       cargo
       rustPlatform.cargoSetupHook
       rustPlatform.cargoBuildHook
       rustPlatform.cargoInstallHook
-    ];
+    ]
+    ++ args.nativeBuildInputs or [ ];
 
     env = {
       buildAndTestSubdir = "fluxer_app_proxy";
       cargoBuildType = "release";
-    };
+    }
+    // args.env or { };
 
     postInstall = ''
       mv $out/bin/fluxer_app_proxy $out/bin/fluxer-app-proxy
+
+      ${args.postInstall or ""}
     '';
 
     meta = {
@@ -68,40 +43,7 @@ make-fluxer-derivation (finalAttrs: {
       homepage = "https://github.com/fluxerapp/fluxer";
       maintainers = with lib.maintainers; [ sodiboo ];
       mainProgram = "fluxer-app-proxy";
-    };
+    }
+    // args.meta or { };
   };
-
-  dist = callPackage ./fluxer-app-web.nix { } {
-    inherit (finalAttrs)
-      version
-      src
-      cargoDeps
-      ;
-
-    pnpmDeps = fetchPnpmDeps {
-      pname = "fluxer";
-      inherit (finalAttrs) src;
-      fetcherVersion = 4;
-      hash = "sha256-cYy7MO3aRBSUqY8yMGjZ5Oo1/ys0IMfh3LPzNdUlUBY=";
-    };
-
-    build-channel = "stable";
-
-    libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
-    libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
-  };
-
-  pname = "${finalAttrs.fluxer-component}-wrapper";
-
-  nativeBuildInputs = [
-    makeWrapper
-  ];
-
-  installPhase = ''
-    mkdir -p $out/bin
-    makeWrapper ${lib.getExe finalAttrs.unwrapped} $out/bin/fluxer-app-proxy \
-      --set-default FLUXER_STATIC_DIR ${finalAttrs.dist.compressed}
-  '';
-
-  inherit (finalAttrs.unwrapped) meta;
-})
+}

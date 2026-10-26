@@ -19,7 +19,7 @@ rec {
   fluxer-components = invoke {
     fluxer-desktop-stable = ./app/desktop/fluxer-desktop-stable.nix;
     fluxer-desktop-canary = ./app/desktop/fluxer-desktop-canary.nix;
-    fluxer-app-proxy = ./app/web/fluxer-app-proxy.nix;
+    fluxer-app-proxy = ./app/web/fluxer-app-proxy-wrapper.nix;
   };
 
   callPackage = lib.callPackageWith (pkgs // fluxer-utils // fluxer-components);

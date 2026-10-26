@@ -12,7 +12,8 @@ lib.extendMkDerivation {
   constructDrv = make-fluxer-app;
 
   extendDrvArgs = finalAttrs: args: {
-    fluxer-component = "fluxer-app-web-${finalAttrs.build-channel}";
+    fluxer-component = "fluxer-app-web";
+    build-channel = "canary"; # override this in RELEASE_CHANNEL env of the app-proxy.
     fluxer-ci = null;
 
     buildPhase = ''
