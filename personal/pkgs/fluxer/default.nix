@@ -6,11 +6,11 @@
 rec {
   invoke = builtins.mapAttrs (_: f: callPackage f { });
 
-  fluxer-utils =
+  fluxer-lib =
     invoke {
-      fetch-fluxer-source = ./fetch-fluxer-source.nix;
-      make-fluxer-derivation = ./make-fluxer-derivation.nix;
-      fluxer-update-script = ./fluxer-update-script.nix;
+      fetch-fluxer-source = ./lib/fetch-fluxer-source.nix;
+      make-fluxer-derivation = ./lib/make-fluxer-derivation.nix;
+      fluxer-update-script = ./lib/fluxer-update-script.nix;
     }
     // {
       inherit callPackage;
@@ -22,5 +22,5 @@ rec {
     fluxer-app-proxy = ./app/web/fluxer-app-proxy-wrapper.nix;
   };
 
-  callPackage = lib.callPackageWith (pkgs // fluxer-utils // fluxer-components);
+  callPackage = lib.callPackageWith (pkgs // fluxer-lib // fluxer-components);
 }
