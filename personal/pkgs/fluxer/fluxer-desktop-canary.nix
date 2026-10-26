@@ -17,7 +17,7 @@
 }:
 make-fluxer-desktop (finalAttrs: {
   fluxer-component = "fluxer-desktop-canary";
-  version = "2026.1018.223341";
+  version = "2026.1026.22540";
 
   build-channel = "canary";
   app-id = "app.fluxer.FluxerCanary";
@@ -25,7 +25,7 @@ make-fluxer-desktop (finalAttrs: {
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-ir92ASsYrcdxXoXFTcvzrjVznW0nO5r/lD8VtFO3iJU=";
+    hash = "sha256-XF6PZDl9eq41g6QiNFcvnjrw0ZhwSJoyobyXrglRCzQ=";
   };
 
   electron = make-fluxer-desktop-electron-bin {
@@ -44,13 +44,13 @@ make-fluxer-desktop (finalAttrs: {
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-2iJ4S4JMekzXWF7IIrhs059unEox2TaL7QnMvwH+b/Q=";
+  cargoHash = "sha256-mC7Y84XD1GkEPvrQi2sTit3HMRObsDIryfSPmwhf69A=";
 
   pnpmDeps = fetchPnpmDeps {
     pname = "fluxer";
     inherit (finalAttrs) src;
     fetcherVersion = 4;
-    hash = "sha256-mmkgT7nhZ7LiaLWrwO0zKxGMuSKURsPE6AN/lYl4sp4=";
+    hash = "sha256-XUpKPSzZr99p4d29m4wYxouRKVZygF0vTiSaXOKI4KM=";
   };
 
   libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
@@ -66,8 +66,8 @@ make-fluxer-desktop (finalAttrs: {
       cargoHash = "sha256-/YSjmYOUJqp9P68MgPsnuRf5pgYLItTWoaDeMu61xt8=";
     };
     hardware-encoder.cargoHash = "sha256-GylpEE/JlVxrbeK62w5vDizbNfGq6mSO47wZHqGBR9Y=";
-    app-store.cargoHash = "sha256-NQsRJqlLDe6nf4msrVdTKiLtgFZHX/1Ys9xPIMwyW74=";
-    gateway-socket.cargoHash = "sha256-ZWntY3bcRx4PuLHV7aepdA6anPrW8USMtWo6kkvpebo=";
+    app-store.cargoHash = "sha256-ZmoKvQDdEdMQo27Z66Vqj5NPmpaJ+GAgcaC7OZr2SEM=";
+    gateway-socket.cargoHash = "sha256-vCSk1qHPDui+NiGkB2cKs+SPrA/BvRSVdQPo2Ae9/QA=";
     linux-audio-capture = {
       nativeBuildInputs = [ rustPlatform.bindgenHook ];
       buildInputs = [ pipewire ];
@@ -81,7 +81,7 @@ make-fluxer-desktop (finalAttrs: {
     };
     system-hunspell = {
       nativeBuildInputs = [ rustPlatform.bindgenHook ];
-      cargoHash = "sha256-UZiiU10RzU60jFooFaY82idN6vwTpMOY6pWLcdL1Cd0=";
+      cargoHash = "sha256-65F2CsCChIGMaKjg8k6GJlkb4LVWCacG4mDTuRI9BVE=";
     };
     linux-input-hook.cargoHash = "sha256-aOSzf5YrPfxUYYs8xsEjFBRkBxZrewNh/2srpj6mdSw=";
     platform-info.cargoHash = "sha256-qppRUj6Unyyswe4gNY4khwwBI+IAtbmMaUcrX3JW5B0=";
