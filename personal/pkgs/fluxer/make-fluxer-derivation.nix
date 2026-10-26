@@ -23,17 +23,21 @@ lib.extendMkDerivation {
       src,
 
       cargoHash ? builtins.throw "missing cargoHash argument",
-      cargoDeps ? rustPlatform.fetchCargoVendor (
-        {
-          name = "fluxer";
-          inherit src;
-          hash = cargoHash;
-        }
-        // lib.optionalAttrs (finalAttrs ? cargoRoot) {
-          name = finalAttrs.pname;
-          inherit (finalAttrs) cargoRoot;
-        }
-      ),
+      cargoDeps ?
+        if cargoHash == null then
+          null
+        else
+          rustPlatform.fetchCargoVendor (
+            {
+              name = "fluxer";
+              inherit src;
+              hash = cargoHash;
+            }
+            // lib.optionalAttrs (finalAttrs ? cargoRoot) {
+              name = finalAttrs.pname;
+              inherit (finalAttrs) cargoRoot;
+            }
+          ),
       custom-deps ? [ ],
 
       update-script,
@@ -46,12 +50,14 @@ lib.extendMkDerivation {
       __structuredAttrs = true;
       strictDeps = true;
 
-      pname = fluxer-component;
+      pname = args.pname or fluxer-component;
       name =
-        let
-          inherit (finalAttrs) pname version;
-        in
-        if (version != null) then "${pname}-${version}" else "${pname}";
+        args.name or (
+          let
+            inherit (finalAttrs) pname version;
+          in
+          if (version != null) then "${pname}-${version}" else "${pname}"
+        );
 
       inherit
         build-channel
