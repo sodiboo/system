@@ -5,7 +5,9 @@
     { config, ... }:
     {
       # This token has no permissions, so it cannot do anything other than read public repositories.
-      sops.secrets.github-access-token = { };
+      sops.secrets.github-access-token = {
+        mode = "0444"; # <-- used in this repo for `nix-update`
+      };
 
       sops.templates.access-token-prelude = {
         content = ''

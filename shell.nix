@@ -33,6 +33,8 @@ pkgs.mkShell {
             "NIX_CONFIG"
             "\n"
             "extra-experimental-features = pipe-operators" # ugh, Nix calls this feature a different thing from Lix.
+            "--run"
+            "export GITHUB_TOKEN=\${GITHUB_TOKEN-$(cat /run/secrets/github-access-token)}"
           ])
         ];
       }
