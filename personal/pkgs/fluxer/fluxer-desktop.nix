@@ -43,39 +43,6 @@ lib.extendMkDerivation {
     }:
 
     let
-      libflux-args =
-        {
-          src ? finalAttrs.src,
-          version ? finalAttrs.version,
-          ...
-        }:
-        {
-          inherit src version;
-        };
-
-      renderer = callPackage ./fluxer-app-desktop-renderer.nix { } {
-        inherit (finalAttrs)
-          src
-          version
-          build-channel
-          cargoDeps
-          pnpmDeps
-          ;
-
-        libfluxcore = lib.extendMkDerivation {
-          constructDrv = callPackage ./libfluxcore.nix { };
-          extendDrvArgs = _: libflux-args;
-        } args.libfluxcore;
-
-        libfluxwebp = lib.extendMkDerivation {
-          constructDrv = callPackage ./libfluxwebp.nix { };
-          extendDrvArgs = _: libflux-args;
-        } args.libfluxwebp;
-
-        markdown-parser-wasm = callPackage ./fluxer-markdown-parser.nix { } {
-          inherit (finalAttrs) src version cargoDeps;
-        };
-      };
 
       inherit (finalAttrs)
         electron
@@ -90,13 +57,23 @@ lib.extendMkDerivation {
       custom-deps =
         (map (addon: addon.cargoDeps.vendorStaging) (builtins.attrValues finalAttrs.passthru.native-addons))
         ++ [
-          renderer.libfluxcore.cargoDeps
-          renderer.libfluxwebp.cargoDeps
+          finalAttrs.renderer.libfluxcore.cargoDeps.vendorStaging
+          finalAttrs.renderer.libfluxwebp.cargoDeps.vendorStaging
         ]
         ++ args.custom-deps or [ ];
 
+      renderer = callPackage ./fluxer-app-desktop-renderer.nix { } {
+        inherit (args) libfluxcore libfluxwebp;
+        inherit (finalAttrs)
+          src
+          version
+          build-channel
+          cargoDeps
+          pnpmDeps
+          ;
+      };
+
       passthru = {
-        inherit renderer;
 
         native-addons = builtins.mapAttrs (
           addon:
@@ -172,7 +149,7 @@ lib.extendMkDerivation {
           fluxer-ci build-desktop --step set_build_channel
 
           mkdir dist
-          ln -s ${renderer} dist/renderer
+          ln -s ${finalAttrs.renderer} dist/renderer
         )
       '';
 
