@@ -20,6 +20,9 @@ rec {
     fluxer-desktop-stable = ./app/desktop/fluxer-desktop-stable.nix;
     fluxer-desktop-canary = ./app/desktop/fluxer-desktop-canary.nix;
     fluxer-app-proxy = ./app/web/fluxer-app-proxy-wrapper.nix;
+
+    fluxer-api = ./server/fluxer-api.nix;
+    fluxer-gateway = ./server/fluxer-gateway.nix;
   };
 
   callPackage = lib.callPackageWith (pkgs // fluxer-lib // fluxer-components);
