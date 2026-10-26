@@ -3,6 +3,7 @@
 nix-update-script {
   extraArgs = [
     "--flake" # <-- mostly specific to this repo. might want to remove that flag if this packageset goes elsewhere
+    "--use-github-releases"
     "--version-regex"
     "${fluxer-component}@(.*)"
   ]
