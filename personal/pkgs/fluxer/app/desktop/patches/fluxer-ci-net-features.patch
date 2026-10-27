@@ -1,0 +1,219 @@
+diff --git a/tools/ci/Cargo.toml b/tools/ci/Cargo.toml
+index 87afb6974..17e70e05c 100644
+--- a/tools/ci/Cargo.toml
++++ b/tools/ci/Cargo.toml
+@@ -6,15 +6,15 @@ license = "AGPL-3.0-or-later"
+ 
+ [dependencies]
+ anyhow = "1.0.104"
+-aws-config = "1.12.0"
+-aws-sdk-s3 = { version = "1.148.0", default-features = false, features = ["default-https-client", "http-1x", "rt-tokio"] }
++aws-config = { version = "1.12.0", optional = true }
++aws-sdk-s3 = { version = "1.148.0", default-features = false, features = ["default-https-client", "http-1x", "rt-tokio"], optional = true }
+ base64 = "0.23.1"
+ brotli = "8.0.2"
+ chrono = "0.4.45"
+ clap = { version = "4.6.7", features = ["derive"] }
+ hex = "0.4.3"
+ md-5 = "0.11.0"
+-reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"] }
++reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"], optional = true }
+ serde = { version = "1.0.229", features = ["derive"] }
+ serde_json = "1.0.151"
+ sha2 = "0.11.0"
+@@ -23,3 +23,8 @@ tempfile = "3.27.0"
+ tokio = { version = "1.53.1", features = ["fs", "io-util", "macros", "process", "rt-multi-thread", "signal", "sync", "time"] }
+ walkdir = "2.5.0"
+ zip = { version = "9.0.5", default-features = false, features = ["deflate"] }
++
++[features]
++default = ["s3", "http"]
++s3 = ["dep:aws-sdk-s3", "dep:aws-config"]
++http = [ "dep:reqwest" ]
+diff --git a/tools/ci/src/app_proxy.rs b/tools/ci/src/app_proxy.rs
+index 7c005ffc7..87cd454f2 100644
+--- a/tools/ci/src/app_proxy.rs
++++ b/tools/ci/src/app_proxy.rs
+@@ -1,10 +1,14 @@
+ // SPDX-License-Identifier: AGPL-3.0-or-later
+ 
+ use crate::common::{
+-    CALVER_SCHEME, CalverEnv, CommandSpec, S3UploadPlanItem, append_github_env,
+-    append_github_output, collect_files, env_string, output_text, path_to_s3_key,
+-    remove_dir_if_exists, require_env, resolve_calver, run_command, runner_temp, s3_client,
+-    trim_option, upload_s3_plan_append_only,
++    CALVER_SCHEME, CalverEnv, CommandSpec, append_github_env,
++    append_github_output, collect_files, env_string, output_text,
++    remove_dir_if_exists, require_env, resolve_calver, run_command, runner_temp,
++    trim_option, path_to_s3_key
++};
++#[cfg(feature = "s3")]
++use crate::common::s3::{
++     S3UploadPlanItem, s3_client, upload_s3_plan_append_only,
+ };
+ use crate::functions::sha256_file;
+ use anyhow::{Context, Result, anyhow, ensure};
+@@ -270,6 +274,12 @@ fn asset_manifest_entries(dist: &Path) -> Result<Vec<String>> {
+     Ok(entries)
+ }
+ 
++#[cfg(not(feature = "s3"))]
++async fn upload_assets_step() -> Result<()> {
++    panic!("needs s3 feature")
++}
++
++#[cfg(feature = "s3")]
+ async fn upload_assets_step() -> Result<()> {
+     let client = s3_client(Some(DEFAULT_S3_ENDPOINT)).await?;
+     let bucket = env::var("STATIC_BUCKET").unwrap_or_else(|_| DEFAULT_STATIC_BUCKET.to_string());
+@@ -289,6 +299,7 @@ async fn upload_assets_step() -> Result<()> {
+     Ok(())
+ }
+ 
++#[cfg(feature = "s3")]
+ fn asset_upload_plan(dist: &Path, assets: &[String]) -> Result<Vec<S3UploadPlanItem>> {
+     assets
+         .iter()
+diff --git a/tools/ci/src/common.rs b/tools/ci/src/common.rs
+index de791ddec..27d25a451 100644
+--- a/tools/ci/src/common.rs
++++ b/tools/ci/src/common.rs
+@@ -1,14 +1,11 @@
+ // SPDX-License-Identifier: AGPL-3.0-or-later
+ 
+ use anyhow::{Context, Result, anyhow, bail, ensure};
+-use aws_config::{BehaviorVersion, Region, retry::RetryConfig};
+-use aws_sdk_s3::Client as S3Client;
+-use aws_sdk_s3::error::ProvideErrorMetadata;
+-use aws_sdk_s3::primitives::ByteStream;
+ use base64::Engine;
+ use base64::engine::general_purpose::STANDARD as BASE64;
+ use chrono::{DateTime, Datelike, NaiveDate, NaiveDateTime, TimeZone, Timelike, Utc};
+ use md5::{Digest as _, Md5};
++#[cfg(feature = "http")]
+ use reqwest::Client;
+ use std::collections::{BTreeMap, BTreeSet};
+ use std::env;
+@@ -117,6 +114,10 @@ pub(crate) struct CapturedOutput {
+     pub(crate) stderr: Vec<u8>,
+ }
+ 
++#[cfg(feature = "s3")]
++mod s3_upload {
++    use super::{*,s3::*};
++
+ #[derive(Debug, Clone, PartialEq, Eq)]
+ pub(crate) struct S3UploadPlanItem {
+     pub(crate) path: PathBuf,
+@@ -159,6 +160,7 @@ impl S3UploadPlanItem {
+         self
+     }
+ 
++    pub(super)
+     fn has_upload_metadata(&self) -> bool {
+         self.content_type.is_some() || self.cache_control.is_some()
+     }
+@@ -177,6 +179,7 @@ pub(crate) enum S3UploadDisposition {
+     SkippedExisting,
+     MetadataRepaired,
+ }
++}
+ 
+ pub(crate) fn env_string(name: &str) -> Option<String> {
+     env::var(name).ok().filter(|value| !value.is_empty())
+@@ -428,6 +431,16 @@ fn invalid_version_date(version: &str) -> anyhow::Error {
+     anyhow!("Invalid build version date/time: {version}")
+ }
+ 
++#[cfg(feature = "s3")]
++pub(crate) mod s3 {
++use super::*;
++pub use super::s3_upload::*;
++
++use aws_config::{BehaviorVersion, Region, retry::RetryConfig};
++use aws_sdk_s3::Client as S3Client;
++use aws_sdk_s3::error::ProvideErrorMetadata;
++use aws_sdk_s3::primitives::ByteStream;
++
+ pub(crate) async fn s3_client(default_endpoint: Option<&str>) -> Result<S3Client> {
+     let region = env::var("AWS_REGION")
+         .or_else(|_| env::var("AWS_DEFAULT_REGION"))
+@@ -525,9 +538,13 @@ struct S3ListedObject {
+ }
+ 
+ #[derive(Debug, Clone, PartialEq, Eq)]
++pub(super)
+ struct S3FileIdentity {
++    pub(super)
+     size: u64,
++    pub(super)
+     md5_hex: String,
++    pub(super)
+     md5_base64: String,
+ }
+ 
+@@ -623,6 +640,7 @@ fn ensure_existing_s3_object_matches_local(
+     Ok(())
+ }
+ 
++pub(super)
+ fn s3_file_identity(path: &Path) -> Result<S3FileIdentity> {
+     let mut file =
+         fs::File::open(path).with_context(|| format!("Failed to read {}", path.display()))?;
+@@ -932,6 +950,8 @@ async fn send_s3_list_objects_v2_page(
+     unreachable!("S3 retry attempts are always greater than zero")
+ }
+ 
++}
++
+ pub(crate) fn path_to_s3_key(path: &Path) -> String {
+     path.components()
+         .filter_map(|component| match component {
+@@ -943,6 +963,11 @@ pub(crate) fn path_to_s3_key(path: &Path) -> String {
+ }
+ 
+ pub(crate) async fn download_file(url: &str, path: &Path) -> Result<()> {
++    #[cfg(not(feature = "http"))] {
++        panic!("i want to download {url}, but the http feature is not enabled");
++    }
++
++    #[cfg(feature="http")] {
+     let bytes = Client::new()
+         .get(url)
+         .send()
+@@ -961,6 +986,7 @@ pub(crate) async fn download_file(url: &str, path: &Path) -> Result<()> {
+     tokio::fs::write(path, bytes)
+         .await
+         .with_context(|| format!("Failed to write {}", path.display()))
++    }
+ }
+ 
+ pub(crate) fn runner_temp() -> PathBuf {
+@@ -1047,7 +1073,8 @@ pub(crate) fn title_case(value: &str) -> String {
+ 
+ #[cfg(test)]
+ mod tests {
+-    use super::*;
++    #![cfg(feature = "s3")]
++    use super::{*, s3::*};
+ 
+     #[test]
+     fn append_only_plan_skips_existing_keys_without_reordering_pending_uploads() {
+diff --git a/tools/ci/src/desktop.rs b/tools/ci/src/desktop.rs
+index d540d1b6f..b9c1979fb 100644
+--- a/tools/ci/src/desktop.rs
++++ b/tools/ci/src/desktop.rs
+@@ -5664,6 +5664,13 @@ fn desktop_live_manifest_url(channel: &str, platform: &str, arch: &str) -> Strin
+     )
+ }
+ 
++
++#[cfg(not(feature = "http"))]
++async fn fetch_live_channel_feeds(channel: &str) -> Result<BTreeMap<String, DesktopLiveFeed>> {
++    panic!("needs http feature")
++}
++
++#[cfg(feature = "http")]
+ async fn fetch_live_channel_feeds(channel: &str) -> Result<BTreeMap<String, DesktopLiveFeed>> {
+     let client = reqwest::Client::builder()
+         .timeout(DESKTOP_LIVE_MANIFEST_TIMEOUT)

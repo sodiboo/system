@@ -49,7 +49,24 @@ lib.extendMkDerivation {
         ;
     in
     {
-      fluxer-ci = make-fluxer-ci { inherit (finalAttrs) src cargoDeps; };
+      fluxer-ci = make-fluxer-ci {
+        inherit (finalAttrs) src cargoDeps;
+
+        # reqwest and aws-sdk-s3 have deep dependency trees and add a lot of compile time.
+        patches = [
+          ./patches/fluxer-ci-net-features.patch
+        ];
+
+        # disabling those dependencies (which are useless in the Nix sandbox anyways) has a significant effect.
+
+        # release + features = 3m37s
+        # release + no features = 1m40s
+        # debug + features = 1m17s
+        # debug + no features = 33s
+
+        buildNoDefaultFeatures = true;
+
+      };
 
       nodejs = args.nodejs or nodejs_26;
       pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
