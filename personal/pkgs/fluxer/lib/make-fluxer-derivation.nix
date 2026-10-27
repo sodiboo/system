@@ -65,24 +65,7 @@ lib.extendMkDerivation {
         custom-deps
         ;
 
-      fluxer-ci =
-        args.fluxer-ci or (
-          if finalAttrs ? cargoRoot then
-            null
-          else
-            rustPlatform.buildRustPackage {
-              name = "fluxer-ci";
-              inherit (finalAttrs) src cargoDeps;
-              buildAndTestSubdir = "tools/ci";
-
-              meta.mainProgram = "fluxer-ci";
-
-              # using debug mode cuts down the build time of this utility from 3min to 1min on my machine.
-              # that's significant, as *everything else fluxer* blocks on this.
-              # overall, this saves about 25%-33% *total build time* for fluxer-desktop.
-              buildType = "debug";
-            }
-        );
+      fluxer-ci = builtins.addErrorContext "in ${finalAttrs.name}" args.fluxer-ci;
 
       postPatch = ''
         ${lib.optionalString (fluxer-ci != null) ''

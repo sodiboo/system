@@ -11,6 +11,8 @@ rec {
       fetch-fluxer-source = ./lib/fetch-fluxer-source.nix;
       make-fluxer-derivation = ./lib/make-fluxer-derivation.nix;
       fluxer-update-script = ./lib/fluxer-update-script.nix;
+
+      make-fluxer-ci = ./lib/fluxer-ci.nix;
     }
     // {
       inherit callPackage;

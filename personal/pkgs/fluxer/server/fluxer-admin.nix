@@ -20,6 +20,8 @@ make-fluxer-derivation (finalAttrs: {
     hash = "sha256-+wgDWFzAafPt3LPUASGkE0FppQS65zHKqvlc3AQ6Qzk=";
   };
 
+  fluxer-ci = null;
+
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
   nativeBuildInputs = [

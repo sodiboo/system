@@ -17,6 +17,7 @@
 
   pkg-config,
 
+  make-fluxer-ci,
   make-fluxer-derivation,
   make-fluxer-app-desktop ? callPackage ./fluxer-app-desktop.nix { },
 }:
@@ -48,6 +49,8 @@ lib.extendMkDerivation {
         ;
     in
     {
+      fluxer-ci = make-fluxer-ci { inherit (finalAttrs) src cargoDeps; };
+
       nodejs = args.nodejs or nodejs_26;
       pnpm = args.pnpm or (pnpm_11.override { nodejs-slim = nodejs; });
       custom-deps =
@@ -64,6 +67,7 @@ lib.extendMkDerivation {
           src
           version
           build-channel
+          fluxer-ci
           cargoDeps
           pnpmDeps
           ;
