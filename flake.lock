@@ -948,11 +948,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790214005,
-        "narHash": "sha256-gt3sXQoGAoiVLtOTZXI9pAflCdOpA5xtPg0g1QFC+fk=",
+        "lastModified": 1792594938,
+        "narHash": "sha256-KqSpeMfKX3wsqUQK266w/U/7Ami2QNZXR+9HDYsC9cw=",
         "ref": "refs/heads/main",
-        "rev": "cedba42686cb07704bf25573a3180d8276a5f6b0",
-        "revCount": 85,
+        "rev": "25868eeb9895253b2bedf9a5368d37ef0f1dbea0",
+        "revCount": 87,
         "type": "git",
         "url": "https://turning.computers.gay/sodiboo/sharkey-flake"
       },
