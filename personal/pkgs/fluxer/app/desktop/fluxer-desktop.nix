@@ -52,12 +52,9 @@ lib.extendMkDerivation {
       fluxer-ci = make-fluxer-ci {
         inherit (finalAttrs) src cargoDeps;
 
+        # default features include `http` and `s3`.
         # reqwest and aws-sdk-s3 have deep dependency trees and add a lot of compile time.
-        patches = [
-          ./patches/fluxer-ci-net-features.patch
-        ];
-
-        # disabling those dependencies (which are useless in the Nix sandbox anyways) has a significant effect.
+        # disabling those features (which are useless in the Nix sandbox anyways) has a significant effect.
 
         # release + features = 3m37s
         # release + no features = 1m40s

@@ -17,7 +17,7 @@
 }:
 make-fluxer-desktop (finalAttrs: {
   fluxer-component = "fluxer-desktop-stable";
-  version = "2026.1026.24218";
+  version = "2026.1029.193831";
 
   build-channel = "stable";
   app-id = "app.fluxer.Fluxer";
@@ -25,7 +25,7 @@ make-fluxer-desktop (finalAttrs: {
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-XF6PZDl9eq41g6QiNFcvnjrw0ZhwSJoyobyXrglRCzQ=";
+    hash = "sha256-8DPMtERny/OUm6TSFKpVCFze+irVuqikUbZJYOvFLgM=";
   };
 
   electron = make-fluxer-electron-bin {
@@ -44,7 +44,7 @@ make-fluxer-desktop (finalAttrs: {
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-mC7Y84XD1GkEPvrQi2sTit3HMRObsDIryfSPmwhf69A=";
+  cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
 
   pnpmDeps = fetchPnpmDeps {
     pname = "fluxer";
@@ -53,7 +53,7 @@ make-fluxer-desktop (finalAttrs: {
     hash = "sha256-XUpKPSzZr99p4d29m4wYxouRKVZygF0vTiSaXOKI4KM=";
   };
 
-  libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
+  libfluxcore.cargoHash = "sha256-j0x+EDR3KKJX3EW8R+zKr2L/Gsuy+LEVF6IWfh3vN9k=";
   libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
 
   native-addons = {
@@ -63,7 +63,7 @@ make-fluxer-desktop (finalAttrs: {
         openssl
         libfido2
       ];
-      cargoHash = "sha256-/YSjmYOUJqp9P68MgPsnuRf5pgYLItTWoaDeMu61xt8=";
+      cargoHash = "sha256-x21aGTg+h1Dg6FUI5YP/08t5cBWn1iUV6URbjmXZRpU=";
     };
     hardware-encoder.cargoHash = "sha256-GylpEE/JlVxrbeK62w5vDizbNfGq6mSO47wZHqGBR9Y=";
     app-store.cargoHash = "sha256-ZmoKvQDdEdMQo27Z66Vqj5NPmpaJ+GAgcaC7OZr2SEM=";
