@@ -24,21 +24,6 @@ in
   options.services.garage = {
     enable = lib.mkEnableOption "Garage Object Storage (S3 compatible)";
 
-    extraEnvironment = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
-      description = "Extra environment variables to pass to the Garage server.";
-      default = { };
-      example = {
-        RUST_BACKTRACE = "yes";
-      };
-    };
-
-    environmentFile = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
-      description = "File containing environment variables to be passed to the Garage server.";
-      default = null;
-    };
-
     logLevel = lib.mkOption {
       type = lib.types.enum [
         "error"
@@ -106,8 +91,7 @@ in
       wantedBy = [ "multi-user.target" ];
       restartTriggers = [
         configFile
-      ]
-      ++ (lib.optional (cfg.environmentFile != null) cfg.environmentFile);
+      ];
       serviceConfig =
         let
           paths = lib.flatten (
@@ -131,15 +115,13 @@ in
           DynamicUser = lib.mkDefault true;
           ProtectHome = true;
           NoNewPrivileges = true;
-          EnvironmentFile = lib.optional (cfg.environmentFile != null) cfg.environmentFile;
           ReadWritePaths = lib.filter (x: !(isDefault x)) (lib.flatten [ paths ]);
           # Upstream recommendation https://garagehq.deuxfleurs.fr/documentation/cookbook/systemd/
           LimitNOFILE = 42000;
         };
       environment = {
         RUST_LOG = lib.mkDefault "garage=${cfg.logLevel}";
-      }
-      // cfg.extraEnvironment;
+      };
     };
   };
 }
