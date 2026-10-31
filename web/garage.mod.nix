@@ -34,7 +34,11 @@ in
       };
       systemd.services.garage = {
         serviceConfig.LoadCredential = [ "rpc-secret:${config.sops.secrets."garage/rpc-secret".path}" ];
-        environment.GARAGE_RPC_SECRET_FILE = "%d/rpc-secret";
+        environment = {
+          GARAGE_RPC_SECRET_FILE = "%d/rpc-secret";
+          # secret is scoped by systemd to just this service.
+          GARAGE_ALLOW_WORLD_READABLE_SECRETS = "true";
+        };
       };
     };
 }
