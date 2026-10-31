@@ -40,3 +40,8 @@ creation_rules:
     - age:
       - *id_sodium
       - *host_nitrogen
+  - path_regex: web/garage\.secrets\.yaml$
+    key_groups:
+    - age:
+      - *id_sodium
+      - *host_oxygen
