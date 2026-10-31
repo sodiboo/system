@@ -62,7 +62,7 @@ Modules have a `*.mod.nix` extension, which is loaded in [`flake.nix`](/flake.ni
 
 `<system>` is either `sodium`, `nitrogen` or more commonly `personal` which contains stuff common for both. There is also `oxygen` and `iridium`, which are headless servers and `universal` which is common to all four. `universal` will generally contain stuff like a command line environment (shell, utilities, prompts), whereas `personal` will contain stuff that doesn't/can't exist on the server, such as bluetooth, audio, GUI/Wayland environment (niri, waybar, etc), and leisure/games.
 
-My secrets are managed using `sops-nix`, which encrypts the secrets into `secrets.yaml` and a key is storerd in my home directory to decrypt them at boot-time. You can still run my configuration without the secret key, but the secrets will be missing and some services will not work as a result.
+My secrets are managed using `sops-nix`, which encrypts them into files in this repository, and they are decrypted at boot-time. You can still run my configuration without the secret key, but the secrets will be missing and some services will not work as a result.
 
 Most modules have a self-explanatory name. Here are some of the less obvious ones:
 

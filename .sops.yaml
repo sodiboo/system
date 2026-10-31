@@ -40,7 +40,3 @@ creation_rules:
     - age:
       - *id_sodium
       - *host_nitrogen
-  - path_regex: secrets.yaml$
-    key_groups:
-    - age:
-      - *personal
