@@ -6,8 +6,6 @@
   ...
 }:
 
-with lib;
-
 let
   cfg = config.services.garage;
   toml = pkgs.formats.toml { };
@@ -24,10 +22,10 @@ in
   };
 
   options.services.garage = {
-    enable = mkEnableOption "Garage Object Storage (S3 compatible)";
+    enable = lib.mkEnableOption "Garage Object Storage (S3 compatible)";
 
-    extraEnvironment = mkOption {
-      type = types.attrsOf types.str;
+    extraEnvironment = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
       description = "Extra environment variables to pass to the Garage server.";
       default = { };
       example = {
@@ -35,14 +33,14 @@ in
       };
     };
 
-    environmentFile = mkOption {
-      type = types.nullOr types.path;
+    environmentFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
       description = "File containing environment variables to be passed to the Garage server.";
       default = null;
     };
 
-    logLevel = mkOption {
-      type = types.enum [
+    logLevel = lib.mkOption {
+      type = lib.types.enum [
         "error"
         "warn"
         "info"
@@ -54,18 +52,18 @@ in
       description = "Garage log level, see <https://garagehq.deuxfleurs.fr/documentation/quick-start/#launching-the-garage-server> for examples.";
     };
 
-    settings = mkOption {
-      type = types.submodule {
+    settings = lib.mkOption {
+      type = lib.types.submodule {
         freeformType = toml.type;
 
         options = {
-          metadata_dir = mkOption {
+          metadata_dir = lib.mkOption {
             default = "/var/lib/garage/meta";
-            type = types.path;
+            type = lib.types.path;
             description = "The metadata directory, put this on a fast disk (e.g. SSD) if possible.";
           };
 
-          data_dir = mkOption {
+          data_dir = lib.mkOption {
             default = "/var/lib/garage/data";
             example = [
               {
@@ -73,7 +71,7 @@ in
                 capacity = "2T";
               }
             ];
-            type = with types; either path (listOf attrs);
+            type = lib.types.either lib.types.path (lib.types.listOf lib.types.attrs);
             description = ''
               The directory in which Garage will store the data blocks of objects. This folder can be placed on an HDD.
               Since v0.9.0, Garage supports multiple data directories, refer to <https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/#data_dir> for the exact format.
@@ -84,13 +82,13 @@ in
       description = "Garage configuration, see <https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/> for reference.";
     };
 
-    package = mkOption {
-      type = types.package;
+    package = lib.mkOption {
+      type = lib.types.package;
       description = "Garage package to use, needs to be set explicitly. If you are upgrading from a major version, please read NixOS and Garage release notes for upgrade instructions.";
     };
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     environment.etc."garage.toml" = {
       source = configFile;
     };
