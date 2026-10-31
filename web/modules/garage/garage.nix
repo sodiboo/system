@@ -20,10 +20,7 @@ in
 
   meta = {
     doc = /. + modulesPath + "/services/web-servers/garage.md";
-    maintainers = with lib.maintainers; [
-      mjm
-      cything
-    ];
+    maintainers = with lib.maintainers; [ sodiboo ];
   };
 
   options.services.garage = {
