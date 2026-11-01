@@ -1,8 +1,7 @@
 let
   rpc-port = 3901;
-in
-{
-  oxygen =
+
+  shared-module =
     {
       lib,
       pkgs,
@@ -67,4 +66,17 @@ in
 
       sops.secrets."garage/rpc-secret".sopsFile = ./garage.secrets.yaml;
     };
+in
+{
+  oxygen = {
+    imports = [ shared-module ];
+  };
+
+  sodium = {
+    imports = [ shared-module ];
+  };
+
+  iridium = {
+    imports = [ shared-module ];
+  };
 }

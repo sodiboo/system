@@ -44,4 +44,6 @@ creation_rules:
     key_groups:
     - age:
       - *id_sodium
+      - *host_sodium
       - *host_oxygen
+      - *host_iridium
