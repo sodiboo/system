@@ -9,7 +9,12 @@
 let
   cfg = config.services.garage;
 
-  settings' = builtins.removeAttrs cfg.settings [ "rpc_secret_file" ];
+  settings' =
+    builtins.removeAttrs cfg.settings [ "rpc_secret_file" ]
+    // lib.optionalAttrs (cfg.dynamic-rpc-addr.enable) {
+      rpc_bind_addr = "$DYNAMIC_RPC_ADDR";
+      rpc_public_addr = "$DYNAMIC_RPC_ADDR";
+    };
 
   rpc-secret-file = cfg.settings.rpc_secret_file;
 
@@ -40,6 +45,15 @@ in
       default = "info";
       example = "debug";
       description = "Garage log level, see <https://garagehq.deuxfleurs.fr/documentation/quick-start/#launching-the-garage-server> for examples.";
+    };
+
+    dynamic-rpc-addr = {
+      enable = lib.mkEnableOption "bind the rpc interface to a dynamically known address";
+
+      oneshot-credential = lib.mkOption {
+        type = lib.types.str;
+        description = "name of a oneshot credential that returns the RPC address";
+      };
     };
 
     settings = lib.mkOption {
@@ -132,10 +146,17 @@ in
                 ]
                 ++ lib.optionals (svc.DynamicUser) [ "--property=DynamicUser=yes" ]
                 ++ lib.optionals (svc ? StateDirectory) [ "--property=StateDirectory=${svc.StateDirectory}" ]
+                ++ lib.optionals (cfg.dynamic-rpc-addr.enable) [
+                  "--property=LoadCredential=config.toml:${config.oneshot-credentials."garage-config".path}"
+                ]
               )
             } -- ${lib.getExe (
               pkgs.writeShellScriptBin "garage-cli-wrapper-inner" ''
-                GARAGE_RPC_SECRET_FILE="$CREDENTIALS_DIRECTORY/rpc-secret" exec ${lib.getExe cfg.package} "$@"
+                export GARAGE_RPC_SECRET_FILE="$CREDENTIALS_DIRECTORY/rpc-secret"
+                ${lib.optionalString (cfg.dynamic-rpc-addr.enable) ''
+                  export GARAGE_CONFIG_FILE="$CREDENTIALS_DIRECTORY/config.toml"
+                ''}
+                exec ${lib.getExe cfg.package} "$@"
               ''
             )} "$@"
           '';
@@ -152,8 +173,27 @@ in
           `services.garage.settings.rpc_secret` is set. don't do this. use `rpc_secret_file` instead.
         '';
       }
+      {
+        assertion = cfg.dynamic-rpc-addr.enable -> !(cfg.settings ? rpc_bind_addr);
+        message = ''
+          `services.garage.dynamic-rpc-addr.enable` is true, but `services.garage.settings.rpc_bind_addr` is set manually. please unset it.
+        '';
+      }
+      {
+        assertion = cfg.dynamic-rpc-addr.enable -> !(cfg.settings ? rpc_public_addr);
+        message = ''
+          `services.garage.dynamic-rpc-addr.enable` is true, but `services.garage.settings.rpc_public_addr` is set manually. please unset it.
+        '';
+      }
+      {
+        assertion = !cfg.dynamic-rpc-addr.enable -> cfg.settings ? rpc_bind_addr;
+        message = ''
+          `services.garage.settings.rpc_bind_addr` is not set, but it is required.
+        '';
+      }
     ];
-    environment.etc."garage.toml" = {
+
+    environment.etc."garage.toml" = lib.mkIf (!cfg.dynamic-rpc-addr.enable) {
       source = configFile;
     };
 
@@ -161,11 +201,36 @@ in
       cfg.cli-wrapper.package
     ];
 
+    oneshot-credentials."garage-config" =
+      let
+        rpc-credential = config.oneshot-credentials.${cfg.dynamic-rpc-addr.oneshot-credential};
+      in
+      lib.mkIf (cfg.dynamic-rpc-addr.enable) {
+        service = {
+          requires = [ rpc-credential.name ];
+          after = [ rpc-credential.name ];
+          serviceConfig.LoadCredential = [
+            "rpc-addr:${rpc-credential.path}"
+          ];
+
+          script = ''
+            DYNAMIC_RPC_ADDR="$(${lib.getExe' config.systemd.package "systemd-creds"} cat rpc-addr)" \
+            ${lib.getExe pkgs.envsubst} -i ${configFile}
+          '';
+        };
+      };
+
     systemd.services.garage = {
       description = "Garage Object Storage (S3 compatible)";
+      requires = lib.optionals (cfg.dynamic-rpc-addr.enable) [
+        config.oneshot-credentials."garage-config".name
+      ];
       after = [
         "network.target"
         "network-online.target"
+      ]
+      ++ lib.optionals (cfg.dynamic-rpc-addr.enable) [
+        config.oneshot-credentials."garage-config".name
       ];
       wants = [
         "network.target"
@@ -204,10 +269,16 @@ in
           # Upstream recommendation https://garagehq.deuxfleurs.fr/documentation/cookbook/systemd/
           LimitNOFILE = 42000;
 
-          LoadCredential = [ "rpc-secret:${rpc-secret-file}" ];
+          LoadCredential = lib.mkMerge [
+            [ "rpc-secret:${rpc-secret-file}" ]
+            (lib.mkIf (cfg.dynamic-rpc-addr.enable) [
+              "config.toml:${config.oneshot-credentials."garage-config".path}"
+            ])
+          ];
         };
       environment = {
         GARAGE_RPC_SECRET_FILE = "%d/rpc-secret";
+        GARAGE_CONFIG_FILE = lib.mkIf (cfg.dynamic-rpc-addr.enable) "%d/config.toml";
         RUST_LOG = lib.mkDefault "garage=${cfg.logLevel}";
       };
     };
