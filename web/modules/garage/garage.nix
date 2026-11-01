@@ -84,6 +84,14 @@ in
               Must match on all nodes. Should only be readable by root; it is passed to `LoadCredential=`.
             '';
           };
+
+          s3_api = {
+            s3_region = lib.mkOption {
+              type = lib.types.str;
+              default = "garage";
+              description = "The S3 region that garage will respond to. Requests to any other region will fail.";
+            };
+          };
         };
       };
       description = "Garage configuration, see <https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/> for reference.";

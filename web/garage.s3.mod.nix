@@ -8,8 +8,6 @@
     }:
     {
       services.garage.settings.s3_api = {
-        s3_region = "garage";
-
         api_bind_addr = "/run/garage/socket";
         public_endpoint = "https://s3.sodi.boo";
         public_endpoint_path_style = true;
