@@ -8,8 +8,13 @@
 
 let
   cfg = config.services.garage;
+
+  settings' = builtins.removeAttrs cfg.settings [ "rpc_secret_file" ];
+
+  rpc-secret-file = cfg.settings.rpc_secret_file;
+
   toml = pkgs.formats.toml { };
-  configFile = toml.generate "garage.toml" cfg.settings;
+  configFile = toml.generate "garage.toml" settings';
 in
 {
   disabledModules = [
@@ -62,6 +67,23 @@ in
               Since v0.9.0, Garage supports multiple data directories, refer to <https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/#data_dir> for the exact format.
             '';
           };
+
+          allow_world_readable_secrets = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = ''
+              Whether to bypass the permission check garage applies to secrets. On by default, because it doesn't work very well with systemd's `LoadCredential=`.
+            '';
+          };
+
+          rpc_secret_file = lib.mkOption {
+            type = lib.types.pathWith { inStore = false; };
+            description = ''
+              Path to the RPC secret used to communicate in the garage cluster. Generate with `openssl rand -hex 32`.
+
+              Must match on all nodes. Should only be readable by root; it is passed to `LoadCredential=`.
+            '';
+          };
         };
       };
       description = "Garage configuration, see <https://garagehq.deuxfleurs.fr/documentation/reference-manual/configuration/> for reference.";
@@ -74,6 +96,14 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !(cfg.settings ? rpc_secret);
+        message = ''
+          `services.garage.settings.rpc_secret` is set. don't do this. use `rpc_secret_file` instead.
+        '';
+      }
+    ];
     environment.etc."garage.toml" = {
       source = configFile;
     };
@@ -118,8 +148,11 @@ in
           ReadWritePaths = lib.filter (x: !(isDefault x)) (lib.flatten [ paths ]);
           # Upstream recommendation https://garagehq.deuxfleurs.fr/documentation/cookbook/systemd/
           LimitNOFILE = 42000;
+
+          LoadCredential = [ "rpc-secret:${rpc-secret-file}" ];
         };
       environment = {
+        GARAGE_RPC_SECRET_FILE = "%d/rpc-secret";
         RUST_LOG = lib.mkDefault "garage=${cfg.logLevel}";
       };
     };

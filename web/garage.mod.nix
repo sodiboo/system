@@ -24,21 +24,13 @@ in
           compression_level = 2;
 
           rpc_bind_addr = "[::]:${toString rpc-port}";
+
+          rpc_secret_file = config.sops.secrets."garage/rpc-secret".path;
         };
       };
 
       networking.firewall.allowedTCPPorts = [ rpc-port ];
 
-      sops.secrets."garage/rpc-secret" = {
-        sopsFile = ./garage.secrets.yaml;
-      };
-      systemd.services.garage = {
-        serviceConfig.LoadCredential = [ "rpc-secret:${config.sops.secrets."garage/rpc-secret".path}" ];
-        environment = {
-          GARAGE_RPC_SECRET_FILE = "%d/rpc-secret";
-          # secret is scoped by systemd to just this service.
-          GARAGE_ALLOW_WORLD_READABLE_SECRETS = "true";
-        };
-      };
+      sops.secrets."garage/rpc-secret".sopsFile = ./garage.secrets.yaml;
     };
 }
