@@ -78,5 +78,31 @@ in
 
   iridium = {
     imports = [ shared-module ];
+
+    systemd.tmpfiles.settings."60-garage-backing-storage" = {
+      "/storage/private".d = {
+        user = "root";
+        group = "root";
+        mode = "0700";
+      };
+
+      "/storage/private/garage".d = {
+        user = "nobody";
+        group = "nogroup";
+        mode = "0700";
+      };
+    };
+
+    systemd.mounts = [
+      {
+        wantedBy = [ "local-fs.target" ];
+        before = [ "local-fs.target" ];
+        what = "/storage/private/garage";
+        where = "/var/lib/private/garage";
+        unitConfig.DefaultDependencies = false;
+        type = "none";
+        options = "bind";
+      }
+    ];
   };
 }
