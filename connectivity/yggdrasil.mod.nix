@@ -13,29 +13,54 @@ let
 in
 
 {
-  universal = { lib, config, ... }: {
-    services.yggdrasil = {
-      enable = lib.mkDefault config.vpn.enable;
-      group = "wheel";
+  universal =
+    {
+      lib,
+      pkgs,
+      config,
+      ...
+    }:
+    {
+      services.yggdrasil = {
+        enable = lib.mkDefault config.vpn.enable;
+        group = "wheel";
 
-      openMulticastPort = true;
+        openMulticastPort = true;
 
-      settings = {
-        IfName = "yggdrasil";
+        settings = {
+          IfName = "yggdrasil";
 
-        Peers = lib.mkDefault public-peers-near-sweden;
+          Peers = lib.mkDefault public-peers-near-sweden;
 
-        MulticastInterfaces = [
-          {
-            Beacon = true;
-            Listen = true;
-            Port = 0;
-            # Password = "songbird";
-          }
-        ];
+          MulticastInterfaces = [
+            {
+              Beacon = true;
+              Listen = true;
+              Port = 0;
+              # Password = "songbird";
+            }
+          ];
+        };
+      };
+
+      oneshot-credentials.yggdrasil-address = lib.mkIf config.services.yggdrasil.enable {
+        service = {
+          bindsTo = [ "yggdrasil.service" ];
+          after = [ "yggdrasil.service" ];
+
+          serviceConfig = {
+            DynamicUser = true;
+            User = "yggdrasil";
+
+            BindPaths = [ "/run/yggdrasil/yggdrasil.sock:/yggdrasil" ];
+          };
+
+          script = ''
+            ${lib.getExe' config.services.yggdrasil.package "yggdrasilctl"} -endpoint unix:///yggdrasil -json getself | ${lib.getExe pkgs.jq} -rj .address
+          '';
+        };
       };
     };
-  };
 
   oxygen.services.yggdrasil = {
     persistentKeys = true;
