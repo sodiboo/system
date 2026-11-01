@@ -93,6 +93,47 @@ in
       type = lib.types.package;
       description = "Garage package to use, needs to be set explicitly. If you are upgrading from a major version, please read NixOS and Garage release notes for upgrade instructions.";
     };
+
+    cli-wrapper = {
+      enable = lib.mkEnableOption "cli wrapper that is allowed to manage garage" // {
+        default = true;
+      };
+      package = lib.mkOption {
+        type = lib.types.package;
+        readOnly = true;
+        default = pkgs.writeTextFile {
+          name = "garage-cli-wrapper";
+          executable = true;
+          destination = "/bin/garage";
+          meta.mainProgram = "garage";
+          text = ''
+            #!${pkgs.runtimeShell}
+
+            exec systemd-run ${
+              let
+                svc = config.systemd.services.garage.serviceConfig;
+              in
+              lib.escapeShellArgs (
+                [
+                  "--quiet"
+                  "--pipe"
+                  "--collect"
+                  "--unit=garage-cli"
+                  "--property=LoadCredential=rpc-secret:${rpc-secret-file}"
+                  "--property=User=${svc.User}"
+                ]
+                ++ lib.optionals (svc.DynamicUser) [ "--property=DynamicUser=yes" ]
+                ++ lib.optionals (svc ? StateDirectory) [ "--property=StateDirectory=${svc.StateDirectory}" ]
+              )
+            } -- ${lib.getExe (
+              pkgs.writeShellScriptBin "garage-cli-wrapper-inner" ''
+                GARAGE_RPC_SECRET_FILE="$CREDENTIALS_DIRECTORY/rpc-secret" exec ${lib.getExe cfg.package} "$@"
+              ''
+            )} "$@"
+          '';
+        };
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -107,6 +148,10 @@ in
     environment.etc."garage.toml" = {
       source = configFile;
     };
+
+    environment.systemPackages = lib.mkIf cfg.cli-wrapper.enable [
+      cfg.cli-wrapper.package
+    ];
 
     systemd.services.garage = {
       description = "Garage Object Storage (S3 compatible)";
@@ -143,6 +188,7 @@ in
 
           StateDirectory = lib.mkIf isDefaultStateDirectory "garage";
           DynamicUser = lib.mkDefault true;
+          User = "garage";
           ProtectHome = true;
           NoNewPrivileges = true;
           ReadWritePaths = lib.filter (x: !(isDefault x)) (lib.flatten [ paths ]);
