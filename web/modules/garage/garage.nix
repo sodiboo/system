@@ -194,6 +194,7 @@ in
         {
           ExecStart = "${cfg.package}/bin/garage server";
 
+          Restart = "always";
           StateDirectory = lib.mkIf isDefaultStateDirectory "garage";
           DynamicUser = lib.mkDefault true;
           User = "garage";
