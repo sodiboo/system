@@ -18,10 +18,12 @@ rec {
       inherit callPackage;
     };
 
-  fluxer-components = invoke {
+  desktop-components = invoke {
     fluxer-desktop-stable = ./app/desktop/fluxer-desktop-stable.nix;
     fluxer-desktop-canary = ./app/desktop/fluxer-desktop-canary.nix;
+  };
 
+  server-components = invoke {
     fluxer-admin = ./server-hashes/fluxer-admin.nix;
     fluxer-app-proxy = ./server-hashes/fluxer-app-proxy.nix;
     fluxer-api = ./server-hashes/fluxer-api.nix;
@@ -34,6 +36,39 @@ rec {
     fluxer-unfurl = ./server-hashes/fluxer-unfurl.nix;
     fluxer-users = ./server-hashes/fluxer-users.nix;
   };
+
+  fluxer-component-sets =
+    builtins.mapAttrs
+      (
+        name: components:
+        (pkgs.linkFarm name components).overrideAttrs (
+          finalAttrs: prevAttrs: {
+            # note that this update script is very specific to this repo's root. in particular, all entries of `fluxer-components` are exported in `packages.<system>` and can be referred to by e.g. `.#fluxer-desktop-canary`
+            # then, you can update it all like `nix-update --flake -u fluxer-full`
+            passthru = prevAttrs.passthru // {
+              updateScript = [
+                (pkgs.writeShellScript "update-many-packages" ''
+                  for p in "$@"; do
+                    ${lib.getExe pkgs.nix-update} --flake -u $p
+                  done
+                '')
+              ]
+              ++ (builtins.attrNames components);
+            };
+
+            # hacks to get nix-update to not complain when invoking the above update script
+            version = null;
+            pos = builtins.unsafeGetAttrPos "x" { x = null; };
+          }
+        )
+      )
+      {
+        fluxer-both-desktops = desktop-components;
+        fluxer-server-full = server-components;
+        fluxer-full = desktop-components // server-components;
+      };
+
+  fluxer-components = desktop-components // server-components // fluxer-component-sets;
 
   callPackage = lib.callPackageWith (pkgs // fluxer-lib // fluxer-components);
 }
