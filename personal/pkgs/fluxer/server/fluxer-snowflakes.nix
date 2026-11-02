@@ -5,43 +5,38 @@
   rustc,
   rustPlatform,
 
-  fetch-fluxer-source,
-  fluxer-update-script,
   make-fluxer-derivation,
 }:
-make-fluxer-derivation (finalAttrs: {
-  fluxer-component = "fluxer-snowflakes";
-  version = "2026.1026.202726";
+lib.extendMkDerivation {
+  constructDrv = make-fluxer-derivation;
 
-  fluxer-ci = null;
+  extendDrvArgs = finalAttrs: args: {
+    fluxer-component = "fluxer-snowflakes";
 
-  src = fetch-fluxer-source {
-    inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-NzgBQwvJSHCwnF2bG/+vywp8mgPpAhUzTP/irrvCQjM=";
+    fluxer-ci = null;
+
+    nativeBuildInputs = [
+      cargo
+      rustc
+      rustPlatform.cargoSetupHook
+      rustPlatform.cargoBuildHook
+      rustPlatform.cargoInstallHook
+    ]
+    ++ args.nativeBuildInputs or [ ];
+
+    env = {
+      buildAndTestSubdir = "fluxer_snowflakes";
+      cargoBuildType = "release";
+    }
+    // args.env or { };
+
+    meta = {
+      description = "A free and open source instant messaging and VoIP chat app";
+      license = lib.licenses.agpl3Plus;
+      homepage = "https://github.com/fluxerapp/fluxer";
+      maintainers = with lib.maintainers; [ sodiboo ];
+      mainProgram = "fluxer-snowflakes";
+    }
+    // args.meta or { };
   };
-
-  update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
-
-  nativeBuildInputs = [
-    cargo
-    rustc
-    rustPlatform.cargoSetupHook
-    rustPlatform.cargoBuildHook
-    rustPlatform.cargoInstallHook
-  ];
-
-  env = {
-    buildAndTestSubdir = "fluxer_snowflakes";
-    cargoBuildType = "release";
-  };
-
-  cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
-
-  meta = {
-    description = "A free and open source instant messaging and VoIP chat app";
-    license = lib.licenses.agpl3Plus;
-    homepage = "https://github.com/fluxerapp/fluxer";
-    maintainers = with lib.maintainers; [ sodiboo ];
-    mainProgram = "fluxer-snowflakes";
-  };
-})
+}

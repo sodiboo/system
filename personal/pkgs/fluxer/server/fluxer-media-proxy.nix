@@ -14,54 +14,50 @@
   libwebp,
   libyuv,
 
-  fetch-fluxer-source,
-  fluxer-update-script,
   make-fluxer-derivation,
 }:
-make-fluxer-derivation (finalAttrs: {
-  fluxer-component = "fluxer-media-proxy";
-  version = "2026.1026.202726";
+lib.extendMkDerivation {
+  constructDrv = make-fluxer-derivation;
 
-  fluxer-ci = null;
+  extendDrvArgs = finalAttrs: args: {
+    fluxer-component = "fluxer-media-proxy";
 
-  src = fetch-fluxer-source {
-    inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-NzgBQwvJSHCwnF2bG/+vywp8mgPpAhUzTP/irrvCQjM=";
+    fluxer-ci = null;
+
+    nativeBuildInputs = [
+      cargo
+      rustc
+      rustPlatform.cargoSetupHook
+      rustPlatform.cargoBuildHook
+      rustPlatform.cargoInstallHook
+
+      pkg-config
+    ]
+    ++ args.nativeBuildInputs or [ ];
+
+    buildInputs = [
+      vips
+      libheif
+      ffmpeg-headless
+      lcms2
+      libwebp
+      libyuv
+    ]
+    ++ args.buildInputs or [ ];
+
+    env = {
+      buildAndTestSubdir = "fluxer_media_proxy";
+      cargoBuildType = "release";
+    }
+    // args.env or { };
+
+    meta = {
+      description = "A free and open source instant messaging and VoIP chat app";
+      license = lib.licenses.agpl3Plus;
+      homepage = "https://github.com/fluxerapp/fluxer";
+      maintainers = with lib.maintainers; [ sodiboo ];
+      mainProgram = "fluxer-media-proxy";
+    }
+    // args.meta or { };
   };
-
-  update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
-
-  nativeBuildInputs = [
-    cargo
-    rustc
-    rustPlatform.cargoSetupHook
-    rustPlatform.cargoBuildHook
-    rustPlatform.cargoInstallHook
-
-    pkg-config
-  ];
-
-  buildInputs = [
-    vips
-    libheif
-    ffmpeg-headless
-    lcms2
-    libwebp
-    libyuv
-  ];
-
-  env = {
-    buildAndTestSubdir = "fluxer_media_proxy";
-    cargoBuildType = "release";
-  };
-
-  cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
-
-  meta = {
-    description = "A free and open source instant messaging and VoIP chat app";
-    license = lib.licenses.agpl3Plus;
-    homepage = "https://github.com/fluxerapp/fluxer";
-    maintainers = with lib.maintainers; [ sodiboo ];
-    mainProgram = "fluxer-media-proxy";
-  };
-})
+}
