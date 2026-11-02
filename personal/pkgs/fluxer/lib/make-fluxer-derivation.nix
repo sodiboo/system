@@ -10,7 +10,6 @@ lib.extendMkDerivation {
   excludeDrvArgNames = [
     "custom-deps"
     "update-script"
-    "extraCargoDeps"
     "cargoHash"
     "fluxer-ci"
   ];
