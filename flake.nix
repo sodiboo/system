@@ -249,11 +249,13 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          fluxer = pkgs.callPackage ./personal/pkgs/fluxer { };
         in
         {
           fluxtop = pkgs.callPackage ./personal/pkgs/fluxtop.nix { };
+          inherit fluxer;
         }
-        // (pkgs.callPackage ./personal/pkgs/fluxer { }).fluxer-components
+        // fluxer.fluxer-components
       );
 
       apps.x86_64-linux = mapAttrs (name: script: {
