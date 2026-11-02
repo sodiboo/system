@@ -5,19 +5,19 @@
   make-fluxer-app-proxy ? callPackage ../app/web/fluxer-app-proxy-wrapper.nix { },
 }:
 make-fluxer-app-proxy (finalAttrs: {
-  version = "2026.1026.2930";
+  version = "2026.1102.30752";
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-qGeyZHvhdDd0d0bs/qCPmOG4N4a+ixhItTb7w5m1aHc=";
+    hash = "sha256-H5+DaHvJvkX3BJ68ZenGOT2HnxXYUOza9yiNVHsUxTI=";
   };
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-mC7Y84XD1GkEPvrQi2sTit3HMRObsDIryfSPmwhf69A=";
+  cargoHash = "sha256-KBKwdYW3tpZmjoqlA5Lx4b0FTlPcHKrDsXXtazuQO0g=";
 
-  pnpmHash = "sha256-cYy7MO3aRBSUqY8yMGjZ5Oo1/ys0IMfh3LPzNdUlUBY=";
+  pnpmHash = "sha256-JLMS59QISQFZieXC4sUgfkPEJEN7JXbJN73Aea8huJo=";
 
-  libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
-  libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
+  libfluxcore.cargoHash = "sha256-OO4aw0TmibmV9NAfVMDue8PAbHsXHKgM/XuYVN8QOQg=";
+  libfluxwebp.cargoHash = "sha256-9kG0urKGRwGGYenIdmW/E9XZ/lSC3dO0mZ8RuzSA61E=";
 })

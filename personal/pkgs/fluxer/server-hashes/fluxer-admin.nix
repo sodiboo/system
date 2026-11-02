@@ -5,14 +5,14 @@
   make-fluxer-admin ? callPackage ../server/fluxer-admin.nix { },
 }:
 make-fluxer-admin (finalAttrs: {
-  version = "2026.1026.150423";
+  version = "2026.1102.30925";
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-+wgDWFzAafPt3LPUASGkE0FppQS65zHKqvlc3AQ6Qzk=";
+    hash = "sha256-H5+DaHvJvkX3BJ68ZenGOT2HnxXYUOza9yiNVHsUxTI=";
   };
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
+  cargoHash = "sha256-KBKwdYW3tpZmjoqlA5Lx4b0FTlPcHKrDsXXtazuQO0g=";
 })

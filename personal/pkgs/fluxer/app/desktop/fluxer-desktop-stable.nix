@@ -17,7 +17,7 @@
 }:
 make-fluxer-desktop (finalAttrs: {
   fluxer-component = "fluxer-desktop-stable";
-  version = "2026.1029.193831";
+  version = "2026.1101.230756";
 
   build-channel = "stable";
   app-id = "app.fluxer.Fluxer";
@@ -25,7 +25,7 @@ make-fluxer-desktop (finalAttrs: {
 
   src = fetch-fluxer-source {
     inherit (finalAttrs) fluxer-component version;
-    hash = "sha256-8DPMtERny/OUm6TSFKpVCFze+irVuqikUbZJYOvFLgM=";
+    hash = "sha256-mWi3S9mAulCk8Jeugh5n55thrGybkqyQYElIU5OQmZs=";
   };
 
   electron = make-fluxer-electron-bin {
@@ -44,12 +44,12 @@ make-fluxer-desktop (finalAttrs: {
 
   update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-  cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
+  cargoHash = "sha256-KBKwdYW3tpZmjoqlA5Lx4b0FTlPcHKrDsXXtazuQO0g=";
 
-  pnpmHash = "sha256-XUpKPSzZr99p4d29m4wYxouRKVZygF0vTiSaXOKI4KM=";
+  pnpmHash = "sha256-JLMS59QISQFZieXC4sUgfkPEJEN7JXbJN73Aea8huJo=";
 
-  libfluxcore.cargoHash = "sha256-j0x+EDR3KKJX3EW8R+zKr2L/Gsuy+LEVF6IWfh3vN9k=";
-  libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
+  libfluxcore.cargoHash = "sha256-OO4aw0TmibmV9NAfVMDue8PAbHsXHKgM/XuYVN8QOQg=";
+  libfluxwebp.cargoHash = "sha256-9kG0urKGRwGGYenIdmW/E9XZ/lSC3dO0mZ8RuzSA61E=";
 
   native-addons = {
     webauthn = {
@@ -58,27 +58,27 @@ make-fluxer-desktop (finalAttrs: {
         openssl
         libfido2
       ];
-      cargoHash = "sha256-x21aGTg+h1Dg6FUI5YP/08t5cBWn1iUV6URbjmXZRpU=";
+      cargoHash = "sha256-wIDP4YUk7ZoSlU+XOQPp2TT67Nre4rmfLIFDSE7WiSc=";
     };
-    hardware-encoder.cargoHash = "sha256-GylpEE/JlVxrbeK62w5vDizbNfGq6mSO47wZHqGBR9Y=";
-    app-store.cargoHash = "sha256-ZmoKvQDdEdMQo27Z66Vqj5NPmpaJ+GAgcaC7OZr2SEM=";
-    gateway-socket.cargoHash = "sha256-vCSk1qHPDui+NiGkB2cKs+SPrA/BvRSVdQPo2Ae9/QA=";
+    hardware-encoder.cargoHash = "sha256-6kby+eWqE/VRsrbw1q4MIIaiN/u0WOJFyxGe5VQcNYI=";
+    app-store.cargoHash = "sha256-Q0wKX/pTFNeAxJNGBNMbHwC78MJO6uxq5jRuO3PQg1g=";
+    gateway-socket.cargoHash = "sha256-6pMA5paREz/8SuCwNpXM4lna7YvZdCtFEDS2rZVdVOw=";
     linux-audio-capture = {
       nativeBuildInputs = [ rustPlatform.bindgenHook ];
       buildInputs = [ pipewire ];
-      cargoHash = "sha256-4cMvuI8juS8n4HtDkMk5ueXlFEldXvFrp7q70Pm8jRs=";
+      cargoHash = "sha256-q+qCK8x18ZplOIeyyCLYfVvlukG9n0UKXvV8B2JZQ5o=";
     };
-    linux-portals.cargoHash = "sha256-Ejilk90J72C946oyPPXafxBDZAgEqedUJFQ39pvqk1A=";
-    linux-notifications.cargoHash = "sha256-HpgpXzXqwBa2K3FIzUJVcJPpoLrd9UAruyrcYVhGSFU=";
+    linux-portals.cargoHash = "sha256-b3XnwJEfuVW7mUjRmMbiWX5xfE1ZQY7DPJJAQOvjnmY=";
+    linux-notifications.cargoHash = "sha256-8dbgHf8tVtAwPBjiIJhhUnqqeco5xZzwAIJqpdPA3rw=";
     linux-evdev = {
       buildInputs = [ udev ];
-      cargoHash = "sha256-L7xUfohe4aOI555u2hzhf7SeTk6Pv2IdTYHaLx5CEVo=";
+      cargoHash = "sha256-M23WQbguQJYGnbH41jnnnOM9cuytXKfEgVLPy48kT3U=";
     };
     system-hunspell = {
       nativeBuildInputs = [ rustPlatform.bindgenHook ];
-      cargoHash = "sha256-65F2CsCChIGMaKjg8k6GJlkb4LVWCacG4mDTuRI9BVE=";
+      cargoHash = "sha256-RWKN4c8l3FrinNsSwh/FCVm/j829uf/mPyRakKkPNGY=";
     };
-    linux-input-hook.cargoHash = "sha256-aOSzf5YrPfxUYYs8xsEjFBRkBxZrewNh/2srpj6mdSw=";
-    platform-info.cargoHash = "sha256-qppRUj6Unyyswe4gNY4khwwBI+IAtbmMaUcrX3JW5B0=";
+    linux-input-hook.cargoHash = "sha256-AIwXWKrl2eIDv+rBJ3qZdat1Ov8bvnuCHps3LDOgSDA=";
+    platform-info.cargoHash = "sha256-bTLPUaD2EQ2+ywBw7MS8mnN6sTad7MV43II03wa1uM4=";
   };
 })
