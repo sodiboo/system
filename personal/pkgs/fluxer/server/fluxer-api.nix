@@ -4,7 +4,6 @@
 
   nodejs_26,
   pnpm_11,
-  fetchPnpmDeps,
   pnpmConfigHook,
   pnpmBuildHook,
 
@@ -46,11 +45,7 @@ make-fluxer-derivation (
     };
 
     pnpmWorkspaces = [ "fluxer_api..." ];
-    pnpmDeps = fetchPnpmDeps {
-      inherit (finalAttrs) pname src pnpmWorkspaces;
-      fetcherVersion = 4;
-      hash = "sha256-jbWCzdUkT9WZK7TjHV95LqJvggF8lous+2q/4HjVzx0=";
-    };
+    pnpmHash = "sha256-jbWCzdUkT9WZK7TjHV95LqJvggF8lous+2q/4HjVzx0=";
 
     installPhase = ''
       runHook preInstall

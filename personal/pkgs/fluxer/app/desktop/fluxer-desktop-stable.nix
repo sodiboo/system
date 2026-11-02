@@ -1,6 +1,6 @@
 {
   callPackage,
-  fetchPnpmDeps,
+
   rustPlatform,
 
   openssl,
@@ -46,12 +46,7 @@ make-fluxer-desktop (finalAttrs: {
 
   cargoHash = "sha256-3PnAeK3MaRDELl/iBCLx3aD05k/6jVoxT7biSfUTdQU=";
 
-  pnpmDeps = fetchPnpmDeps {
-    pname = "fluxer";
-    inherit (finalAttrs) src;
-    fetcherVersion = 4;
-    hash = "sha256-XUpKPSzZr99p4d29m4wYxouRKVZygF0vTiSaXOKI4KM=";
-  };
+  pnpmHash = "sha256-XUpKPSzZr99p4d29m4wYxouRKVZygF0vTiSaXOKI4KM=";
 
   libfluxcore.cargoHash = "sha256-j0x+EDR3KKJX3EW8R+zKr2L/Gsuy+LEVF6IWfh3vN9k=";
   libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";

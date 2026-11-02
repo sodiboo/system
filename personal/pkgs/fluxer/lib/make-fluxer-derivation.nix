@@ -3,6 +3,7 @@
   stdenv,
 
   rustPlatform,
+  fetchPnpmDeps,
   ...
 }:
 lib.extendMkDerivation {
@@ -11,6 +12,7 @@ lib.extendMkDerivation {
     "custom-deps"
     "update-script"
     "cargoHash"
+    "pnpmHash"
     "fluxer-ci"
   ];
   extendDrvArgs =
@@ -37,6 +39,23 @@ lib.extendMkDerivation {
               inherit (finalAttrs) cargoRoot;
             }
           ),
+
+      pnpmHash ? null,
+      pnpmDeps ?
+        if pnpmHash == null then
+          null
+        else
+          fetchPnpmDeps (
+            {
+              pname = "fluxer";
+              inherit (finalAttrs) src;
+              fetcherVersion = 4;
+              hash = pnpmHash;
+            }
+            // lib.optionalAttrs (finalAttrs ? pnpm) { inherit (finalAttrs) pnpm; }
+            // lib.optionalAttrs (finalAttrs ? pnpmWorkspaces) { inherit (finalAttrs) pname pnpmWorkspaces; }
+          ),
+
       custom-deps ? [ ],
 
       update-script,
@@ -61,6 +80,7 @@ lib.extendMkDerivation {
       inherit
         build-channel
         cargoDeps
+        pnpmDeps
         custom-deps
         ;
 

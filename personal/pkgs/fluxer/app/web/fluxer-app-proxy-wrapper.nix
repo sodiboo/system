@@ -3,8 +3,6 @@
   callPackage,
   makeWrapper,
 
-  fetchPnpmDeps,
-
   fetch-fluxer-source,
   fluxer-update-script,
   make-fluxer-derivation,
@@ -41,12 +39,7 @@ make-fluxer-derivation (finalAttrs: {
   dist = make-fluxer-app-web {
     inherit (finalAttrs) version src cargoDeps;
 
-    pnpmDeps = fetchPnpmDeps {
-      pname = "fluxer";
-      inherit (finalAttrs) src;
-      fetcherVersion = 4;
-      hash = "sha256-cYy7MO3aRBSUqY8yMGjZ5Oo1/ys0IMfh3LPzNdUlUBY=";
-    };
+    pnpmHash = "sha256-cYy7MO3aRBSUqY8yMGjZ5Oo1/ys0IMfh3LPzNdUlUBY=";
 
     libfluxcore.cargoHash = "sha256-n9hA0WaUyYpXV9ply8QwUgq4NvmBERIebrfzz2lCd/A=";
     libfluxwebp.cargoHash = "sha256-zz5JD3jiNCx8FOReZmCm4O2F20s7UbMsfZIM2sIcSS0=";
