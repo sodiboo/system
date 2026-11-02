@@ -39,7 +39,6 @@ make-fluxer-derivation (
       pnpmBuildHook
     ];
 
-    cargoHash = null;
     fluxer-ci = null;
 
     env = {

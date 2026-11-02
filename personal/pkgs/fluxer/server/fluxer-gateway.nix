@@ -92,7 +92,6 @@ make-fluxer-derivation (
 
     update-script = fluxer-update-script { inherit (finalAttrs) fluxer-component custom-deps; };
 
-    cargoHash = null;
     fluxer-ci = null;
 
     nativeBuildInputs = [

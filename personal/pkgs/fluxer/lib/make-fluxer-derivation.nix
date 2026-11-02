@@ -21,7 +21,7 @@ lib.extendMkDerivation {
       build-channel ? null,
       src,
 
-      cargoHash ? builtins.throw "missing cargoHash argument",
+      cargoHash ? null,
       cargoDeps ?
         if cargoHash == null then
           null
