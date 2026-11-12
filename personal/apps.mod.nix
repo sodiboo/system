@@ -29,6 +29,7 @@ inputs: {
             vesktop
             element-desktop
             signal-desktop
+            bitwarden-desktop
             bitwarden-cli
             grim
             slurp
