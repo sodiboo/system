@@ -47,8 +47,7 @@ inputs: {
           xdg.mimeApps.defaultApplications =
             let
               file-manager = "org.kde.dolphin.desktop";
-              web-browser =
-                if nixosConfig.networking.hostName == "sodium" then "floorp.desktop" else "firefox.desktop";
+              web-browser = "librewolf.desktop";
             in
             {
               "inode/directory" = file-manager;
