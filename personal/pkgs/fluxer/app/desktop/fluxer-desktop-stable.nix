@@ -6,6 +6,8 @@
   openssl,
   libfido2,
 
+  sqlite,
+
   pipewire,
 
   udev,
@@ -46,7 +48,7 @@ make-fluxer-desktop (finalAttrs: {
 
   cargoHash = "sha256-KBKwdYW3tpZmjoqlA5Lx4b0FTlPcHKrDsXXtazuQO0g=";
 
-  pnpmHash = "sha256-JLMS59QISQFZieXC4sUgfkPEJEN7JXbJN73Aea8huJo=";
+  pnpmHash = "sha256-89bJwzGZ6JoFQxBInH4kMQzfhgXMqOgBVn31EGJ7Tps=";
 
   libfluxcore.cargoHash = "sha256-OO4aw0TmibmV9NAfVMDue8PAbHsXHKgM/XuYVN8QOQg=";
   libfluxwebp.cargoHash = "sha256-9kG0urKGRwGGYenIdmW/E9XZ/lSC3dO0mZ8RuzSA61E=";
@@ -61,7 +63,10 @@ make-fluxer-desktop (finalAttrs: {
       cargoHash = "sha256-wIDP4YUk7ZoSlU+XOQPp2TT67Nre4rmfLIFDSE7WiSc=";
     };
     hardware-encoder.cargoHash = "sha256-6kby+eWqE/VRsrbw1q4MIIaiN/u0WOJFyxGe5VQcNYI=";
-    app-store.cargoHash = "sha256-Q0wKX/pTFNeAxJNGBNMbHwC78MJO6uxq5jRuO3PQg1g=";
+    app-store = {
+      buildInputs = [ sqlite ];
+      cargoHash = "sha256-Q0wKX/pTFNeAxJNGBNMbHwC78MJO6uxq5jRuO3PQg1g=";
+    };
     gateway-socket.cargoHash = "sha256-6pMA5paREz/8SuCwNpXM4lna7YvZdCtFEDS2rZVdVOw=";
     linux-audio-capture = {
       nativeBuildInputs = [ rustPlatform.bindgenHook ];

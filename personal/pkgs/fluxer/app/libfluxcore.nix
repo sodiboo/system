@@ -12,8 +12,9 @@
 
   clang,
   lld,
+  # pkg-config,
 
-  zstd,
+  # zstd,
 
   make-fluxer-derivation,
 }:
@@ -44,12 +45,15 @@ lib.extendMkDerivation {
         lld
         rustPlatform.cargoSetupHook
         wasm-bindgen-cli
+        # pkg-config
         jq
       ];
 
       buildInputs = [
-        zstd
+        # zstd
       ];
+
+      dontCargoUseSystemLibs = true;
 
       buildPhase = ''
         (

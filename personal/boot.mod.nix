@@ -9,7 +9,7 @@
       boot.plymouth.enable = true;
       stylix.targets.plymouth.enable = false;
       boot.plymouth.theme = "bgrt";
-      boot.initrd.verbose = false;
+      # boot.initrd.verbose = false;
       boot.consoleLogLevel = 0;
       boot.kernelParams = [
         "quiet"

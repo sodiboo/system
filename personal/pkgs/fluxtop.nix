@@ -13,7 +13,7 @@ let
       [ "fluxtop" "Fluxtop" ];
 in
 (vesktop.override {
-  electron_43 = electron_44;
+  electron_45 = electron_44;
 }).overrideAttrs
   (
     finalAttrs: prevAttrs: {
@@ -40,7 +40,7 @@ in
             pnpm install "''${installFlagsArray[@]}"
           )
         '';
-        hash = "sha256-wJHDNUlrJkipeInZd8U4Adharp1QHLVVcsShvt7FVFE=";
+        hash = "sha256-odU/jFIiWXMETMPP5pdvluXS2D9doivR+7YZIXbV4o0=";
       };
 
       preBuild = ''
