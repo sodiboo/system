@@ -25,6 +25,14 @@ inputs: {
           helix.enable = true;
           vscode.enable = true;
           # vscode.package = pkgs.vscode-fhs;
+
+          gram = {
+            enable = true;
+            extraPackages = [
+              pkgs.vscode-json-languageserver
+              pkgs.tinymist
+            ];
+          };
         };
       };
     };
