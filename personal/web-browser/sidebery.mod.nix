@@ -23,7 +23,7 @@
           moveNewTabParent = "first_child";
           moveNewTabButton = "start";
           moveNewTab = "start";
-          pinnedTabsPosition = "top";
+          pinnedTabsPosition = "panel";
           pinnedTabsList = true;
           treeRmOutdent = "first_child";
           scrollThroughTabsSkipDiscarded = false;
