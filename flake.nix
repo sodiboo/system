@@ -58,6 +58,8 @@
     firefox-addons.url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
     firefox-addons.inputs.nixpkgs.follows = "nixpkgs";
 
+    gram-extensions.url = "https://codeberg.org/niklaskorz/nix-gram-extensions/archive/main.tar.gz";
+
     nixocaine.url = "git+https://git.madhouse-project.org/iocaine/nixocaine?ref=stable";
 
     sharkey-flake.url = "git+https://turning.computers.gay/sodiboo/sharkey-flake";

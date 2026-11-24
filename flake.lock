@@ -335,6 +335,22 @@
         "type": "gitlab"
       }
     },
+    "gram-extensions": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1794083706,
+        "narHash": "sha256-7+KyIJWHwyqmPu9foOAnAE/XOsKKlzh6/6JLtesfsro=",
+        "rev": "fffc345f4afb1f5cec05b45fc414eb1c09c18310",
+        "type": "tarball",
+        "url": "https://codeberg.org/api/v1/repos/niklaskorz/nix-gram-extensions/archive/fffc345f4afb1f5cec05b45fc414eb1c09c18310.tar.gz?rev=fffc345f4afb1f5cec05b45fc414eb1c09c18310"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://codeberg.org/niklaskorz/nix-gram-extensions/archive/main.tar.gz"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -486,7 +502,7 @@
       "inputs": {
         "niri-stable": "niri-stable",
         "niri-unstable": "niri-unstable",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
         "xwayland-satellite-stable": "xwayland-satellite-stable",
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
@@ -563,7 +579,7 @@
       "inputs": {
         "iocaine-stable": "iocaine-stable",
         "nam-shub-of-enki": "nam-shub-of-enki",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "pre-commit-hooks": "pre-commit-hooks",
         "systems": "systems_4",
         "treefmt-nix": "treefmt-nix"
@@ -585,7 +601,7 @@
     },
     "nixos-hardware": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1794425805,
@@ -603,16 +619,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1767379071,
-        "narHash": "sha256-EgE0pxsrW9jp9YFMkHL9JMXxcqi/OoumPJYwf+Okucw=",
-        "owner": "NixOS",
+        "lastModified": 1783503551,
+        "narHash": "sha256-bKMNrMZd/B56gE31iFABBHTbkzAptLy7G8G235yOv8Q=",
+        "owner": "niklaskorz",
         "repo": "nixpkgs",
-        "rev": "fb7944c166a3b630f177938e478f0378e64ce108",
+        "rev": "6da901a408ae91ee140bc8e94081d758f0a73126",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "owner": "niklaskorz",
+        "ref": "wasip2-rustc",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -728,6 +744,22 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1767379071,
+        "narHash": "sha256-EgE0pxsrW9jp9YFMkHL9JMXxcqi/OoumPJYwf+Okucw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "fb7944c166a3b630f177938e478f0378e64ce108",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1786943417,
         "narHash": "sha256-b4qgjdFtlz5TAZ1Hi7DFJeqX3sjaDUnrwr9OO+O1rM0=",
         "owner": "NixOS",
@@ -742,7 +774,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1789546076,
         "narHash": "sha256-vWkSk5bbfTqdtMoSgD9FshACO8JCvXTFi+3cqEp0mH0=",
@@ -755,7 +787,7 @@
         "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1794386569,
         "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
@@ -902,13 +934,14 @@
         "disko": "disko",
         "firefox-addons": "firefox-addons",
         "flashrom-meson": "flashrom-meson",
+        "gram-extensions": "gram-extensions",
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "niri-flake": "niri-flake",
         "nix-index-database": "nix-index-database",
         "nixocaine": "nixocaine",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "nixpkgs-wayland": "nixpkgs-wayland",
         "nixpkgs-xr": "nixpkgs-xr",
         "picocss": "picocss",
